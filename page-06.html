@@ -1,0 +1,1717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Page 06 — Agent Swarm & A2A Commerce Architecture · The Autonomous Supply Chain</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=Instrument+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bg: #0a0b0d;
+    --bg-2: #0f1114;
+    --bg-3: #141720;
+    --bg-4: #1a1e28;
+    --border: rgba(255,255,255,0.07);
+    --border-mid: rgba(255,255,255,0.12);
+    --border-bright: rgba(255,255,255,0.22);
+    --text-primary: #e8eaf0;
+    --text-secondary: #8a909e;
+    --text-dim: #545c6e;
+    --accent-blue: #4a90d9;
+    --accent-blue-dim: rgba(74,144,217,0.15);
+    --accent-blue-glow: rgba(74,144,217,0.08);
+    --accent-green: #34c37a;
+    --accent-green-dim: rgba(52,195,122,0.12);
+    --accent-amber: #e8a030;
+    --accent-amber-dim: rgba(232,160,48,0.12);
+    --accent-red: #e85550;
+    --accent-red-dim: rgba(232,85,80,0.12);
+    --accent-purple: #9b72cf;
+    --accent-purple-dim: rgba(155,114,207,0.12);
+    --font-display: 'DM Serif Display', Georgia, serif;
+    --font-body: 'Instrument Sans', sans-serif;
+    --font-mono: 'DM Mono', monospace;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; font-size: 16px; }
+  body {
+    background: var(--bg);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-weight: 400;
+    line-height: 1.6;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 48px; height: 60px;
+    background: rgba(10,11,13,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-brand { font-family: var(--font-mono); font-size: 11px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-secondary); text-decoration: none; transition: color 0.2s; }
+  .nav-brand:hover { color: var(--text-primary); }
+  .nav-page-tag { font-family: var(--font-mono); font-size: 10px; color: var(--text-dim); letter-spacing: 0.1em; }
+  .nav-links { display: flex; gap: 28px; }
+  .nav-links a { font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; text-decoration: none; color: var(--text-dim); transition: color 0.2s; }
+  .nav-links a:hover { color: var(--text-primary); }
+
+  /* HERO */
+  .hero { min-height: 100vh; display: flex; flex-direction: column; justify-content: flex-end; padding: 0 80px 80px; position: relative; overflow: hidden; }
+  .hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 60% 50% at 70% 40%, rgba(74,144,217,0.06) 0%, transparent 70%), radial-gradient(ellipse 40% 60% at 20% 70%, rgba(52,195,122,0.04) 0%, transparent 60%); pointer-events: none; }
+  .hero-eyebrow { font-family: var(--font-mono); font-size: 11px; font-weight: 400; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent-blue); margin-bottom: 24px; display: flex; align-items: center; gap: 16px; }
+  .hero-eyebrow::before { content: ''; display: block; width: 40px; height: 1px; background: var(--accent-blue); }
+  .hero-title { font-family: var(--font-display); font-size: clamp(48px, 6vw, 88px); line-height: 1.05; font-weight: 400; letter-spacing: -0.01em; color: var(--text-primary); max-width: 900px; margin-bottom: 32px; }
+  .hero-title em { font-style: italic; color: var(--text-secondary); }
+  .hero-subtitle { font-size: 17px; font-weight: 300; line-height: 1.65; color: var(--text-secondary); max-width: 620px; margin-bottom: 56px; }
+  .hero-stats { display: grid; grid-template-columns: repeat(4, auto); gap: 0; border: 1px solid var(--border); width: fit-content; }
+  .hero-stat { padding: 24px 40px; border-right: 1px solid var(--border); }
+  .hero-stat:last-child { border-right: none; }
+  .hero-stat-num { font-family: var(--font-display); font-size: 36px; color: var(--text-primary); line-height: 1; margin-bottom: 6px; }
+  .hero-stat-label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim); }
+
+  /* SECTIONS */
+  section { padding: 120px 80px; }
+  section + section { border-top: 1px solid var(--border); }
+  .section-eyebrow { font-family: var(--font-mono); font-size: 10px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 16px; }
+  .section-title { font-family: var(--font-display); font-size: clamp(32px, 3.5vw, 52px); font-weight: 400; line-height: 1.1; color: var(--text-primary); margin-bottom: 20px; }
+  .section-title em { font-style: italic; color: var(--text-secondary); }
+  .section-lead { font-size: 16px; font-weight: 300; line-height: 1.75; color: var(--text-secondary); max-width: 680px; margin-bottom: 72px; }
+
+  /* TOPOLOGY DIAGRAM */
+  .topology-wrap { width: 100%; border: 1px solid var(--border); background: var(--bg-2); padding: 48px; margin-bottom: 72px; position: relative; overflow: hidden; }
+  .topology-wrap::before { content: 'AGENT TOPOLOGY — ADK MULTI-AGENT SWARM'; position: absolute; top: 16px; left: 20px; font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.18em; color: var(--text-dim); }
+  .topology-svg-container { width: 100%; overflow-x: auto; }
+
+  /* AGENT CARDS */
+  .agents-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); margin-bottom: 72px; }
+  .agent-card { background: var(--bg); padding: 36px 32px; position: relative; transition: background 0.25s; }
+  .agent-card:hover { background: var(--bg-3); }
+  .agent-card.orchestrator { grid-column: 1 / -1; background: var(--bg-2); border-bottom: 1px solid var(--border); display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 40px; }
+  .agent-card.orchestrator:hover { background: var(--bg-3); }
+  .agent-tag { display: inline-block; font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; padding: 4px 10px; border: 1px solid; margin-bottom: 16px; }
+  .tag-orch { color: var(--accent-blue); border-color: rgba(74,144,217,0.3); background: var(--accent-blue-dim); }
+  .tag-demand { color: var(--accent-purple); border-color: rgba(155,114,207,0.3); background: var(--accent-purple-dim); }
+  .tag-supplier { color: var(--accent-amber); border-color: rgba(232,160,48,0.3); background: var(--accent-amber-dim); }
+  .tag-procure { color: var(--accent-green); border-color: rgba(52,195,122,0.3); background: var(--accent-green-dim); }
+  .tag-contract { color: var(--accent-blue); border-color: rgba(74,144,217,0.3); background: var(--accent-blue-dim); }
+  .tag-inventory { color: var(--accent-purple); border-color: rgba(155,114,207,0.3); background: var(--accent-purple-dim); }
+  .tag-quality { color: var(--accent-red); border-color: rgba(232,85,80,0.3); background: var(--accent-red-dim); }
+  .tag-scope { color: var(--accent-green); border-color: rgba(52,195,122,0.3); background: var(--accent-green-dim); }
+  .tag-command { color: var(--accent-amber); border-color: rgba(232,160,48,0.3); background: var(--accent-amber-dim); }
+  .agent-name { font-family: var(--font-display); font-size: 22px; color: var(--text-primary); margin-bottom: 12px; line-height: 1.1; }
+  .agent-role { font-size: 13px; line-height: 1.65; color: var(--text-secondary); margin-bottom: 20px; font-weight: 300; }
+  .agent-tools-label { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 8px; }
+  .agent-tools { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tool-chip { font-family: var(--font-mono); font-size: 9px; padding: 3px 8px; background: rgba(255,255,255,0.04); border: 1px solid var(--border); color: var(--text-dim); letter-spacing: 0.05em; }
+  .agent-boundary { margin-top: 20px; padding: 12px 16px; background: rgba(255,255,255,0.025); border-left: 2px solid; font-size: 11px; line-height: 1.6; color: var(--text-secondary); font-weight: 300; }
+  .boundary-auto { border-color: var(--accent-green); }
+  .boundary-hitl { border-color: var(--accent-amber); }
+  .boundary-label { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 4px; }
+  .boundary-auto .boundary-label { color: var(--accent-green); }
+  .boundary-hitl .boundary-label { color: var(--accent-amber); }
+  .orch-main { grid-column: 1; }
+  .orch-tools-col { grid-column: 2; }
+  .orch-meta { grid-column: 3; }
+
+  /* STATE MACHINE */
+  .state-machine-section { background: var(--bg-2); }
+  .state-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .state-table th { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-dim); text-align: left; padding: 12px 20px; border-bottom: 1px solid var(--border-mid); background: var(--bg-3); white-space: nowrap; }
+  .state-table td { padding: 16px 20px; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.55; font-weight: 300; color: var(--text-secondary); }
+  .state-table tr:hover td { background: rgba(255,255,255,0.015); }
+  .state-name { font-family: var(--font-mono); font-size: 11px; font-weight: 500; letter-spacing: 0.06em; white-space: nowrap; }
+  .state-idle { color: var(--text-dim); }
+  .state-active { color: var(--accent-blue); }
+  .state-hitl { color: var(--accent-amber); }
+  .state-ok { color: var(--accent-green); }
+  .state-err { color: var(--accent-red); }
+  .audit-yes { font-family: var(--font-mono); font-size: 9px; color: var(--accent-green); letter-spacing: 0.1em; }
+  .audit-no { font-family: var(--font-mono); font-size: 9px; color: var(--text-dim); letter-spacing: 0.1em; }
+
+  /* A2A SECTION */
+  .a2a-protocol-block { border: 1px solid var(--border); background: var(--bg-2); margin-bottom: 48px; }
+  .a2a-header { padding: 20px 32px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 16px; }
+  .a2a-label { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; padding: 4px 10px; border: 1px solid rgba(74,144,217,0.3); background: var(--accent-blue-dim); color: var(--accent-blue); }
+  .a2a-title { font-size: 14px; font-weight: 500; color: var(--text-primary); }
+  .a2a-body { padding: 32px; }
+
+  /* A2A COMMERCE LOOP */
+  .commerce-loop { position: relative; margin-bottom: 72px; }
+  .commerce-step { display: grid; grid-template-columns: 80px 1fr 340px; gap: 0; border: 1px solid var(--border); border-bottom: none; position: relative; }
+  .commerce-step:last-child { border-bottom: 1px solid var(--border); }
+  .commerce-step:hover { background: rgba(255,255,255,0.01); }
+  .step-num-col { display: flex; align-items: flex-start; justify-content: center; padding: 28px 0 28px; border-right: 1px solid var(--border); }
+  .step-num { font-family: var(--font-display); font-size: 13px; color: var(--text-dim); }
+  .step-body { padding: 28px 36px; border-right: 1px solid var(--border); }
+  .step-tag { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 8px; }
+  .step-title { font-family: var(--font-display); font-size: 20px; color: var(--text-primary); margin-bottom: 12px; line-height: 1.15; }
+  .step-desc { font-size: 13px; line-height: 1.7; font-weight: 300; color: var(--text-secondary); }
+  .step-code-col { padding: 20px 24px; background: var(--bg-3); }
+  .code-block { font-family: var(--font-mono); font-size: 10px; line-height: 1.7; color: var(--text-secondary); white-space: pre; }
+  .code-key { color: var(--accent-blue); }
+  .code-val { color: var(--accent-green); }
+  .code-str { color: var(--accent-amber); }
+  .code-comment { color: var(--text-dim); }
+  .code-num { color: var(--accent-purple); }
+
+  /* INTRA-ENTERPRISE A2A */
+  .intra-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); margin-bottom: 48px; }
+  .intra-cell { background: var(--bg); padding: 28px 24px; }
+  .intra-cell:hover { background: var(--bg-3); }
+  .intra-from { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 6px; }
+  .intra-flow { font-size: 13px; color: var(--text-primary); font-weight: 500; margin-bottom: 10px; line-height: 1.3; }
+  .intra-flow span { color: var(--accent-blue); }
+  .intra-desc { font-size: 12px; line-height: 1.65; color: var(--text-secondary); font-weight: 300; }
+
+  /* MCP MANIFEST */
+  .mcp-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); margin-bottom: 72px; }
+  .mcp-row { background: var(--bg); padding: 0; display: grid; grid-template-columns: 260px 1fr; border-bottom: none; }
+  .mcp-row:hover .mcp-name-col, .mcp-row:hover .mcp-desc-col { background: var(--bg-3); }
+  .mcp-name-col { padding: 20px 24px; border-right: 1px solid var(--border); font-family: var(--font-mono); font-size: 11px; font-weight: 500; color: var(--accent-blue); letter-spacing: 0.03em; line-height: 1.4; display: flex; align-items: center; }
+  .mcp-desc-col { padding: 20px 24px; font-size: 12px; line-height: 1.65; color: var(--text-secondary); font-weight: 300; }
+
+  /* CIRCUIT BREAKERS */
+  .cb-stack { border: 1px solid var(--border); margin-bottom: 72px; }
+  .cb-row { display: grid; grid-template-columns: 200px 1fr 1fr 260px; gap: 0; border-bottom: 1px solid var(--border); }
+  .cb-row:last-child { border-bottom: none; }
+  .cb-cell { padding: 24px 20px; border-right: 1px solid var(--border); font-size: 12px; line-height: 1.65; color: var(--text-secondary); font-weight: 300; }
+  .cb-cell:last-child { border-right: none; }
+  .cb-cell-header { padding: 12px 20px; font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-dim); border-right: 1px solid var(--border); background: var(--bg-3); }
+  .cb-cell-header:last-child { border-right: none; }
+  .cb-agent-name { font-family: var(--font-mono); font-size: 12px; font-weight: 500; color: var(--text-primary); margin-bottom: 4px; }
+  .cb-trigger { font-family: var(--font-mono); font-size: 10px; color: var(--accent-red); line-height: 1.7; }
+  .cb-fallback { color: var(--text-secondary); }
+  .cb-audit { font-family: var(--font-mono); font-size: 10px; color: var(--text-dim); line-height: 1.7; }
+
+  /* AUDIT GUARANTEE */
+  .audit-guarantee { padding: 32px; border: 1px solid rgba(52,195,122,0.15); background: rgba(52,195,122,0.03); margin-top: 48px; }
+  .audit-guarantee-title { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent-green); margin-bottom: 16px; }
+  .audit-guarantee-text { font-size: 14px; line-height: 1.75; font-weight: 300; color: var(--text-secondary); max-width: 780px; }
+  .audit-guarantee-text strong { color: var(--text-primary); font-weight: 500; }
+  .audit-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 20px; }
+  .audit-tag { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; padding: 5px 12px; border: 1px solid rgba(52,195,122,0.25); color: var(--accent-green); background: rgba(52,195,122,0.06); }
+
+  /* TRUST MODEL SECTION */
+  .trust-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); margin-bottom: 48px; }
+  .trust-cell { background: var(--bg); padding: 28px 24px; }
+  .trust-cell:hover { background: var(--bg-3); }
+  .trust-cell-label { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 10px; }
+  .trust-cell-title { font-size: 14px; font-weight: 500; color: var(--text-primary); margin-bottom: 10px; }
+  .trust-cell-body { font-size: 12px; line-height: 1.7; color: var(--text-secondary); font-weight: 300; }
+
+  /* HITL REGISTRY TABLE */
+  .hitl-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 72px; }
+  .hitl-table th { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-dim); text-align: left; padding: 12px 20px; border-bottom: 1px solid var(--border-mid); background: var(--bg-3); }
+  .hitl-table td { padding: 14px 20px; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.55; font-weight: 300; color: var(--text-secondary); }
+  .hitl-table tr:hover td { background: rgba(255,255,255,0.015); }
+  .hitl-id { font-family: var(--font-mono); font-size: 11px; font-weight: 500; color: var(--accent-amber); letter-spacing: 0.08em; }
+
+  /* GOVERNANCE POLICY TABLE */
+  .policy-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 48px; }
+  .policy-table th { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-dim); text-align: left; padding: 12px 20px; border-bottom: 1px solid var(--border-mid); background: var(--bg-3); }
+  .policy-table td { padding: 14px 20px; border-bottom: 1px solid var(--border); vertical-align: top; font-weight: 300; color: var(--text-secondary); font-size: 12px; line-height: 1.55; }
+
+  /* TWO-COL */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start; }
+  .two-col-narrow { display: grid; grid-template-columns: 2fr 3fr; gap: 80px; align-items: start; }
+
+  /* FOOTER */
+  footer { padding: 60px 80px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+  .footer-brand { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-dim); }
+  .footer-page { font-family: var(--font-display); font-size: 80px; color: rgba(255,255,255,0.03); line-height: 1; user-select: none; }
+  .footer-nav { display: flex; gap: 28px; }
+  .footer-nav a { font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; text-decoration: none; color: var(--text-dim); transition: color 0.2s; }
+  .footer-nav a:hover { color: var(--text-primary); }
+
+  /* MISC */
+  .rule { height: 1px; background: var(--border); margin: 48px 0; }
+  .rule-blue { height: 1px; margin: 48px 0; background: linear-gradient(90deg, var(--accent-blue) 0%, transparent 100%); opacity: 0.4; }
+  .intro-note { font-size: 13px; line-height: 1.7; font-weight: 300; color: var(--text-dim); padding: 20px 24px; border-left: 1px solid var(--border); margin-bottom: 48px; max-width: 680px; }
+  .label-pill { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; padding: 5px 12px; border: 1px solid var(--border-mid); color: var(--text-dim); }
+  .fix-badge { font-family: var(--font-mono); font-size: 8px; letter-spacing: 0.12em; text-transform: uppercase; padding: 3px 8px; border: 1px solid rgba(52,195,122,0.3); color: var(--accent-green); background: rgba(52,195,122,0.06); display: inline-block; margin-left: 8px; vertical-align: middle; }
+
+  /* RESPONSIVE */
+  @media (max-width: 1100px) {
+    .agents-grid { grid-template-columns: repeat(2, 1fr); }
+    .agent-card.orchestrator { grid-column: 1 / -1; }
+    nav { padding: 0 24px; }
+    section { padding: 80px 32px; }
+    .hero { padding: 0 32px 60px; }
+    .two-col, .two-col-narrow { grid-template-columns: 1fr; gap: 40px; }
+    .cb-row { grid-template-columns: 1fr; }
+    .commerce-step { grid-template-columns: 60px 1fr; }
+    .step-code-col { display: none; }
+    footer { padding: 40px 32px; flex-direction: column; gap: 24px; text-align: center; }
+    .hero-stats { grid-template-columns: repeat(2, 1fr); }
+    .trust-grid { grid-template-columns: 1fr; }
+    .hitl-table { font-size: 11px; }
+  }
+  @media (max-width: 768px) {
+    .agents-grid { grid-template-columns: 1fr; }
+    .agent-card.orchestrator { display: block; }
+    .mcp-grid { grid-template-columns: 1fr; }
+    .mcp-row { grid-template-columns: 1fr; }
+    .mcp-name-col { border-right: none; border-bottom: 1px solid var(--border); }
+    .intra-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-brand">The Autonomous Supply Chain</a>
+  <span class="nav-page-tag">Page 06 of 09</span>
+  <div class="nav-links">
+    <a href="#topology">Topology</a>
+    <a href="#state-machine">State Machine</a>
+    <a href="#hitl-registry">HITL Registry</a>
+    <a href="#a2a">A2A Commerce</a>
+    <a href="#trust">Trust Model</a>
+    <a href="#mcp">MCP Tools</a>
+    <a href="#circuit">Circuit Breakers</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" style="padding-top:120px;">
+  <div class="hero-eyebrow">Page 06 — Agent Swarm & A2A Commerce Architecture</div>
+  <h1 class="hero-title">Nine agents. One swarm. <em>Transacting at the boundary</em> of the enterprise.</h1>
+  <p class="hero-subtitle">
+    A complete ADK multi-agent topology, formal state machine specification, full HITL registry,
+    intra-enterprise A2A coordination, and the inter-enterprise A2A Commerce pattern with
+    cross-boundary agent trust model — MedDevice agents transacting with supplier and 3PL agents
+    across the GCP estate boundary, fully authenticated and GDPR-compliant.
+  </p>
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <div class="hero-stat-num">9</div>
+      <div class="hero-stat-label">ADK Agents</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num">10</div>
+      <div class="hero-stat-label">MCP Tools</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num">8</div>
+      <div class="hero-stat-label">HITL Checkpoints</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num">0</div>
+      <div class="hero-stat-label">Unaudited A2A Messages</div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 01 — TOPOLOGY -->
+<section id="topology">
+  <div class="section-eyebrow">Section 01</div>
+  <h2 class="section-title">Agent Topology <em>Overview</em></h2>
+  <p class="section-lead">
+    Eight specialist agents plus a master Orchestrator, each with a defined autonomy boundary, tool manifest,
+    and HITL configuration. Every agent is a formal ADK component. Every inter-agent message is
+    schema-validated Protobuf. No agent proceeds without an audit record. All nine agents share a common
+    state machine contract — timeouts, HITL queue definitions, and circuit breaker thresholds are the
+    only per-agent deltas.
+  </p>
+
+  <!-- SVG TOPOLOGY DIAGRAM -->
+  <div class="topology-wrap" id="topology-diagram">
+    <div class="topology-svg-container">
+      <svg viewBox="0 0 1100 440" xmlns="http://www.w3.org/2000/svg" style="width:100%;min-width:880px;display:block;">
+        <defs>
+          <marker id="arr" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6 Z" fill="rgba(138,144,158,0.5)"/>
+          </marker>
+          <marker id="arr-blue" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6 Z" fill="rgba(74,144,217,0.8)"/>
+          </marker>
+          <marker id="arr-green" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6 Z" fill="rgba(52,195,122,0.8)"/>
+          </marker>
+          <marker id="arr-amber" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6 Z" fill="rgba(232,160,48,0.8)"/>
+          </marker>
+        </defs>
+
+        <!-- BACKGROUND GRID LINES -->
+        <line x1="0" y1="120" x2="1100" y2="120" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
+        <line x1="0" y1="300" x2="1100" y2="300" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
+
+        <!-- ORCHESTRATOR BOX -->
+        <rect x="380" y="20" width="340" height="80" fill="rgba(74,144,217,0.06)" stroke="rgba(74,144,217,0.35)" stroke-width="1"/>
+        <text x="550" y="48" text-anchor="middle" font-family="DM Mono,monospace" font-size="9" fill="rgba(74,144,217,0.7)" letter-spacing="2">ORCHESTRATOR AGENT</text>
+        <text x="550" y="64" text-anchor="middle" font-family="DM Mono,monospace" font-size="8" fill="rgba(138,144,158,0.6)">ADK Master · Pub/Sub Router · Firestore State</text>
+        <text x="550" y="79" text-anchor="middle" font-family="DM Mono,monospace" font-size="7.5" fill="rgba(232,85,80,0.5)">Circuit Breaker: Cloud Monitoring alert → manual ops runbook</text>
+        <text x="550" y="93" text-anchor="middle" font-family="DM Mono,monospace" font-size="7" fill="rgba(138,144,158,0.4)">Dead-letter: agent-dlq topic · 3× retry · COO alert</text>
+
+        <!-- PUB/SUB BUS -->
+        <rect x="50" y="130" width="1000" height="36" fill="rgba(74,144,217,0.04)" stroke="rgba(74,144,217,0.18)" stroke-width="1" rx="2"/>
+        <text x="550" y="153" text-anchor="middle" font-family="DM Mono,monospace" font-size="9" fill="rgba(74,144,217,0.5)" letter-spacing="3">GCP PUB/SUB · EXACTLY-ONCE · PROTOBUF SCHEMA-VALIDATED · DLQ ON FAILURE</text>
+
+        <!-- ORCHESTRATOR LINE DOWN TO BUS -->
+        <line x1="550" y1="100" x2="550" y2="130" stroke="rgba(74,144,217,0.4)" stroke-width="1.5" marker-end="url(#arr-blue)"/>
+
+        <!-- AGENT BOXES — ROW 2 -->
+        <!-- DemandIQ -->
+        <rect x="50" y="200" width="130" height="70" fill="rgba(155,114,207,0.05)" stroke="rgba(155,114,207,0.25)" stroke-width="1"/>
+        <text x="115" y="224" text-anchor="middle" font-family="DM Mono,monospace" font-size="8" fill="rgba(155,114,207,0.8)" letter-spacing="1">DemandIQ</text>
+        <text x="115" y="238" text-anchor="middle" font-family="DM Mono,monospace" font-size="7" fill="rgba(138,144,158,0.5)">Vertex Forecast</text>
+        <text x="115" y="250" text-anchor="middle" font-family="DM Mono,monospace" font-size="7" fill="rgba(138,144,158,0.5)">SHAP · HITL-01</text>
+        <rect x="55" y="258" width="120" height="8" rx="2" fill="rgba(232,160,48,0.15)" stroke="rgba(232,160,48,0.3)" stroke-width="0.5"/>
+        <text x="115" y="265" text-anchor="middle" font-family="DM Mono,monospace" font-size="6.5" fill="rgba(232,160,48,0.8)" letter-spacing="1">HITL-01 REQUIRED</text>
+
+        <!-- SupplierSentinel -->
+        <rect x="210" y="200" width="130" height="70" fill="rgba(232,160,48,0.05)" stroke="rgba(232,160,48,0.25)" stroke-width="1.5"/>
+        <text x="275" y="224" text-anchor="middle" font-family="DM Mono,monospace" font-size="8" fill="rgba(232,160,48,0.8)" letter-spacing="1">SupplierSentinel</text>
+        <text x="275" y="238" text-anchor="middle" font-family="DM Mono,monospace" font-size="7" fill="rgba(138,144,158,0.5)">Risk Scoring · Gemini</text>
+        <text x="275" y="250" text-anchor="middle" font-family="DM Mono,monospace" font-size="7" fill="rgba(138,144,158,0.5)">SHAP · HITL-02</text>
+        <rect x="215" y="258" width="120" height="8" rx="2" fill="rgba(232,160,48,0.15)" stroke="rgba(232,160,48,0.3)" stroke-width="0.5"/>
+        <text x="275" y="265" text-anchor="middle" font-family="DM Mono,monospace" font-size="6.5" fill="rgba(232,160,48,0.8)" letter-spacing="1">HITL-02 REQUIRED</text>
+
+        <!-- ProcureGuard -->
+        <rect x="370" y="200" width="130" height="70" fill="rgba(52,195,122,0.05)" stroke="rgba(52,195,122,0.3)" stroke-width="1.5"/>
+        <text x="435" y="224" text-anchor="middle" font-family="DM Mono,monospace" font-size="8" fill="rgba(52,195,122,0.8)" letter-spacing="1">ProcureGuard</text>
+        <text x="435" y="238" text-anchor="middle" font-family="DM Mono,monospace" font-size="7" fill="rgba(138,144,158,0.5)">SAP Ariba · A2A</text>
+        <text x="435" y="250" text-anchor="middle" font-family="DM Mono,monospace" font-size="7" fill="rgba(138,144,158,0.5)">Commerce · HITL-06</text>
+        <rect x="375" y="258" width="120" height="8" rx="2" fill="rgba(52,195,122,0.1)" stroke="rgba(52,195,122,0.3)" stroke-width="0.5"/>
+        <text x="435" y="265" text-anchor="middle" font-family="DM Mono,monospace" font-size="6.5" fill="rgba(52,195,122,0.8)" letter-spacing="1">AUTO &lt;€50K A2A</text>
+
+        <!-- ContractIntelligence -->
+        <rect x="530" y="200" width="130" height="70" fill="rgba(74,144,217,0.05)" stroke="rgba(74,144,217,0.25)" stroke-width="1"/>
+        <text x="595" y="222" text-anchor="middle" font-family="DM Mono,monospace" font-size="7.5" fill="rgba(74,144,217,0.8)" letter-spacing="1">ContractIntelligence</text>
+        <text x="595" y="236" text-anchor="middle" font-family="DM Mono,monospace" font-size="7" fill="rgba(138,144,158,0.5)">Gemini 2.5 Pro</text>
+        <text x="595" y="248" text-anchor="middle" font-family="DM Mono,monospace" font-size="7" fill="rgba(138,144,158,0.5)">TCO · HITL-05</text>
+        <rect x="535" y="258" width="120" height="8" rx="2" fill="rgba(232,160,48,0.15)" stroke="rgba(232,160,48,0.3)" stroke-width="0.5"/>
+        <text x="595" y="265" text-anchor="middle" font-family="DM Mono,monospace" font-size="6.5" fill="rgba(232,160,48,0.8)" letter-spacing="1">HITL-05 REQUIRED</text>
+
+        <!-- InventoryOrchestrator -->
+        <rect x="690" y="200" width="130" height="70" fill="rgba(155,114,207,0.05)" stroke="rgba(155,114,207,0.25)" stroke-width="1"/>
+        <text x="755" y="222" text-anchor="middle" font-family="DM Mono,monospace" font-size="7.5" fill="rgba(155,114,207,0.8)" letter-spacing="1">InventoryOrchestr.</text>
+        <text x="755" y="236" text-anchor="middle" font-family="DM Mono,monospace" font-size="7" fill="rgba(138,144,158,0.5)">ML Reorder · S/4HANA</text>
+        <text x="755" y="248" text-anchor="middle" font-family="DM Mono,monospace" font-size="7" fill="rgba(138,144,158,0.5)">SHAP · HITL-04</text>
+        <rect x="695" y="258" width="120" height="8" rx="2" fill="rgba(232,160,48,0.15)" stroke="rgba(232,160,48,0.3)" stroke-width="0.5"/>
+        <text x="755" y="265" text-anchor="middle" font-family="DM Mono,monospace" font-size="6.5" fill="rgba(232,160,48,0.8)" letter-spacing="1">HITL &gt;€100K</text>
+
+        <!-- QualityTrace -->
+        <rect x="850" y="200" width="130" height="70" fill="rgba(232,85,80,0.05)" stroke="rgba(232,85,80,0.25)" stroke-width="1"/>
+        <text x="915" y="224" text-anchor="middle" font-family="DM Mono,monospace" font-size="8" fill="rgba(232,85,80,0.8)" letter-spacing="1">QualityTrace</text>
+        <text x="915" y="238" text-anchor="middle" font-family="DM Mono,monospace" font-size="7" fill="rgba(138,144,158,0.5)">NCR · MDR · CAPA</text>
+        <text x="915" y="250" text-anchor="middle" font-family="DM Mono,monospace" font-size="7" fill="rgba(138,144,158,0.5)">HITL-03 + HITL-08</text>
+        <rect x="855" y="258" width="120" height="8" rx="2" fill="rgba(232,160,48,0.15)" stroke="rgba(232,160,48,0.3)" stroke-width="0.5"/>
+        <text x="915" y="265" text-anchor="middle" font-family="DM Mono,monospace" font-size="6.5" fill="rgba(232,160,48,0.8)" letter-spacing="1">HITL REQUIRED</text>
+
+        <!-- Lines from Bus to Agents Row 2 -->
+        <line x1="115" y1="166" x2="115" y2="200" stroke="rgba(155,114,207,0.4)" stroke-width="1.5" stroke-dasharray="3,3" marker-end="url(#arr)"/>
+        <line x1="275" y1="166" x2="275" y2="200" stroke="rgba(232,160,48,0.4)" stroke-width="1.5" stroke-dasharray="3,3" marker-end="url(#arr)"/>
+        <line x1="435" y1="166" x2="435" y2="200" stroke="rgba(52,195,122,0.4)" stroke-width="1.5" stroke-dasharray="3,3" marker-end="url(#arr)"/>
+        <line x1="595" y1="166" x2="595" y2="200" stroke="rgba(74,144,217,0.3)" stroke-width="1" stroke-dasharray="3,3" marker-end="url(#arr)"/>
+        <line x1="755" y1="166" x2="755" y2="200" stroke="rgba(155,114,207,0.3)" stroke-width="1" stroke-dasharray="3,3" marker-end="url(#arr)"/>
+        <line x1="915" y1="166" x2="915" y2="200" stroke="rgba(232,85,80,0.4)" stroke-width="1.5" stroke-dasharray="3,3" marker-end="url(#arr)"/>
+
+        <!-- ROW 3 — Autonomous Agents -->
+        <!-- ScopeTracer -->
+        <rect x="130" y="320" width="140" height="60" fill="rgba(52,195,122,0.04)" stroke="rgba(52,195,122,0.2)" stroke-width="1"/>
+        <text x="200" y="344" text-anchor="middle" font-family="DM Mono,monospace" font-size="8" fill="rgba(52,195,122,0.7)" letter-spacing="1">ScopeTracer</text>
+        <text x="200" y="358" text-anchor="middle" font-family="DM Mono,monospace" font-size="7" fill="rgba(138,144,158,0.5)">CSRD · BigQuery Omni</text>
+        <rect x="135" y="367" width="130" height="8" rx="2" fill="rgba(52,195,122,0.08)" stroke="rgba(52,195,122,0.2)" stroke-width="0.5"/>
+        <text x="200" y="374" text-anchor="middle" font-family="DM Mono,monospace" font-size="6.5" fill="rgba(52,195,122,0.7)" letter-spacing="1">ADVISORY · HITL-07 SIGN-OFF</text>
+
+        <!-- SC Command -->
+        <rect x="340" y="320" width="160" height="60" fill="rgba(232,160,48,0.04)" stroke="rgba(232,160,48,0.2)" stroke-width="1"/>
+        <text x="420" y="344" text-anchor="middle" font-family="DM Mono,monospace" font-size="7.5" fill="rgba(232,160,48,0.7)" letter-spacing="1">SC Command</text>
+        <text x="420" y="358" text-anchor="middle" font-family="DM Mono,monospace" font-size="7" fill="rgba(138,144,158,0.5)">C-suite KPI · Dashboard</text>
+        <rect x="345" y="367" width="150" height="8" rx="2" fill="rgba(52,195,122,0.08)" stroke="rgba(52,195,122,0.2)" stroke-width="0.5"/>
+        <text x="420" y="374" text-anchor="middle" font-family="DM Mono,monospace" font-size="6.5" fill="rgba(52,195,122,0.7)" letter-spacing="1">FULLY AUTONOMOUS · READ-ONLY</text>
+
+        <!-- Bus lines to Row 3 agents -->
+        <line x1="200" y1="166" x2="200" y2="320" stroke="rgba(52,195,122,0.3)" stroke-width="1" stroke-dasharray="3,3" marker-end="url(#arr)"/>
+        <line x1="420" y1="166" x2="420" y2="320" stroke="rgba(232,160,48,0.3)" stroke-width="1" stroke-dasharray="3,3" marker-end="url(#arr)"/>
+
+        <!-- A2A Commerce boundary -->
+        <rect x="580" y="308" width="480" height="100" fill="rgba(74,144,217,0.02)" stroke="rgba(74,144,217,0.15)" stroke-width="1" stroke-dasharray="6,4" rx="2"/>
+        <text x="820" y="326" text-anchor="middle" font-family="DM Mono,monospace" font-size="8" fill="rgba(74,144,217,0.5)" letter-spacing="2">A2A COMMERCE BOUNDARY — MUTUAL WIF + AGENT CARD VERIFIED</text>
+
+        <!-- Supplier agents (external) -->
+        <rect x="598" y="335" width="100" height="52" fill="rgba(74,144,217,0.06)" stroke="rgba(74,144,217,0.3)" stroke-width="1"/>
+        <text x="648" y="357" text-anchor="middle" font-family="DM Mono,monospace" font-size="7.5" fill="rgba(74,144,217,0.8)">Supplier A</text>
+        <text x="648" y="371" text-anchor="middle" font-family="DM Mono,monospace" font-size="7" fill="rgba(138,144,158,0.4)">Agent · WIF Auth</text>
+        <rect x="720" y="335" width="100" height="52" fill="rgba(74,144,217,0.06)" stroke="rgba(74,144,217,0.3)" stroke-width="1"/>
+        <text x="770" y="357" text-anchor="middle" font-family="DM Mono,monospace" font-size="7.5" fill="rgba(74,144,217,0.8)">Supplier B</text>
+        <text x="770" y="371" text-anchor="middle" font-family="DM Mono,monospace" font-size="7" fill="rgba(138,144,158,0.4)">Agent · WIF Auth</text>
+        <rect x="842" y="335" width="100" height="52" fill="rgba(74,144,217,0.06)" stroke="rgba(74,144,217,0.3)" stroke-width="1"/>
+        <text x="892" y="357" text-anchor="middle" font-family="DM Mono,monospace" font-size="7.5" fill="rgba(74,144,217,0.8)">3PL Agent</text>
+        <text x="892" y="371" text-anchor="middle" font-family="DM Mono,monospace" font-size="7" fill="rgba(138,144,158,0.4)">Agent · WIF Auth</text>
+
+        <!-- ProcureGuard A2A lines -->
+        <line x1="500" y1="270" x2="648" y2="335" stroke="rgba(52,195,122,0.5)" stroke-width="1.5" marker-end="url(#arr-green)"/>
+        <line x1="500" y1="270" x2="770" y2="335" stroke="rgba(52,195,122,0.5)" stroke-width="1.5" marker-end="url(#arr-green)"/>
+        <line x1="500" y1="270" x2="892" y2="335" stroke="rgba(52,195,122,0.5)" stroke-width="1.5" marker-end="url(#arr-green)"/>
+
+        <!-- Legend -->
+        <line x1="52" y1="418" x2="80" y2="418" stroke="rgba(138,144,158,0.4)" stroke-width="1" stroke-dasharray="3,3"/>
+        <text x="84" y="422" font-family="DM Mono,monospace" font-size="7.5" fill="rgba(138,144,158,0.5)">Intra-enterprise Pub/Sub (exactly-once)</text>
+        <line x1="260" y1="418" x2="288" y2="418" stroke="rgba(52,195,122,0.6)" stroke-width="1.5"/>
+        <text x="292" y="422" font-family="DM Mono,monospace" font-size="7.5" fill="rgba(138,144,158,0.5)">A2A Commerce (WIF-authenticated)</text>
+        <circle cx="460" cy="418" r="4" fill="rgba(232,160,48,0.3)" stroke="rgba(232,160,48,0.5)" stroke-width="1"/>
+        <text x="468" y="422" font-family="DM Mono,monospace" font-size="7.5" fill="rgba(138,144,158,0.5)">HITL checkpoint</text>
+        <circle cx="560" cy="418" r="4" fill="rgba(52,195,122,0.3)" stroke="rgba(52,195,122,0.5)" stroke-width="1"/>
+        <text x="568" y="422" font-family="DM Mono,monospace" font-size="7.5" fill="rgba(138,144,158,0.5)">Fully autonomous</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- AGENT CARDS GRID -->
+  <div class="agents-grid">
+
+    <!-- ORCHESTRATOR — full width -->
+    <div class="agent-card orchestrator">
+      <div class="orch-main">
+        <div class="agent-tag tag-orch">ADK Master</div>
+        <div class="agent-name">Orchestrator Agent</div>
+        <div class="agent-role">
+          Routes events from Pub/Sub to the correct specialist agent. Manages global state across
+          all nine modules. Enforces circuit breakers at the fabric level. Triggers HITL queues
+          and writes the primary audit log entry for every cross-agent event.
+        </div>
+        <div class="agent-boundary boundary-hitl">
+          <div class="boundary-label">Circuit Breaker — Orchestrator Failure</div>
+          Cloud Monitoring detects Orchestrator unhealthy (3× probe failure). Dead-letter topic
+          captures all in-flight Pub/Sub messages. Manual ops runbook is triggered. COO and
+          VP Engineering receive alert. No agent action proceeds until Orchestrator recovery is confirmed.
+          Immutable Firestore record written at failure onset and recovery.
+        </div>
+      </div>
+      <div class="orch-tools-col">
+        <div class="agent-tools-label">Tool Manifest</div>
+        <div class="agent-tools">
+          <span class="tool-chip">pubsub_subscriber</span>
+          <span class="tool-chip">firestore_read_write</span>
+          <span class="tool-chip">cloud_monitoring_write</span>
+          <span class="tool-chip">hitl_queue_publisher</span>
+          <span class="tool-chip">audit_log_writer</span>
+        </div>
+        <div style="margin-top:20px;">
+          <div class="agent-tools-label">Pub/Sub Guarantee</div>
+          <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-secondary);line-height:2;">
+            Exactly-once delivery via Pub/Sub ordering keys<br>
+            Per-message UUID idempotency enforced at Orchestrator<br>
+            Dead-letter topic: <code>agent-dlq</code> (3× retry)<br>
+            Poison-pill isolation: malformed Protobuf → DLQ + alert
+          </div>
+        </div>
+      </div>
+      <div class="orch-meta">
+        <div class="agent-tools-label">Protocol</div>
+        <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-secondary);line-height:1.8;margin-bottom:16px;">
+          Pub/Sub topic-per-agent<br>
+          Protobuf schema validated<br>
+          Firestore state before proceed<br>
+          Immutable audit on every event
+        </div>
+        <div class="agent-tools-label">Scope</div>
+        <div style="font-family:var(--font-mono);font-size:10px;color:var(--accent-blue);line-height:1.8;">
+          All 9 agent state machines<br>
+          8 HITL queue definitions<br>
+          Global circuit breaker registry<br>
+          DLQ monitoring + alerting
+        </div>
+      </div>
+    </div>
+
+    <!-- DemandIQ -->
+    <div class="agent-card">
+      <div class="agent-tag tag-demand">ML Forecasting</div>
+      <div class="agent-name">DemandIQ Agent</div>
+      <div class="agent-role">Consumes demand signals from Pub/Sub, triggers a Vertex AI Forecast run, produces a SHAP explanation at inference time, and routes output to HITL-01 (Supply Chain Director) before any procurement action is triggered. Confidence &lt;0.55 → circuit breaker.</div>
+      <div class="agent-tools-label" style="margin-top:16px;">Tools</div>
+      <div class="agent-tools">
+        <span class="tool-chip">vertex_ai_forecast_invoker</span>
+        <span class="tool-chip">feature_store_read</span>
+        <span class="tool-chip">shap_explanation_generator</span>
+        <span class="tool-chip">hitl_queue_publisher (HITL-01)</span>
+        <span class="tool-chip">audit_log_writer</span>
+      </div>
+      <div class="agent-boundary boundary-hitl">
+        <div class="boundary-label">Autonomy Boundary</div>
+        Auto-triggers forecasts. HITL-01 required before any procurement action proceeds.
+        Stale forecast fallback flags all downstream recommendations with staleness timestamp.
+      </div>
+    </div>
+
+    <!-- SupplierSentinel -->
+    <div class="agent-card">
+      <div class="agent-tag tag-supplier">Risk Intelligence</div>
+      <div class="agent-name">SupplierSentinel Agent</div>
+      <div class="agent-role">Continuous supplier risk scoring from live Pub/Sub streams. Produces risk score + SHAP explanation. Invokes Gemini Search for news intelligence. Routes high-risk events (≥ 0.75 threshold) to HITL-02 (Procurement Director).</div>
+      <div class="agent-tools-label" style="margin-top:16px;">Tools</div>
+      <div class="agent-tools">
+        <span class="tool-chip">feature_store_read_write</span>
+        <span class="tool-chip">risk_classifier_invoke</span>
+        <span class="tool-chip">gemini_search_invoke</span>
+        <span class="tool-chip">hitl_queue_publisher (HITL-02)</span>
+        <span class="tool-chip">shap_explanation_generator</span>
+        <span class="tool-chip">audit_log_writer</span>
+      </div>
+      <div class="agent-boundary boundary-hitl">
+        <div class="boundary-label">Autonomy Boundary</div>
+        Auto-scores and monitors continuously. HITL-02 required before any sourcing action.
+      </div>
+    </div>
+
+    <!-- ProcureGuard -->
+    <div class="agent-card">
+      <div class="agent-tag tag-procure">A2A Commerce</div>
+      <div class="agent-name">ProcureGuard Agent</div>
+      <div class="agent-role">Manages procurement workflow in SAP Ariba. Issues Purchase Orders via A2A Commerce to WIF-authenticated, pre-qualified supplier agents. Below €50K threshold (board-ratified DFA): autonomous to pre-approved supplier list only. HITL-06 (Legal) for contract countersignature and all transactions above threshold.</div>
+      <div class="agent-tools-label" style="margin-top:16px;">Tools</div>
+      <div class="agent-tools">
+        <span class="tool-chip">sap_ariba_rest_client</span>
+        <span class="tool-chip">a2a_commerce_publisher</span>
+        <span class="tool-chip">contract_classifier_invoke</span>
+        <span class="tool-chip">hitl_queue_publisher (HITL-06)</span>
+        <span class="tool-chip">audit_log_writer</span>
+      </div>
+      <div class="agent-boundary boundary-auto">
+        <div class="boundary-label">Autonomy Boundary — DFA Reference: FIN-POL-2024-03</div>
+        Auto-issues POs below €50K to pre-approved suppliers via A2A. All others HITL-gated.
+        €50K threshold set by Board-ratified Delegated Financial Authority policy, reviewed annually.
+        Threshold is write-protected in Firestore config — changes require dual CFO/CISO authorisation.
+      </div>
+    </div>
+
+    <!-- ContractIntelligence -->
+    <div class="agent-card">
+      <div class="agent-tag tag-contract">Gemini 2.5 Pro</div>
+      <div class="agent-name">ContractIntelligence Agent</div>
+      <div class="agent-role">Full-corpus Gemini 2.5 Pro contract analysis via Vertex AI. Evaluates A2A bids from supplier agents. Produces risk-adjusted TCO recommendation with SHAP attribution. Routes to HITL-05 (CPO) for all strategic sourcing. Minimum 2 valid bids required — fewer triggers circuit breaker.</div>
+      <div class="agent-tools-label" style="margin-top:16px;">Tools</div>
+      <div class="agent-tools">
+        <span class="tool-chip">gemini_document_analyser</span>
+        <span class="tool-chip">sap_ariba_contract_reader</span>
+        <span class="tool-chip">a2a_bid_receiver</span>
+        <span class="tool-chip">tco_model_invoke</span>
+        <span class="tool-chip">shap_explanation_generator</span>
+        <span class="tool-chip">hitl_queue_publisher (HITL-05)</span>
+        <span class="tool-chip">audit_log_writer</span>
+      </div>
+      <div class="agent-boundary boundary-hitl">
+        <div class="boundary-label">Autonomy Boundary</div>
+        Auto-analyses and scores all bids. HITL-05 required for all strategic sourcing decisions.
+      </div>
+    </div>
+
+    <!-- InventoryOrchestrator -->
+    <div class="agent-card">
+      <div class="agent-tag tag-inventory">MRP Integration</div>
+      <div class="agent-name">InventoryOrchestrator Agent</div>
+      <div class="agent-role">ML-optimised reorder and safety stock recommendations integrated with SAP S/4HANA MRP via Pub/Sub. Produces SHAP-attributed recommendations. Routes high-value reorders (>€100K, DFA: FIN-POL-2024-03) to HITL-04 (VP Operations) before any SAP write commits. Stale forecast mode lowers HITL threshold to catch all reorder decisions.</div>
+      <div class="agent-tools-label" style="margin-top:16px;">Tools</div>
+      <div class="agent-tools">
+        <span class="tool-chip">inventory_ml_model_invoke</span>
+        <span class="tool-chip">feature_store_read</span>
+        <span class="tool-chip">sap_s4_pub_sub_writer</span>
+        <span class="tool-chip">shap_explanation_generator</span>
+        <span class="tool-chip">hitl_queue_publisher (HITL-04)</span>
+        <span class="tool-chip">audit_log_writer</span>
+      </div>
+      <div class="agent-boundary boundary-hitl">
+        <div class="boundary-label">Autonomy Boundary — DFA Reference: FIN-POL-2024-03</div>
+        Auto-recommends. HITL-04 required for reorders exceeding €100K before SAP write.
+      </div>
+    </div>
+
+    <!-- QualityTrace -->
+    <div class="agent-card">
+      <div class="agent-tag tag-quality">MDR · ISO 13485</div>
+      <div class="agent-name">QualityTrace Agent</div>
+      <div class="agent-role">NCR root cause hypothesis generation. MDR device lineage tracing via BigQuery graph. CAPA recommendation. Routes to HITL-03 (Quality Manager) for CAPA closure and HITL-08 (Regulatory Affairs VP) for MDR sign-off. Hard escalation at hour 48 regardless of system state.</div>
+      <div class="agent-tools-label" style="margin-top:16px;">Tools</div>
+      <div class="agent-tools">
+        <span class="tool-chip">veeva_vault_reader</span>
+        <span class="tool-chip">gemini_document_analyser</span>
+        <span class="tool-chip">bigquery_device_lineage</span>
+        <span class="tool-chip">mdr_report_generator</span>
+        <span class="tool-chip">hitl_queue_publisher (HITL-03)</span>
+        <span class="tool-chip">hitl_queue_publisher (HITL-08)</span>
+        <span class="tool-chip">audit_log_writer</span>
+      </div>
+      <div class="agent-boundary boundary-hitl">
+        <div class="boundary-label">Autonomy Boundary</div>
+        Auto-analyses and generates hypothesis. HITL required before CAPA closure and MDR sign-off. MDR hour-48 hard escalation is write-path encoded — cannot be suppressed.
+      </div>
+    </div>
+
+    <!-- ScopeTracer -->
+    <div class="agent-card">
+      <div class="agent-tag tag-scope">CSRD · GreenOps</div>
+      <div class="agent-name">ScopeTracer Agent</div>
+      <div class="agent-role">Continuous Scope 3 calculation from freight and 3PL Pub/Sub streams using BigQuery Omni in-place analysis. CSRD report generation. GreenOps scheduling. All outputs advisory — require HITL-07 (CFO / Sustainability Director) sign-off before regulatory submission per ESRS assurance requirements.</div>
+      <div class="agent-tools-label" style="margin-top:16px;">Tools</div>
+      <div class="agent-tools">
+        <span class="tool-chip">bigquery_scope3_calculator</span>
+        <span class="tool-chip">freight_3pl_pubsub_consumer</span>
+        <span class="tool-chip">csrd_report_generator</span>
+        <span class="tool-chip">greenops_scheduler</span>
+        <span class="tool-chip">hitl_queue_publisher (HITL-07)</span>
+        <span class="tool-chip">audit_log_writer</span>
+      </div>
+      <div class="agent-boundary boundary-hitl">
+        <div class="boundary-label">Autonomy Boundary — ESRS Assurance</div>
+        Autonomous Scope 3 computation and draft report generation. HITL-07 mandatory before any CSRD submission. Reports are flagged DRAFT until CFO/Sustainability Director approves. No autonomous regulatory filing.
+      </div>
+    </div>
+
+    <!-- SC Command -->
+    <div class="agent-card">
+      <div class="agent-tag tag-command">C-Suite Dashboard</div>
+      <div class="agent-name">SupplyChain Command Agent</div>
+      <div class="agent-role">Aggregates KPIs from all eight specialist modules via BigQuery multi-module query. Produces real-time C-suite dashboard data. Publishes to React dashboard via Pub/Sub. Read-only — no transactional authority. No HITL triggers.</div>
+      <div class="agent-tools-label" style="margin-top:16px;">Tools</div>
+      <div class="agent-tools">
+        <span class="tool-chip">bigquery_multi_module_query</span>
+        <span class="tool-chip">dashboard_pubsub_publisher</span>
+      </div>
+      <div class="agent-boundary boundary-auto">
+        <div class="boundary-label">Autonomy Boundary</div>
+        Fully autonomous. Read-only aggregation. No write operations or HITL triggers. Circuit breaker: BigQuery timeout → stale dashboard flag + Cloud Monitoring alert.
+      </div>
+    </div>
+
+  </div><!-- /agents-grid -->
+</section>
+
+
+<!-- SECTION 02 — HITL REGISTRY -->
+<section id="hitl-registry" style="background:var(--bg-2);">
+  <div class="section-eyebrow">Section 02</div>
+  <h2 class="section-title">HITL Checkpoint <em>Registry</em></h2>
+  <p class="section-lead">
+    All eight HITL checkpoints fully specified. Every checkpoint has a named approver, SLA window, escalation path,
+    circuit breaker behaviour, and financial authority reference where applicable.
+    This registry is the authoritative record for EU AI Act Article 14 human oversight compliance.
+  </p>
+  <div style="border:1px solid var(--border);overflow:hidden;margin-bottom:48px;">
+    <table class="hitl-table" style="width:100%;">
+      <thead>
+        <tr>
+          <th style="width:90px;">HITL ID</th>
+          <th style="width:160px;">Approver</th>
+          <th>Trigger Condition</th>
+          <th>SLA Window</th>
+          <th>Escalation on Timeout</th>
+          <th>Authority Reference</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="hitl-id">HITL-01</span></td>
+          <td style="font-weight:500;color:var(--text-primary);font-size:12px;">Supply Chain Director</td>
+          <td>DemandIQ forecast triggers a procurement action of any size. Confidence interval ≥ 0.55.</td>
+          <td style="font-family:var(--font-mono);font-size:11px;color:var(--accent-amber);">4 hours</td>
+          <td style="font-size:11px;">VP Operations. Procurement action blocked until resolved.</td>
+          <td style="font-family:var(--font-mono);font-size:10px;color:var(--text-dim);">OPS-POL-2024-01</td>
+        </tr>
+        <tr>
+          <td><span class="hitl-id">HITL-02</span></td>
+          <td style="font-weight:500;color:var(--text-primary);font-size:12px;">Procurement Director</td>
+          <td>SupplierSentinel risk score ≥ 0.75 on any active supplier. Includes SHAP brief + news context.</td>
+          <td style="font-family:var(--font-mono);font-size:11px;color:var(--accent-amber);">4 hours</td>
+          <td style="font-size:11px;">VP Supply Chain. A2A sourcing action blocked until resolved.</td>
+          <td style="font-family:var(--font-mono);font-size:10px;color:var(--text-dim);">PROC-POL-2024-02</td>
+        </tr>
+        <tr>
+          <td><span class="hitl-id">HITL-03</span></td>
+          <td style="font-weight:500;color:var(--text-primary);font-size:12px;">Quality Manager</td>
+          <td>QualityTrace generates a CAPA recommendation from an NCR event. Required before CAPA closure.</td>
+          <td style="font-family:var(--font-mono);font-size:11px;color:var(--accent-red);">24 hours</td>
+          <td style="font-size:11px;">VP Quality. NCR held OPEN. MDR timer continues running independently.</td>
+          <td style="font-family:var(--font-mono);font-size:10px;color:var(--text-dim);">QMS-POL-2024-01 · ISO 13485 §8.5.2</td>
+        </tr>
+        <tr>
+          <td><span class="hitl-id">HITL-04</span></td>
+          <td style="font-weight:500;color:var(--text-primary);font-size:12px;">VP Operations</td>
+          <td>InventoryOrchestrator reorder recommendation exceeds €100K (DFA threshold). Required before SAP S/4HANA write.</td>
+          <td style="font-family:var(--font-mono);font-size:11px;color:var(--accent-amber);">8 hours</td>
+          <td style="font-size:11px;">COO. SAP write blocked. Fallback to manual MRP review.</td>
+          <td style="font-family:var(--font-mono);font-size:10px;color:var(--text-dim);">FIN-POL-2024-03 §4.2</td>
+        </tr>
+        <tr>
+          <td><span class="hitl-id">HITL-05</span></td>
+          <td style="font-weight:500;color:var(--text-primary);font-size:12px;">Chief Procurement Officer</td>
+          <td>ContractIntelligence TCO recommendation for all strategic sourcing decisions. All A2A bid evaluations above €50K.</td>
+          <td style="font-family:var(--font-mono);font-size:11px;color:var(--accent-amber);">24 hours (extendable 24h on Gemini failure)</td>
+          <td style="font-size:11px;">CEO. A2A Commerce loop held PENDING. Human analyst brief auto-generated.</td>
+          <td style="font-family:var(--font-mono);font-size:10px;color:var(--text-dim);">PROC-POL-2024-02 §7.1</td>
+        </tr>
+        <tr>
+          <td><span class="hitl-id">HITL-06</span></td>
+          <td style="font-weight:500;color:var(--text-primary);font-size:12px;">Legal Counsel</td>
+          <td>ProcureGuard requires contract countersignature or any PO above €50K with new/unvalidated contract terms.</td>
+          <td style="font-family:var(--font-mono);font-size:11px;color:var(--accent-amber);">48 hours</td>
+          <td style="font-size:11px;">General Counsel. PO issuance blocked. Supplier agent notified of delay via A2A status message.</td>
+          <td style="font-family:var(--font-mono);font-size:10px;color:var(--text-dim);">LEGAL-POL-2024-01</td>
+        </tr>
+        <tr>
+          <td><span class="hitl-id">HITL-07</span></td>
+          <td style="font-weight:500;color:var(--text-primary);font-size:12px;">CFO / Sustainability Director</td>
+          <td>ScopeTracer generates a CSRD Scope 3 draft report. Required before any regulatory submission per ESRS assurance framework.</td>
+          <td style="font-family:var(--font-mono);font-size:11px;color:var(--accent-amber);">72 hours</td>
+          <td style="font-size:11px;">CEO. Report held as DRAFT. Filing deadline risk flag raised to Board.</td>
+          <td style="font-family:var(--font-mono);font-size:10px;color:var(--text-dim);">CSRD-POL-2024-01 · ESRS §5.3</td>
+        </tr>
+        <tr>
+          <td><span class="hitl-id">HITL-08</span></td>
+          <td style="font-weight:500;color:var(--text-primary);font-size:12px;">Regulatory Affairs VP</td>
+          <td>QualityTrace MDR report ready for submission. Hard trigger at hour 48 from NCR detection regardless of Veeva availability.</td>
+          <td style="font-family:var(--font-mono);font-size:11px;color:var(--accent-red);">48 hours HARD (write-path encoded)</td>
+          <td style="font-size:11px;">CEO + Notified Body contact. Cannot be suppressed by any system state or circuit breaker.</td>
+          <td style="font-family:var(--font-mono);font-size:10px;color:var(--text-dim);">MDR 2017/745 Art. 87 · QMS-POL-2024-01</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="intro-note">
+    All eight HITL checkpoints share the same structural state machine contract as SupplierSentinel (Section 03).
+    Per-agent deltas are: HITL ID, approver role, SLA window, and escalation target only. The audit write,
+    JWT capture, and Firestore state persistence mechanism is identical across all checkpoints.
+    Financial authority thresholds (HITL-01, HITL-04, HITL-05) are governed by DFA policy FIN-POL-2024-03,
+    reviewed annually by the CFO and ratified by the Board. Threshold values are write-protected in Firestore
+    — modification requires dual CFO + CISO authorisation with full audit trail.
+  </div>
+</section>
+
+
+<!-- SECTION 03 — STATE MACHINE -->
+<section id="state-machine" class="state-machine-section">
+  <div class="section-eyebrow">Section 03</div>
+  <h2 class="section-title">Agent State Machine <em>Specification</em></h2>
+  <p class="section-lead">
+    Formal state machine for SupplierSentinel — the worked example that demonstrates
+    the full HITL + A2A trigger pattern. Every state has a defined entry condition,
+    action, exit condition, audit write, and timeout behaviour. All nine agents share this
+    structural contract. Per-agent variations (timeouts, HITL IDs, escalation targets) are
+    fully enumerated in the HITL Registry above.
+  </p>
+
+  <div class="intro-note">
+    SupplierSentinel was selected as the worked example because it demonstrates the complete pattern:
+    continuous autonomous monitoring, SHAP-attributed risk scoring, HITL-gated escalation,
+    and A2A Commerce trigger as the downstream action post-approval. The "0 Unaudited A2A Messages"
+    guarantee is enforced at the tool layer: <code>a2a_commerce_publisher</code> invokes
+    <code>audit_log_writer</code> as a pre-condition. The publish call will not execute if the
+    Firestore write does not return a confirmed document ID. This is an SDK-level enforcement,
+    not a policy convention.
+  </div>
+
+  <!-- STATE FLOW SVG -->
+  <div style="overflow-x:auto;margin-bottom:48px;">
+    <svg viewBox="0 0 1080 200" xmlns="http://www.w3.org/2000/svg" style="min-width:960px;width:100%;display:block;">
+      <defs>
+        <marker id="sm-arr" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+          <path d="M0,0 L6,3 L0,6 Z" fill="rgba(138,144,158,0.6)"/>
+        </marker>
+        <marker id="sm-arr-green" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+          <path d="M0,0 L6,3 L0,6 Z" fill="rgba(52,195,122,0.8)"/>
+        </marker>
+        <marker id="sm-arr-red" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+          <path d="M0,0 L6,3 L0,6 Z" fill="rgba(232,85,80,0.8)"/>
+        </marker>
+        <marker id="sm-arr-purple" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+          <path d="M0,0 L6,3 L0,6 Z" fill="rgba(155,114,207,0.8)"/>
+        </marker>
+        <marker id="sm-arr-amber" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+          <path d="M0,0 L6,3 L0,6 Z" fill="rgba(232,160,48,0.8)"/>
+        </marker>
+      </defs>
+      <!-- IDLE -->
+      <rect x="10" y="70" width="80" height="44" rx="22" fill="rgba(30,34,44,1)" stroke="rgba(100,108,124,0.4)" stroke-width="1"/>
+      <text x="50" y="95" text-anchor="middle" font-family="DM Mono,monospace" font-size="8.5" fill="rgba(138,144,158,0.8)" letter-spacing="0.5">IDLE</text>
+      <line x1="90" y1="92" x2="118" y2="92" stroke="rgba(138,144,158,0.4)" stroke-width="1" marker-end="url(#sm-arr)"/>
+      <!-- EVENT_RECEIVED -->
+      <rect x="118" y="70" width="108" height="44" rx="4" fill="rgba(74,144,217,0.07)" stroke="rgba(74,144,217,0.3)" stroke-width="1"/>
+      <text x="172" y="91" text-anchor="middle" font-family="DM Mono,monospace" font-size="8" fill="rgba(74,144,217,0.9)">EVENT</text>
+      <text x="172" y="103" text-anchor="middle" font-family="DM Mono,monospace" font-size="8" fill="rgba(74,144,217,0.9)">RECEIVED</text>
+      <line x1="226" y1="92" x2="254" y2="92" stroke="rgba(138,144,158,0.4)" stroke-width="1" marker-end="url(#sm-arr)"/>
+      <!-- SCORING -->
+      <rect x="254" y="70" width="96" height="44" rx="4" fill="rgba(74,144,217,0.07)" stroke="rgba(74,144,217,0.3)" stroke-width="1"/>
+      <text x="302" y="91" text-anchor="middle" font-family="DM Mono,monospace" font-size="8" fill="rgba(74,144,217,0.9)">SCORING</text>
+      <text x="302" y="103" text-anchor="middle" font-family="DM Mono,monospace" font-size="8" fill="rgba(138,144,158,0.5)">classifier + SHAP</text>
+      <line x1="350" y1="92" x2="378" y2="92" stroke="rgba(138,144,158,0.4)" stroke-width="1" marker-end="url(#sm-arr)"/>
+      <!-- EXPLANATION_GENERATED -->
+      <rect x="378" y="70" width="120" height="44" rx="4" fill="rgba(74,144,217,0.07)" stroke="rgba(74,144,217,0.3)" stroke-width="1"/>
+      <text x="438" y="91" text-anchor="middle" font-family="DM Mono,monospace" font-size="8" fill="rgba(74,144,217,0.9)">EXPLANATION</text>
+      <text x="438" y="103" text-anchor="middle" font-family="DM Mono,monospace" font-size="8" fill="rgba(74,144,217,0.9)">GENERATED</text>
+      <line x1="498" y1="92" x2="526" y2="92" stroke="rgba(138,144,158,0.4)" stroke-width="1" marker-end="url(#sm-arr)"/>
+      <!-- THRESHOLD_CHECK -->
+      <rect x="526" y="70" width="116" height="44" rx="4" fill="rgba(74,144,217,0.07)" stroke="rgba(74,144,217,0.3)" stroke-width="1"/>
+      <text x="584" y="91" text-anchor="middle" font-family="DM Mono,monospace" font-size="8" fill="rgba(74,144,217,0.9)">THRESHOLD</text>
+      <text x="584" y="103" text-anchor="middle" font-family="DM Mono,monospace" font-size="8" fill="rgba(74,144,217,0.9)">CHECK</text>
+      <!-- Branch: low risk -->
+      <line x1="584" y1="114" x2="584" y2="145" stroke="rgba(52,195,122,0.6)" stroke-width="1.2" marker-end="url(#sm-arr-green)"/>
+      <rect x="534" y="145" width="100" height="36" rx="4" fill="rgba(52,195,122,0.07)" stroke="rgba(52,195,122,0.3)" stroke-width="1"/>
+      <text x="584" y="160" text-anchor="middle" font-family="DM Mono,monospace" font-size="7.5" fill="rgba(52,195,122,0.9)">AUTO_LOG</text>
+      <text x="584" y="172" text-anchor="middle" font-family="DM Mono,monospace" font-size="7" fill="rgba(138,144,158,0.5)">low risk → IDLE</text>
+      <!-- Branch: high risk -->
+      <line x1="642" y1="92" x2="668" y2="92" stroke="rgba(232,160,48,0.6)" stroke-width="1.2" marker-end="url(#sm-arr-amber)"/>
+      <!-- HITL_QUEUED -->
+      <rect x="668" y="70" width="100" height="44" rx="4" fill="rgba(232,160,48,0.08)" stroke="rgba(232,160,48,0.4)" stroke-width="1.5"/>
+      <text x="718" y="91" text-anchor="middle" font-family="DM Mono,monospace" font-size="8" fill="rgba(232,160,48,0.9)">HITL</text>
+      <text x="718" y="103" text-anchor="middle" font-family="DM Mono,monospace" font-size="8" fill="rgba(232,160,48,0.9)">QUEUED</text>
+      <line x1="768" y1="92" x2="794" y2="92" stroke="rgba(232,160,48,0.5)" stroke-width="1.2" marker-end="url(#sm-arr-amber)"/>
+      <!-- HITL_PENDING -->
+      <rect x="794" y="70" width="104" height="44" rx="4" fill="rgba(232,160,48,0.08)" stroke="rgba(232,160,48,0.4)" stroke-width="1.5"/>
+      <text x="846" y="91" text-anchor="middle" font-family="DM Mono,monospace" font-size="8" fill="rgba(232,160,48,0.9)">HITL</text>
+      <text x="846" y="103" text-anchor="middle" font-family="DM Mono,monospace" font-size="8" fill="rgba(232,160,48,0.9)">PENDING</text>
+      <!-- Branch outcomes -->
+      <line x1="898" y1="84" x2="948" y2="54" stroke="rgba(52,195,122,0.6)" stroke-width="1.2" marker-end="url(#sm-arr-green)"/>
+      <rect x="948" y="35" width="90" height="36" rx="4" fill="rgba(52,195,122,0.07)" stroke="rgba(52,195,122,0.3)" stroke-width="1"/>
+      <text x="993" y="56" text-anchor="middle" font-family="DM Mono,monospace" font-size="7.5" fill="rgba(52,195,122,0.9)">APPROVED →</text>
+      <text x="993" y="66" text-anchor="middle" font-family="DM Mono,monospace" font-size="7" fill="rgba(52,195,122,0.7)">A2A_TRIGGERED</text>
+      <line x1="898" y1="92" x2="948" y2="92" stroke="rgba(232,85,80,0.6)" stroke-width="1.2" marker-end="url(#sm-arr-red)"/>
+      <rect x="948" y="72" width="90" height="36" rx="4" fill="rgba(232,85,80,0.07)" stroke="rgba(232,85,80,0.3)" stroke-width="1"/>
+      <text x="993" y="93" text-anchor="middle" font-family="DM Mono,monospace" font-size="7.5" fill="rgba(232,85,80,0.9)">REJECTED →</text>
+      <text x="993" y="103" text-anchor="middle" font-family="DM Mono,monospace" font-size="7" fill="rgba(232,85,80,0.7)">AUDIT → IDLE</text>
+      <line x1="898" y1="100" x2="948" y2="130" stroke="rgba(155,114,207,0.6)" stroke-width="1.2" marker-end="url(#sm-arr-purple)"/>
+      <rect x="948" y="112" width="90" height="36" rx="4" fill="rgba(155,114,207,0.07)" stroke="rgba(155,114,207,0.3)" stroke-width="1"/>
+      <text x="993" y="133" text-anchor="middle" font-family="DM Mono,monospace" font-size="7.5" fill="rgba(155,114,207,0.9)">TIMEOUT →</text>
+      <text x="993" y="143" text-anchor="middle" font-family="DM Mono,monospace" font-size="7" fill="rgba(155,114,207,0.7)">ESCALATED</text>
+      <!-- Branch labels -->
+      <text x="648" y="82" font-family="DM Mono,monospace" font-size="7" fill="rgba(232,160,48,0.7)">high risk</text>
+      <text x="564" y="140" font-family="DM Mono,monospace" font-size="7" fill="rgba(52,195,122,0.7)">low risk</text>
+    </svg>
+  </div>
+
+  <!-- STATE TABLE -->
+  <div style="border:1px solid var(--border);overflow:hidden;margin-bottom:72px;">
+    <table class="state-table" style="width:100%;">
+      <thead>
+        <tr>
+          <th style="width:160px;">State</th>
+          <th>Entry Condition</th>
+          <th>Action</th>
+          <th>Exit Condition</th>
+          <th style="width:80px;">Audit Write</th>
+          <th>Timeout Behaviour</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="state-name state-idle">IDLE</span></td>
+          <td>Agent initialised or previous event fully resolved</td>
+          <td>Subscribe to Pub/Sub topic. Await next supplier event.</td>
+          <td>Pub/Sub message received from Orchestrator</td>
+          <td><span class="audit-no">—</span></td>
+          <td>None. Persistent subscription. Exactly-once delivery enforced at bus level.</td>
+        </tr>
+        <tr>
+          <td><span class="state-name state-active">EVENT_RECEIVED</span></td>
+          <td>Pub/Sub message acknowledged</td>
+          <td>Deserialise Protobuf. Validate schema. Write event to Firestore before proceeding. Malformed Protobuf → DLQ + alert.</td>
+          <td>Schema validated. Firestore record created.</td>
+          <td><span class="audit-yes">YES — event receipt</span></td>
+          <td>Schema failure → reject to DLQ + IDLE. Duplicate UUID → idempotent discard.</td>
+        </tr>
+        <tr>
+          <td><span class="state-name state-active">SCORING</span></td>
+          <td>Event record in Firestore</td>
+          <td>Read supplier features from Feature Store. Invoke risk classifier. Compute risk score.</td>
+          <td>Risk score produced. Written to Firestore.</td>
+          <td><span class="audit-yes">YES — score + model version</span></td>
+          <td>Classifier timeout → circuit breaker. Fallback to last-known score + HITL alert.</td>
+        </tr>
+        <tr>
+          <td><span class="state-name state-active">EXPLANATION_GENERATED</span></td>
+          <td>Risk score available in Firestore</td>
+          <td>Invoke SHAP generator. Produce top-5 feature weights. Invoke Gemini Search for news context. Write explanation to Firestore atomically with score.</td>
+          <td>SHAP explanation written. News context attached.</td>
+          <td><span class="audit-yes">YES — SHAP payload</span></td>
+          <td>SHAP timeout → proceed with score only. Absence flagged in audit record.</td>
+        </tr>
+        <tr>
+          <td><span class="state-name state-active">THRESHOLD_CHECK</span></td>
+          <td>Explanation generated</td>
+          <td>Evaluate risk score against threshold (0.75). Branch to AUTO_LOG or HITL_QUEUED.</td>
+          <td>Branch decision recorded in Firestore.</td>
+          <td><span class="audit-yes">YES — threshold + branch</span></td>
+          <td>Evaluation is synchronous. No timeout applies.</td>
+        </tr>
+        <tr>
+          <td><span class="state-name state-ok">AUTO_LOG</span></td>
+          <td>Risk score &lt; 0.75</td>
+          <td>Write structured log record. Update supplier risk register in Firestore. Return to IDLE.</td>
+          <td>Log written. Register updated.</td>
+          <td><span class="audit-yes">YES — low risk record</span></td>
+          <td>Not applicable.</td>
+        </tr>
+        <tr>
+          <td><span class="state-name state-hitl">HITL_QUEUED</span></td>
+          <td>Risk score ≥ 0.75</td>
+          <td>Invoke hitl_queue_publisher for HITL-02 (Procurement Director). Package: score + SHAP + news context + recommended action.</td>
+          <td>HITL queue acknowledgement received.</td>
+          <td><span class="audit-yes">YES — HITL dispatch record</span></td>
+          <td>Queue timeout (15 min) → re-attempt × 2, then alert Orchestrator.</td>
+        </tr>
+        <tr>
+          <td><span class="state-name state-hitl">HITL_PENDING</span></td>
+          <td>HITL queue acknowledgement confirmed</td>
+          <td>Agent paused. No downstream action. Await human decision within SLA window (4 hours).</td>
+          <td>Human decision received: APPROVED, REJECTED, or TIMEOUT.</td>
+          <td><span class="audit-no">— (timer state written)</span></td>
+          <td>4-hour SLA → TIMEOUT branch triggers. Written to audit. Escalated to VP Supply Chain.</td>
+        </tr>
+        <tr>
+          <td><span class="state-name state-ok">A2A_TRIGGERED</span></td>
+          <td>HITL-02 APPROVED decision received. Signed JWT captured.</td>
+          <td>audit_log_writer invoked first — publish blocked until Firestore write returns confirmed doc ID. Signal ProcureGuard via Orchestrator. ProcureGuard issues A2A SourcingRequest with idempotency key, HITL JWT, and GDPR-minimised payload to WIF-authenticated supplier agents.</td>
+          <td>A2A message acknowledged by at least one supplier agent.</td>
+          <td><span class="audit-yes">YES — pre-condition enforced</span></td>
+          <td>A2A timeout (4h) → circuit breaker to manual SAP Ariba workflow.</td>
+        </tr>
+        <tr>
+          <td><span class="state-name state-err">AUDIT_WRITTEN / IDLE</span></td>
+          <td>Any terminal state reached (APPROVED, REJECTED, TIMEOUT)</td>
+          <td>Write immutable, terminal audit record to Firestore. Release agent. Return to IDLE.</td>
+          <td>Audit record committed.</td>
+          <td><span class="audit-yes">YES — terminal record</span></td>
+          <td>Audit write failure → retry × 3. Alert Orchestrator if all fail. Action blocked.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+
+<!-- SECTION 04 — A2A PROTOCOL -->
+<section id="a2a">
+  <div class="section-eyebrow">Section 04</div>
+  <h2 class="section-title">A2A Protocol <em>Specification</em></h2>
+  <p class="section-lead">
+    Two distinct A2A patterns. Intra-enterprise coordination within MedDevice's GCP estate.
+    Inter-enterprise A2A Commerce across the boundary to supplier and 3PL agent networks —
+    the portfolio's primary technical differentiator, with full cross-boundary trust model
+    and GDPR data minimisation specification.
+  </p>
+
+  <!-- INTRA-ENTERPRISE -->
+  <div class="a2a-protocol-block" style="margin-bottom:48px;">
+    <div class="a2a-header">
+      <span class="a2a-label">Pattern 01</span>
+      <span class="a2a-title">Intra-Enterprise A2A — Within MedDevice GCP Estate</span>
+    </div>
+    <div class="a2a-body">
+      <div class="two-col" style="gap:48px;margin-bottom:32px;">
+        <div>
+          <div class="agent-tools-label" style="margin-bottom:12px;">Protocol</div>
+          <div style="font-size:13px;line-height:1.8;color:var(--text-secondary);font-weight:300;">
+            Orchestrator publishes to named agent topics. Agents subscribe and process. Responses published
+            to reply topics. All messages schema-validated Protobuf with explicit field definitions below.
+            All state written to Firestore before the agent proceeds to the next action. No agent-to-agent
+            message is acknowledged without a prior Firestore record.
+          </div>
+        </div>
+        <div>
+          <div class="agent-tools-label" style="margin-bottom:12px;">Transport Guarantees</div>
+          <div style="font-family:var(--font-mono);font-size:10px;line-height:2;color:var(--text-secondary);">
+            Pub/Sub: exactly-once delivery (ordering keys)<br>
+            Idempotency key: per-message UUID (v4)<br>
+            Dead-letter: <code>agent-dlq</code> topic, 3× retry<br>
+            Schema: Protobuf v3, strict version pinning<br>
+            Auth: Workload Identity per agent service account<br>
+            State persistence: Firestore before proceed<br>
+            Audit: immutable write before every branch
+          </div>
+        </div>
+      </div>
+
+      <!-- Intra-enterprise Protobuf schema example -->
+      <div style="margin-bottom:32px;padding:20px 24px;background:var(--bg-3);border:1px solid var(--border);">
+        <div class="agent-tools-label" style="margin-bottom:12px;">Intra-Enterprise Message Schema (Protobuf excerpt — DemandIQ → InventoryOrchestrator)</div>
+        <div class="code-block"><span class="code-comment">// proto/demand_forecast_event.proto — topic: agent-inventory</span>
+<span class="code-comment">// Ordering key: supplier_region · Idempotency key: message_id (UUID v4)</span>
+<span class="code-key">message</span> DemandForecastEvent {
+  <span class="code-key">string</span>  <span class="code-val">message_id</span>       = 1;  <span class="code-comment">// UUID v4 — idempotency key</span>
+  <span class="code-key">string</span>  <span class="code-val">sku_id</span>           = 2;
+  <span class="code-key">double</span>  <span class="code-val">forecast_units</span>   = 3;
+  <span class="code-key">double</span>  <span class="code-val">confidence_lower</span> = 4;
+  <span class="code-key">double</span>  <span class="code-val">confidence_upper</span> = 5;
+  <span class="code-key">string</span>  <span class="code-val">model_version</span>    = 6;  <span class="code-comment">// pinned model artifact ID</span>
+  <span class="code-key">string</span>  <span class="code-val">shap_doc_ref</span>     = 7;  <span class="code-comment">// Firestore doc ID for SHAP payload</span>
+  <span class="code-key">string</span>  <span class="code-val">audit_doc_ref</span>    = 8;  <span class="code-comment">// Firestore doc ID — pre-written</span>
+  <span class="code-key">google.protobuf.Timestamp</span> <span class="code-val">created_at</span> = 9;
+}</div>
+      </div>
+
+      <div class="intra-grid">
+        <div class="intra-cell">
+          <div class="intra-from">Flow 01</div>
+          <div class="intra-flow">DemandIQ <span>→</span> InventoryOrchestrator</div>
+          <div class="intra-desc">Completed forecast output from DemandIQ feeds directly into the reorder model input for InventoryOrchestrator. Forecast results published to <code>agent-inventory</code> topic. InventoryOrchestrator subscribes and triggers ML reorder run. Closes the demand-to-replenishment loop without human intervention below €100K threshold. Duplicate message_id → idempotent discard.</div>
+        </div>
+        <div class="intra-cell">
+          <div class="intra-from">Flow 02</div>
+          <div class="intra-flow">SupplierSentinel <span>→</span> ProcureGuard</div>
+          <div class="intra-desc">High-risk supplier event (post HITL-02 approval) triggers ProcureGuard to open a procurement review in SAP Ariba and initiate A2A SourcingRequest broadcast to pre-qualified alternative supplier agents. The HITL approval JWT is propagated forward through the A2A message chain. Supplier contact personal data is excluded from intra-enterprise messages — GDPR Article 5(1)(c) data minimisation.</div>
+        </div>
+        <div class="intra-cell">
+          <div class="intra-from">Flow 03</div>
+          <div class="intra-flow">QualityTrace <span>→</span> SupplierSentinel</div>
+          <div class="intra-desc">An NCR event with identified component batch triggers SupplierSentinel re-evaluation of the affected supplier. QualityTrace publishes the component batch ID and NCR reference to <code>agent-supplier</code> topic. SupplierSentinel re-scores with NCR context included as a feature, elevating the risk signal with full regulatory traceability. MDR SLA timer runs independently of this flow.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INTER-ENTERPRISE A2A COMMERCE -->
+  <div class="a2a-protocol-block">
+    <div class="a2a-header">
+      <span class="a2a-label" style="border-color:rgba(52,195,122,0.4);background:rgba(52,195,122,0.08);color:var(--accent-green);">Pattern 02 — Differentiator</span>
+      <span class="a2a-title">Inter-Enterprise A2A Commerce — MedDevice ↔ Supplier / 3PL Agents</span>
+    </div>
+    <div class="a2a-body">
+      <div class="two-col" style="gap:48px;margin-bottom:36px;">
+        <div>
+          <div class="agent-tools-label" style="margin-bottom:12px;">Protocol Stack</div>
+          <div style="font-family:var(--font-mono);font-size:10px;line-height:2.1;color:var(--text-secondary);">
+            Transport: Google A2A Protocol over HTTPS<br>
+            Identity (MedDevice): Workload Identity Federation<br>
+            Identity (Suppliers): WIF — verified at onboarding<br>
+            Agent discovery: A2A Agent Card registry (GCP)<br>
+            Message signing: ECDSA P-256 (both parties)<br>
+            Encryption: TLS 1.3 + application-layer payload encryption<br>
+            Auth token: HITL-signed JWT (propagated per step)<br>
+            Idempotency: per-message UUID v4 in every payload<br>
+            GDPR: data minimisation enforced at schema level<br>
+            Role: MedDevice = A2A Commerce Initiator<br>
+            Role: Suppliers = A2A Commerce Responders
+          </div>
+        </div>
+        <div>
+          <div class="agent-tools-label" style="margin-bottom:12px;">Scenario</div>
+          <div style="font-size:13px;line-height:1.75;color:var(--text-secondary);font-weight:300;">
+            The full A2A Commerce loop is illustrated via the Emergency Re-Sourcing scenario.
+            SupplierSentinel scores a Malaysian PCB supplier at 0.89 (high risk). HITL-02 fires.
+            Procurement Director approves emergency re-sourcing action. ProcureGuard initiates
+            a five-step A2A Commerce loop to source, bid, evaluate, approve, and confirm
+            a replacement supply — fully audited at every step, with idempotency keys preventing
+            duplicate PO issuance on network retry.
+          </div>
+        </div>
+      </div>
+
+      <!-- TRIGGER BLOCK -->
+      <div style="padding:20px 24px;border:1px solid rgba(232,85,80,0.2);background:rgba(232,85,80,0.03);margin-bottom:1px;border-bottom:none;">
+        <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:0.18em;text-transform:uppercase;color:var(--accent-red);margin-bottom:8px;">Trigger Event</div>
+        <div style="font-size:13px;line-height:1.7;color:var(--text-secondary);font-weight:300;">
+          SupplierSentinel scores Malaysian PCB supplier at <strong style="color:var(--accent-red);font-family:var(--font-mono);">0.89</strong> (high risk threshold: 0.75).
+          Top SHAP features: geopolitical tension index (0.31), recent shipment delay variance (0.24),
+          credit rating downgrade signal (0.18), alternative supplier capacity check (0.15), commodity price volatility (0.12).
+          HITL-02 fires. Procurement Director reviews full SHAP brief and approves emergency re-sourcing.
+          Signed JWT issued. ProcureGuard receives intra-enterprise A2A signal.
+        </div>
+      </div>
+
+      <!-- COMMERCE LOOP STEPS -->
+      <div class="commerce-loop">
+
+        <!-- Step 01 -->
+        <div class="commerce-step">
+          <div class="step-num-col"><span class="step-num">01</span></div>
+          <div class="step-body">
+            <div class="step-tag">A2A Commerce Initiator · ProcureGuard Agent</div>
+            <div class="step-title">Sourcing Request Broadcast</div>
+            <div class="step-desc">
+              ProcureGuard retrieves the Agent Cards for the three pre-qualified supplier agents from the
+              A2A Agent Card registry. Each Agent Card contains the supplier's WIF identity, endpoint URL,
+              and supported A2A message types — verified at supplier onboarding and rotated annually.
+              ProcureGuard generates a signed A2A SourcingRequest with UUID idempotency key and broadcasts
+              to all three simultaneously. The HITL authorisation JWT and Firestore audit reference
+              are embedded. Payload is GDPR-minimised: no personal data of supplier contacts included.
+              All three supplier agents receive the broadcast via Google A2A Protocol over HTTPS (TLS 1.3).
+            </div>
+          </div>
+          <div class="step-code-col">
+            <div class="code-block"><span class="code-comment">// A2A SourcingRequest</span>
+{
+  <span class="code-key">"messageId"</span>: <span class="code-str">"uuid-v4"</span>,  <span class="code-comment">// idempotency</span>
+  <span class="code-key">"requestType"</span>: <span class="code-str">"EMERGENCY_RESOURCING"</span>,
+  <span class="code-key">"item"</span>: <span class="code-str">"PCB Sub-Assembly MDA-4471"</span>,
+  <span class="code-key">"quantity"</span>: <span class="code-num">12000</span>,
+  <span class="code-key">"requiredBy"</span>: <span class="code-str">"ISO-8601"</span>,
+  <span class="code-key">"qualificationReqs"</span>: [
+    <span class="code-str">"ISO13485"</span>, <span class="code-str">"MDR_cert"</span>
+  ],
+  <span class="code-key">"initiatorAgentCard"</span>: <span class="code-str">"wif://meddevice/procureguard"</span>,
+  <span class="code-key">"hitlAuthorizationToken"</span>: <span class="code-str">"signed-JWT-HITL-02"</span>,
+  <span class="code-key">"shapRiskJustification"</span>: {
+    <span class="code-key">"top5Features"</span>: <span class="code-str">"[...]"</span>
+  },
+  <span class="code-key">"auditTrailRef"</span>: <span class="code-str">"firestore-doc-id"</span>
+}</div>
+          </div>
+        </div>
+
+        <!-- Step 02 -->
+        <div class="commerce-step">
+          <div class="step-num-col"><span class="step-num">02</span></div>
+          <div class="step-body">
+            <div class="step-tag">A2A Commerce Responders · Supplier Agents — WIF Authenticated</div>
+            <div class="step-title">Supplier Agent Bid Responses</div>
+            <div class="step-desc">
+              Each supplier agent verifies the SourcingRequest signature against MedDevice's WIF identity
+              before processing. ProcureGuard verifies each BidResponse signature against the pre-registered
+              Agent Card WIF identity before accepting. This mutual authentication prevents spoofed bids
+              from unregistered agents entering the A2A Commerce loop.
+              Each BidResponse contains a verified supplier identity, unit price in EUR, committed lead time,
+              ISO 13485 qualification document reference (Veeva-compatible), and capacity confirmation.
+              All three BidResponse messages are written to Firestore atomically before ContractIntelligence proceeds.
+              Duplicate messageId → idempotent discard.
+            </div>
+          </div>
+          <div class="step-code-col">
+            <div class="code-block"><span class="code-comment">// A2A BidResponse (per supplier)</span>
+{
+  <span class="code-key">"messageId"</span>: <span class="code-str">"uuid-v4"</span>,   <span class="code-comment">// idempotency</span>
+  <span class="code-key">"requestId"</span>: <span class="code-str">"echo-sourcing-uuid"</span>,
+  <span class="code-key">"responderAgentCard"</span>: <span class="code-str">"wif://supplierA/agent"</span>,
+  <span class="code-key">"supplierId"</span>: <span class="code-str">"wif-verified-identity"</span>,
+  <span class="code-key">"unitPrice"</span>: {
+    <span class="code-key">"amount"</span>: <span class="code-num">14.72</span>,
+    <span class="code-key">"currency"</span>: <span class="code-str">"EUR"</span>
+  },
+  <span class="code-key">"leadTimeDays"</span>: <span class="code-num">18</span>,
+  <span class="code-key">"qualificationDocRef"</span>: <span class="code-str">"veeva-cert-ref"</span>,
+  <span class="code-key">"capacityConfirmed"</span>: <span class="code-str">true</span>,
+  <span class="code-key">"ecdsaSignature"</span>: <span class="code-str">"P-256-sig"</span>
+}</div>
+          </div>
+        </div>
+
+        <!-- Step 03 -->
+        <div class="commerce-step">
+          <div class="step-num-col"><span class="step-num">03</span></div>
+          <div class="step-body">
+            <div class="step-tag">ContractIntelligence Agent · Gemini 2.5 Pro</div>
+            <div class="step-title">Bid Evaluation & TCO Recommendation</div>
+            <div class="step-desc">
+              ContractIntelligence receives all three BidResponse messages and runs the
+              risk-adjusted TCO model across all bids simultaneously. Gemini 2.5 Pro (2M token context)
+              analyses each qualification document corpus against ISO 13485 requirements. SHAP attribution
+              explains the winning bid recommendation across price, lead time, qualification
+              completeness, and historical supplier performance. The full recommendation package
+              — TCO model output, SHAP explanation, qualification analysis — is routed to HITL-05
+              (CPO) for final approval.
+            </div>
+          </div>
+          <div class="step-code-col">
+            <div class="code-block"><span class="code-comment">// TCO Recommendation Output</span>
+{
+  <span class="code-key">"recommendedBid"</span>: <span class="code-str">"bid-uuid-B"</span>,
+  <span class="code-key">"tcoScore"</span>: <span class="code-num">0.847</span>,
+  <span class="code-key">"shapExplanation"</span>: {
+    <span class="code-key">"unitPrice"</span>: <span class="code-num">-0.23</span>,
+    <span class="code-key">"leadTime"</span>: <span class="code-num">+0.31</span>,
+    <span class="code-key">"qualification"</span>: <span class="code-num">+0.28</span>,
+    <span class="code-key">"historicalPerf"</span>: <span class="code-num">+0.18</span>
+  },
+  <span class="code-key">"hitlTarget"</span>: <span class="code-str">"HITL-05-CPO"</span>,
+  <span class="code-key">"auditTrailRef"</span>: <span class="code-str">"firestore-doc-id"</span>
+}</div>
+          </div>
+        </div>
+
+        <!-- Step 04 -->
+        <div class="commerce-step">
+          <div class="step-num-col"><span class="step-num">04</span></div>
+          <div class="step-body">
+            <div class="step-tag">HITL-05 CPO Approval · ProcureGuard Agent</div>
+            <div class="step-title">CPO Approval & PO Issuance</div>
+            <div class="step-desc">
+              CPO reviews the recommendation via the HITL interface: TCO score, SHAP attribution,
+              qualification document summary, and all three bids side by side. CPO approves.
+              A signed JWT is issued and captured. <strong>audit_log_writer is invoked first</strong> —
+              the PO publish call is blocked until Firestore returns a confirmed document ID.
+              ProcureGuard issues an A2A PurchaseOrderMessage to the winning supplier agent with
+              a fresh UUID idempotency key. The PO embeds INCOTERMS, ISO 13485 certificate
+              requirements, and the CPO's signed authorisation token.
+              Personal data fields (supplier contact names) are excluded from the PO payload — 
+              the supplierId field contains the WIF identity reference only (GDPR Art. 5(1)(c)).
+            </div>
+          </div>
+          <div class="step-code-col">
+            <div class="code-block"><span class="code-comment">// A2A PurchaseOrderMessage</span>
+{
+  <span class="code-key">"messageId"</span>: <span class="code-str">"uuid-v4"</span>,  <span class="code-comment">// idempotency</span>
+  <span class="code-key">"poId"</span>: <span class="code-str">"uuid-v4"</span>,
+  <span class="code-key">"supplierId"</span>: <span class="code-str">"wif://supplierB/agent"</span>,
+  <span class="code-key">"item"</span>: <span class="code-str">"PCB Sub-Assembly MDA-4471"</span>,
+  <span class="code-key">"quantity"</span>: <span class="code-num">12000</span>,
+  <span class="code-key">"agreedPrice"</span>: <span class="code-num">176640</span>,
+  <span class="code-key">"deliveryTerms"</span>: <span class="code-str">"DDP INCOTERMS 2020"</span>,
+  <span class="code-key">"qualityReqs"</span>: [<span class="code-str">"ISO13485_cert_required"</span>],
+  <span class="code-key">"hitlAuthorizationToken"</span>: <span class="code-str">"signed-JWT-CPO"</span>,
+  <span class="code-key">"auditTrailRef"</span>: <span class="code-str">"firestore-doc-id"</span>
+}</div>
+          </div>
+        </div>
+
+        <!-- Step 05 -->
+        <div class="commerce-step">
+          <div class="step-num-col"><span class="step-num">05</span></div>
+          <div class="step-body">
+            <div class="step-tag">Supplier Agent Confirmation · Audit Completion</div>
+            <div class="step-title">Acknowledgement & Atomic Audit</div>
+            <div class="step-desc">
+              The winning supplier agent verifies ProcureGuard's WIF identity before accepting the PO,
+              then returns a signed A2A PurchaseOrderAcknowledgement.
+              ProcureGuard writes final state to Firestore atomically with the PO confirmation.
+              SAP Ariba is updated via REST API. The immutable audit log entry — containing
+              the full event chain from SupplierSentinel risk score through CPO approval to
+              confirmed PO — is written in one atomic Firestore transaction.
+              The Firestore audit document constitutes the Article 30 GDPR Record of Processing
+              for this cross-border data transfer. Supplier agents outside EEA: transfer covered
+              by Standard Contractual Clauses (SCCs) embedded in the supplier onboarding agreement.
+              EU AI Act Article 14 satisfied for all HITL steps. MDR traceability satisfied.
+            </div>
+          </div>
+          <div class="step-code-col">
+            <div class="code-block"><span class="code-comment">// A2A PO Acknowledgement</span>
+{
+  <span class="code-key">"messageId"</span>: <span class="code-str">"uuid-v4"</span>,  <span class="code-comment">// idempotency</span>
+  <span class="code-key">"ackId"</span>: <span class="code-str">"uuid-v4"</span>,
+  <span class="code-key">"poId"</span>: <span class="code-str">"uuid-ref"</span>,
+  <span class="code-key">"supplierId"</span>: <span class="code-str">"wif://supplierB/agent"</span>,
+  <span class="code-key">"confirmedDelivery"</span>: <span class="code-str">"ISO-8601"</span>,
+  <span class="code-key">"status"</span>: <span class="code-str">"CONFIRMED"</span>,
+  <span class="code-key">"ecdsaSignature"</span>: <span class="code-str">"P-256-sig"</span>
+}
+<span class="code-comment">// Firestore atomic write → Art.30 record</span>
+<span class="code-comment">// SAP Ariba REST update</span>
+<span class="code-comment">// EU AI Act Art.14 ✓ MDR ✓ GDPR ✓</span></div>
+          </div>
+        </div>
+
+      </div><!-- /commerce-loop -->
+
+      <div class="audit-guarantee">
+        <div class="audit-guarantee-title">Audit Guarantee — Every A2A Commerce Message</div>
+        <div class="audit-guarantee-text">
+          Every A2A message in the Emergency Re-Sourcing loop is written to the immutable audit log
+          before the next step proceeds. <strong>This is SDK-level enforcement</strong> — the
+          <code>a2a_commerce_publisher</code> tool invokes <code>audit_log_writer</code> as a
+          pre-condition; the publish call will not execute without a confirmed Firestore document ID.
+          This is the mechanism behind the "0 Unaudited A2A Messages" guarantee — not a policy convention.
+          The HITL authorisation JWT chain links every automated action to the originating human approval.
+          <strong>EU AI Act Article 14 is satisfied structurally</strong> — by the state machine, not by policy.
+          MDR device and component traceability is satisfied by qualification document references
+          embedded in every A2A message. Cross-boundary GDPR compliance is maintained through
+          GDPR Art. 5(1)(c) data minimisation at the schema level and SCCs at the contract layer.
+        </div>
+        <div class="audit-tags">
+          <span class="audit-tag">EU AI Act Art. 14 ✓</span>
+          <span class="audit-tag">MDR Traceability ✓</span>
+          <span class="audit-tag">ISO 13485 ✓</span>
+          <span class="audit-tag">GDPR Art. 5 + Art. 30 ✓</span>
+          <span class="audit-tag">SCC Transfer Mechanism</span>
+          <span class="audit-tag">Atomic Firestore Write</span>
+          <span class="audit-tag">HITL JWT Chain</span>
+          <span class="audit-tag">Immutable Audit Log</span>
+          <span class="audit-tag">Mutual WIF Authentication</span>
+          <span class="audit-tag">UUID Idempotency Keys</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- SECTION 05 — CROSS-BOUNDARY TRUST MODEL -->
+<section id="trust" style="background:var(--bg-2);">
+  <div class="section-eyebrow">Section 05</div>
+  <h2 class="section-title">Cross-Boundary Agent <em>Trust Model</em></h2>
+  <p class="section-lead">
+    The inter-enterprise A2A Commerce pattern crosses GCP project and organisational boundaries.
+    This section specifies how agent identity is established, verified, and revoked — and how
+    GDPR Article 46 cross-border transfer obligations are satisfied at the contract layer.
+  </p>
+
+  <div class="trust-grid">
+    <div class="trust-cell">
+      <div class="trust-cell-label">Identity Layer</div>
+      <div class="trust-cell-title">Workload Identity Federation — Mutual</div>
+      <div class="trust-cell-body">
+        Both MedDevice and each supplier/3PL register a WIF identity before any A2A message exchange.
+        MedDevice's ProcureGuard agent authenticates to external supplier agents using its GCP
+        Service Account WIF token. Each supplier agent presents its own WIF token, which ProcureGuard
+        verifies against the pre-registered Agent Card before accepting any BidResponse or ACK.
+        No message from an unregistered WIF identity is processed. WIF tokens are short-lived (1 hour)
+        and automatically rotated. Revocation is immediate via WIF pool membership removal.
+      </div>
+    </div>
+    <div class="trust-cell">
+      <div class="trust-cell-label">Discovery Layer</div>
+      <div class="trust-cell-title">A2A Agent Card Registry</div>
+      <div class="trust-cell-body">
+        Each supplier and 3PL agent publishes an Agent Card to a GCP-hosted A2A Agent Card registry
+        at onboarding. The Agent Card contains: WIF identity, A2A endpoint URL, supported message types,
+        ISO 13485 certification status, and GDPR data processing agreement reference.
+        Agent Cards are signed by MedDevice's Procurement Director (HITL-06) at onboarding
+        and re-validated annually. Revoked or expired Agent Cards immediately block that supplier
+        from participating in A2A Commerce loops. ProcureGuard queries the registry before every
+        SourcingRequest broadcast — no cached identity lists.
+      </div>
+    </div>
+    <div class="trust-cell">
+      <div class="trust-cell-label">Message Integrity Layer</div>
+      <div class="trust-cell-title">ECDSA P-256 Bi-directional Signing</div>
+      <div class="trust-cell-body">
+        Every A2A message — in both directions — is signed with ECDSA P-256. The sender's public key
+        is retrieved from the Agent Card registry at verification time. This prevents:
+        (1) message spoofing from unauthenticated agents,
+        (2) man-in-the-middle bid injection,
+        (3) replay attacks (per-message UUID checked against Firestore deduplication log).
+        Signature verification failure → message rejected + security alert to CISO + Cloud Monitoring event.
+        Signing keys rotated every 90 days via automated Cloud KMS workflow.
+      </div>
+    </div>
+    <div class="trust-cell">
+      <div class="trust-cell-label">GDPR Transfer Mechanism</div>
+      <div class="trust-cell-title">GDPR Art. 46 — Standard Contractual Clauses</div>
+      <div class="trust-cell-body">
+        Supplier agents outside the EEA: data transfer is covered by EU Standard Contractual Clauses
+        (SCCs, 2021 Commission Decision) embedded in every supplier onboarding agreement.
+        SCC reference is included in each supplier's Agent Card metadata.
+        GDPR Article 30 Records of Processing: each Firestore audit document constitutes the
+        processing record for the corresponding A2A transaction.
+        Data minimisation (Art. 5(1)(c)): A2A message schemas are defined to exclude personal
+        data of supplier contacts — supplierId fields contain WIF machine identities only.
+      </div>
+    </div>
+    <div class="trust-cell">
+      <div class="trust-cell-label">Onboarding & Offboarding</div>
+      <div class="trust-cell-title">Supplier Agent Lifecycle</div>
+      <div class="trust-cell-body">
+        Onboarding: supplier submits Agent Card + ISO 13485 certificate + DPA.
+        Legal Counsel (HITL-06) approves registration. Agent Card signed and added to registry.
+        WIF pool membership granted. Test A2A handshake performed before production access.
+        Offboarding: WIF pool membership revoked immediately. Agent Card marked REVOKED in registry.
+        In-flight A2A loops → circuit breaker to manual SAP Ariba workflow. All prior
+        Firestore audit records retained per ISO 13485 retention schedule (15 years).
+      </div>
+    </div>
+    <div class="trust-cell">
+      <div class="trust-cell-label">Security Incident Response</div>
+      <div class="trust-cell-title">Compromised Agent Response</div>
+      <div class="trust-cell-body">
+        If a supplier agent's WIF identity is suspected compromised: immediate WIF pool revocation.
+        All pending A2A Commerce loops for that supplier → circuit breaker state.
+        CISO + Procurement Director alerted. Firestore audit log reviewed for anomalous messages.
+        ECDSA signing key for MedDevice rotated as precaution. Any POs in PENDING state
+        escalated to HITL-06 for manual review before issuance. Full incident record
+        written to Firestore with immutable timestamp.
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- SECTION 06 — MCP TOOL MANIFEST -->
+<section id="mcp">
+  <div class="section-eyebrow">Section 06</div>
+  <h2 class="section-title">MCP Tool <em>Manifest</em></h2>
+  <p class="section-lead">
+    Ten MCP tools registered for the Autonomous Supply Chain agent swarm. Every tool has a single
+    responsibility, a defined IAM role, and a defined error contract. Every tool that writes state
+    does so to the immutable audit log before returning.
+  </p>
+
+  <div class="mcp-grid">
+    <div class="mcp-row">
+      <div class="mcp-name-col">sap_ariba_contract_reader</div>
+      <div class="mcp-desc-col">Reads the full SAP Ariba contract corpus for a given supplier or category. Returns structured contract data to ContractIntelligence Agent for Gemini 2.5 Pro full-document analysis. Read-only. IAM role: <code>ariba.contracts.read</code>. Rate limit: 429 → exponential backoff × 3, then circuit breaker.</div>
+    </div>
+    <div class="mcp-row">
+      <div class="mcp-name-col">sap_s4_pub_sub_writer</div>
+      <div class="mcp-desc-col">Writes reorder events from InventoryOrchestrator Agent to SAP S/4HANA MRP via Pub/Sub. Only invoked post HITL-04 approval for reorders exceeding €100K. Audit log write occurs before SAP event is published. IAM role: <code>pubsub.publisher</code> (scoped to <code>sap-s4-reorder</code> topic only). 503 → retry × 3, then HITL-04 re-queue.</div>
+    </div>
+    <div class="mcp-row">
+      <div class="mcp-name-col">vertex_ai_forecast_invoker</div>
+      <div class="mcp-desc-col">Triggers a DemandIQ model run on Vertex AI Forecast. Passes current feature vector from Feature Store. Returns forecast output and confidence interval. Invoked autonomously; HITL gated downstream before procurement action. IAM role: <code>aiplatform.endpoints.predict</code>. Endpoint unavailable or confidence &lt;0.55 → circuit breaker + stale forecast fallback.</div>
+    </div>
+    <div class="mcp-row">
+      <div class="mcp-name-col">gemini_document_analyser</div>
+      <div class="mcp-desc-col">Full-document Gemini 2.5 Pro analysis via Vertex AI. Used by ContractIntelligence for contract corpus analysis and bid evaluation, and by QualityTrace for batch record root cause hypothesis. 2M token context window. IAM role: <code>aiplatform.endpoints.predict</code>. Timeout &gt;120s → circuit breaker + HITL-05 SLA extension.</div>
+    </div>
+    <div class="mcp-row">
+      <div class="mcp-name-col">veeva_vault_reader</div>
+      <div class="mcp-desc-col">Reads quality records, NCR documents, and batch certificates from Veeva Vault via REST API. Used by QualityTrace for MDR device lineage tracing and CAPA generation. Read-only. IAM role: Veeva API key scoped to read-only vault access, stored in Secret Manager. API failure → circuit breaker; NCR held PENDING; MDR timer continues independently.</div>
+    </div>
+    <div class="mcp-row">
+      <div class="mcp-name-col">bigquery_scope3_calculator</div>
+      <div class="mcp-desc-col">In-place Scope 3 calculation on logistics and freight data using BigQuery Omni. Invoked by ScopeTracer Agent for continuous CSRD reporting. Fully autonomous computation. Outputs are advisory only — require HITL-07 sign-off before regulatory submission. IAM role: <code>bigquery.jobs.create</code> (scoped to logistics dataset). Query timeout → stale report flag + Cloud Monitoring alert.</div>
+    </div>
+    <div class="mcp-row">
+      <div class="mcp-name-col">hitl_queue_publisher</div>
+      <div class="mcp-desc-col">Routes agent decisions to named human approvers via the HITL queue. Packages risk score, SHAP explanation, confidence score, and recommended action. Eight named HITL queues, one per approval role. Audit record written before queue publish. IAM role: <code>pubsub.publisher</code> (scoped per-queue). Queue timeout (15 min) → re-attempt × 2, then Orchestrator alert.</div>
+    </div>
+    <div class="mcp-row">
+      <div class="mcp-name-col">a2a_commerce_publisher</div>
+      <div class="mcp-desc-col">Issues A2A Commerce messages — SourcingRequest, PurchaseOrderMessage — to verified external supplier agents over Google A2A Protocol. Verifies destination Agent Card WIF identity before publish. Signs message with ECDSA P-256. Embeds HITL JWT and Firestore audit trail reference. <strong>Requires prior audit_log_writer confirmation</strong> — publish blocked without confirmed Firestore doc ID. WIF identity mismatch → reject + CISO alert.</div>
+    </div>
+    <div class="mcp-row">
+      <div class="mcp-name-col">audit_log_writer</div>
+      <div class="mcp-desc-col">Writes immutable records to the Firestore audit log. Invoked by every agent before any irreversible action or state transition. Failure triggers circuit breaker — the dependent action is blocked. Retries × 3. If all fail, Orchestrator is alerted and the action is permanently blocked until manual resolution. IAM role: <code>datastore.documents.create</code> (no update or delete). Records constitute GDPR Art. 30 processing log.</div>
+    </div>
+    <div class="mcp-row">
+      <div class="mcp-name-col">shap_explanation_generator</div>
+      <div class="mcp-desc-col">Generates SHAP feature importance values at inference time for every ML model output in the swarm. Returns top-5 features with weights. Written to Firestore atomically with the model score — never retrospective. EU AI Act Art. 13 transparency contract. IAM role: <code>aiplatform.endpoints.predict</code> (SHAP model endpoint). Timeout → proceed with score only; SHAP absence flagged in audit record. EU AI Act Art. 13 ✓</div>
+    </div>
+  </div>
+</section>
+
+
+<!-- SECTION 07 — CIRCUIT BREAKERS -->
+<section id="circuit" style="background:var(--bg-2);">
+  <div class="section-eyebrow">Section 07</div>
+  <h2 class="section-title">Circuit Breaker & <em>Guardrail Specification</em></h2>
+  <p class="section-lead">
+    Every agent carries a circuit breaker configuration. When external dependencies fail,
+    the swarm degrades gracefully rather than propagating failures. Every circuit breaker event
+    produces an immutable audit record and, where applicable, an escalation to a named human.
+    The Orchestrator — as the single routing point for all specialist agents — carries its own
+    circuit breaker specification below.
+  </p>
+
+  <div class="cb-stack">
+    <div class="cb-row" style="background:var(--bg-3);">
+      <div class="cb-cell-header">Agent</div>
+      <div class="cb-cell-header">Trigger Condition</div>
+      <div class="cb-cell-header">Fallback Behaviour</div>
+      <div class="cb-cell-header">Audit Record</div>
+    </div>
+
+    <!-- Orchestrator CB -->
+    <div class="cb-row">
+      <div class="cb-cell">
+        <div class="cb-agent-name">Orchestrator</div>
+        <div style="font-family:var(--font-mono);font-size:9px;color:var(--accent-red);letter-spacing:0.08em;margin-top:4px;">SINGLE POINT OF ROUTING</div>
+      </div>
+      <div class="cb-cell">
+        <div class="cb-trigger">Cloud Monitoring health probe failure × 3 (30s interval). Memory or CPU spike beyond defined threshold. Pub/Sub consumer lag > 5 minutes sustained.</div>
+      </div>
+      <div class="cb-cell cb-fallback">
+        Dead-letter topic (<code>agent-dlq</code>) captures all in-flight messages. Manual ops runbook triggered automatically. COO and VP Engineering alerted immediately. No specialist agent action proceeds until Orchestrator health confirmed. All in-flight HITL queues held — SLA timers continue running.
+      </div>
+      <div class="cb-cell">
+        <div class="cb-audit">Orchestrator failure timestamp, probe failure count, DLQ message count, alert reference, recovery timestamp. Written by Cloud Monitoring → Firestore sink. Cannot be suppressed.</div>
+      </div>
+    </div>
+
+    <!-- SupplierSentinel CB -->
+    <div class="cb-row">
+      <div class="cb-cell">
+        <div class="cb-agent-name">SupplierSentinel</div>
+        <div style="font-family:var(--font-mono);font-size:9px;color:var(--text-dim);letter-spacing:0.08em;margin-top:4px;">Risk Intelligence</div>
+      </div>
+      <div class="cb-cell">
+        <div class="cb-trigger">Pub/Sub ingestion failure &gt;5 minutes. Risk classifier timeout &gt;30 seconds. Feature Store read failure.</div>
+      </div>
+      <div class="cb-cell cb-fallback">
+        Fallback to last-known risk score for affected supplier (cached in Firestore with staleness timestamp). Immediate HITL-02 alert to Procurement Director with outage context. All downstream A2A sourcing actions require manual confirmation during degraded mode.
+      </div>
+      <div class="cb-cell">
+        <div class="cb-audit">Circuit breaker event, timestamp, affected supplier IDs, last-known score, staleness duration, HITL notification reference. All written atomically.</div>
+      </div>
+    </div>
+
+    <!-- ProcureGuard CB -->
+    <div class="cb-row">
+      <div class="cb-cell">
+        <div class="cb-agent-name">ProcureGuard</div>
+        <div style="font-family:var(--font-mono);font-size:9px;color:var(--text-dim);letter-spacing:0.08em;margin-top:4px;">A2A Commerce</div>
+      </div>
+      <div class="cb-cell">
+        <div class="cb-trigger">A2A timeout — no supplier agent response within 4 hours of SourcingRequest broadcast. SAP Ariba REST API failure &gt;3 retries. WIF identity verification failure on any BidResponse.</div>
+      </div>
+      <div class="cb-cell cb-fallback">
+        Fallback to manual SAP Ariba procurement workflow. Alert to Procurement Director with full A2A message context (SourcingRequest ID, broadcast timestamp, non-responding or unverified supplier agent identities). PO issuance blocked until manual confirmation. WIF failure → CISO alert in addition to Procurement Director.
+      </div>
+      <div class="cb-cell">
+        <div class="cb-audit">A2A timeout event, SourcingRequest ID, all broadcast targets, individual response status per supplier, WIF verification status, fallback transition, human alert reference.</div>
+      </div>
+    </div>
+
+    <!-- QualityTrace CB -->
+    <div class="cb-row">
+      <div class="cb-cell">
+        <div class="cb-agent-name">QualityTrace</div>
+        <div style="font-family:var(--font-mono);font-size:9px;color:var(--text-dim);letter-spacing:0.08em;margin-top:4px;">MDR · ISO 13485</div>
+      </div>
+      <div class="cb-cell">
+        <div class="cb-trigger">Veeva Vault REST API failure — any NCR record read fails. BigQuery device lineage query timeout &gt;60 seconds. MDR SLA hard limit: 48 hours from NCR detection.</div>
+      </div>
+      <div class="cb-cell cb-fallback">
+        NCR held in PENDING state in Firestore. Alert to Quality Manager (HITL-03). MDR SLA timer continues running — hard escalation to Regulatory Affairs VP (HITL-08) at hour 48 regardless of Veeva availability or any system state. Manual lineage review procedure triggered.
+      </div>
+      <div class="cb-cell">
+        <div class="cb-audit">NCR ID, Veeva outage timestamp, MDR SLA timer state, Quality Manager alert reference, escalation ladder and trigger times. Hard-written — cannot be suppressed by any agent state or circuit breaker.</div>
+      </div>
+    </div>
+
+    <!-- DemandIQ CB -->
+    <div class="cb-row">
+      <div class="cb-cell">
+        <div class="cb-agent-name">DemandIQ</div>
+        <div style="font-family:var(--font-mono);font-size:9px;color:var(--text-dim);letter-spacing:0.08em;margin-top:4px;">ML Forecasting</div>
+      </div>
+      <div class="cb-cell">
+        <div class="cb-trigger">Vertex AI Forecast endpoint unavailable. Feature Store read latency &gt;10 seconds. Forecast confidence score below minimum viability threshold (0.55).</div>
+      </div>
+      <div class="cb-cell cb-fallback">
+        Fallback to last committed forecast (Firestore, with staleness timestamp). Flag all downstream InventoryOrchestrator recommendations as STALE-FORECAST. HITL-01 threshold lowered to catch all reorder decisions during degraded mode — no autonomous procurement below €100K during stale forecast period.
+      </div>
+      <div class="cb-cell">
+        <div class="cb-audit">Forecast failure event, staleness flag, affected SKU list, HITL-01 threshold override record, InventoryOrchestrator notification reference.</div>
+      </div>
+    </div>
+
+    <!-- ContractIntelligence CB -->
+    <div class="cb-row">
+      <div class="cb-cell">
+        <div class="cb-agent-name">ContractIntelligence</div>
+        <div style="font-family:var(--font-mono);font-size:9px;color:var(--text-dim);letter-spacing:0.08em;margin-top:4px;">Gemini 2.5 Pro</div>
+      </div>
+      <div class="cb-cell">
+        <div class="cb-trigger">Gemini 2.5 Pro endpoint timeout &gt;120 seconds. SAP Ariba contract corpus read failure. BidResponse count below minimum (fewer than 2 valid, WIF-verified bids received).</div>
+      </div>
+      <div class="cb-cell cb-fallback">
+        TCO evaluation paused. Alert to CPO (HITL-05) with available bid data and failure reason. A2A Commerce loop held in PENDING. Human analyst briefing document auto-generated from available data. HITL-05 SLA extended by 24 hours. Fewer-than-2-bids → additional SourcingRequest broadcast with extended deadline.
+      </div>
+      <div class="cb-cell">
+        <div class="cb-audit">Endpoint failure timestamp, bid count at circuit break, WIF-verified bid count, CPO alert reference, HITL-05 SLA extension record, loop PENDING state timestamp.</div>
+      </div>
+    </div>
+
+    <!-- InventoryOrchestrator CB -->
+    <div class="cb-row">
+      <div class="cb-cell">
+        <div class="cb-agent-name">InventoryOrchestrator</div>
+        <div style="font-family:var(--font-mono);font-size:9px;color:var(--text-dim);letter-spacing:0.08em;margin-top:4px;">MRP Integration</div>
+      </div>
+      <div class="cb-cell">
+        <div class="cb-trigger">SAP S/4HANA Pub/Sub writer failure &gt;3 retries. Stale forecast mode active (DemandIQ circuit breaker triggered). Inventory ML model confidence below threshold.</div>
+      </div>
+      <div class="cb-cell cb-fallback">
+        All reorder recommendations flagged STALE or DEGRADED. HITL-04 threshold lowered to zero — all reorder decisions require VP Operations approval regardless of value. Manual MRP review procedure triggered. SAP Pub/Sub failure → fallback to manual SAP GUI entry with Procurement Director notification.
+      </div>
+      <div class="cb-cell">
+        <div class="cb-audit">Degraded mode flag, timestamp, affected SKU list, HITL-04 threshold override, VP Operations alert reference, SAP failure event reference.</div>
+      </div>
+    </div>
+
+    <!-- ScopeTracer CB -->
+    <div class="cb-row">
+      <div class="cb-cell">
+        <div class="cb-agent-name">ScopeTracer</div>
+        <div style="font-family:var(--font-mono);font-size:9px;color:var(--text-dim);letter-spacing:0.08em;margin-top:4px;">CSRD · GreenOps</div>
+      </div>
+      <div class="cb-cell">
+        <div class="cb-trigger">BigQuery Omni query timeout &gt;60 seconds. 3PL Pub/Sub feed unavailable &gt;1 hour. CSRD reporting deadline within 7 days with incomplete data.</div>
+      </div>
+      <div class="cb-cell cb-fallback">
+        Draft CSRD report flagged INCOMPLETE with data gap timestamps. CFO/Sustainability Director (HITL-07) alerted immediately. Deadline-proximity flag escalates to CEO at 3 days. No partial report filed autonomously — HITL-07 approval required regardless of deadline pressure.
+      </div>
+      <div class="cb-cell">
+        <div class="cb-audit">Data gap timestamp, affected freight lanes, report completeness percentage, HITL-07 alert reference, deadline risk flag, CEO escalation trigger (if applicable).</div>
+      </div>
+    </div>
+
+    <!-- SC Command CB -->
+    <div class="cb-row">
+      <div class="cb-cell">
+        <div class="cb-agent-name">SC Command</div>
+        <div style="font-family:var(--font-mono);font-size:9px;color:var(--text-dim);letter-spacing:0.08em;margin-top:4px;">C-Suite Dashboard</div>
+      </div>
+      <div class="cb-cell">
+        <div class="cb-trigger">BigQuery multi-module query timeout &gt;30 seconds. Pub/Sub dashboard publisher failure. Any upstream agent reporting degraded state.</div>
+      </div>
+      <div class="cb-cell cb-fallback">
+        Dashboard displays STALE badge with last-updated timestamp. No data is interpolated or estimated. Cloud Monitoring alert to VP Engineering. Read-only agent — no operational system impact. Degraded upstream agents flagged with amber/red status indicators on dashboard.
+      </div>
+      <div class="cb-cell">
+        <div class="cb-audit">Query failure timestamp, staleness duration, affected KPI modules, Cloud Monitoring event reference. Read-only — no operational impact on audit log.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- CLOSING STATEMENT -->
+  <div style="margin-top:72px;" class="two-col-narrow">
+    <div>
+      <div class="section-eyebrow">Architecture Position</div>
+      <h3 style="font-family:var(--font-display);font-size:28px;font-weight:400;line-height:1.2;color:var(--text-primary);margin-bottom:16px;">
+        The swarm that <em>knows its limits</em>.
+      </h3>
+    </div>
+    <div>
+      <p style="font-size:14px;line-height:1.8;color:var(--text-secondary);font-weight:300;margin-bottom:20px;">
+        The circuit breaker layer is not defensive programming. In a regulated medical device supply chain,
+        a supplier risk score that silently fails is more dangerous than one that loudly escalates.
+        Every circuit breaker in this architecture has a defined human escalation target, a defined fallback
+        state, and an immutable audit record that captures the degraded-mode operation.
+        The Orchestrator — previously unspecified — now carries the most critical circuit breaker definition
+        in the swarm: the dead-letter queue, the ops runbook trigger, and the COO alert that ensures
+        no message is silently dropped when the routing layer fails.
+      </p>
+      <p style="font-size:14px;line-height:1.8;color:var(--text-secondary);font-weight:300;">
+        The MDR SLA hard escalation at hour 48 is not configurable. It is encoded as a write-path constraint.
+        No agent state, no system outage, and no circuit breaker can suppress it.
+        The CSRD HITL-07 gate is not configurable either — no regulatory report is filed without
+        human sign-off, regardless of deadline pressure. This is what compliance as a structural property means in practice.
+      </p>
+    </div>
+  </div>
+
+</section>
+
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-brand">The Autonomous Supply Chain · Page 06 of 09 · Rev 2.0</div>
+  <div class="footer-page">06</div>
+  <div class="footer-nav">
+    <a href="#">← Page 05</a>
+    <a href="#">Page 07 →</a>
+    <a href="#">GitHub ↗</a>
+  </div>
+</footer>
+
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.opacity = '1';
+        entry.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, { threshold: 0.05, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('.agent-card, .commerce-step, .mcp-row, .cb-row, .intra-cell, .a2a-protocol-block, .trust-cell').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(16px)';
+    el.style.transition = 'opacity 0.45s ease, transform 0.45s ease';
+    observer.observe(el);
+  });
+</script>
+</body>
+</html>

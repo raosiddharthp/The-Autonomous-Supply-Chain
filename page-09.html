@@ -1,0 +1,1327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PG 09 — Adoption Architecture · The Autonomous Supply Chain</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bg: #080c10;
+    --bg-surface: #0d1117;
+    --bg-card: #111820;
+    --bg-card-hover: #141d26;
+    --border: rgba(255,255,255,0.07);
+    --border-accent: rgba(255,255,255,0.14);
+    --text-primary: #e8edf2;
+    --text-secondary: #8a9aaa;
+    --text-tertiary: #4d5e6e;
+    --accent-blue: #4a9eff;
+    --accent-teal: #2dd4bf;
+    --accent-amber: #f59e0b;
+    --accent-red: #f43f5e;
+    --accent-green: #22d3a7;
+    --accent-purple: #a78bfa;
+    --label-size: 0.65rem;
+    --mono: 'DM Mono', monospace;
+    --serif: 'DM Serif Display', serif;
+    --sans: 'Syne', sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text-primary);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.5;
+  }
+
+  /* ─── NAV ─── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.25rem 3rem;
+    background: rgba(8,12,16,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-brand { font-family: var(--mono); font-size: 0.75rem; color: var(--text-secondary); letter-spacing: 0.06em; text-decoration: none; }
+  .nav-brand span { color: var(--accent-teal); }
+  .nav-links { display: flex; gap: 2rem; list-style: none; }
+  .nav-links a { font-family: var(--mono); font-size: 0.68rem; color: var(--text-tertiary); text-decoration: none; letter-spacing: 0.08em; text-transform: uppercase; transition: color 0.2s; }
+  .nav-links a:hover { color: var(--text-primary); }
+  .nav-page-badge { font-family: var(--mono); font-size: 0.65rem; color: var(--accent-teal); letter-spacing: 0.1em; border: 1px solid rgba(45,212,191,0.3); padding: 0.25rem 0.6rem; border-radius: 2px; }
+
+  /* ─── HERO ─── */
+  .hero {
+    position: relative; min-height: 100vh;
+    display: flex; align-items: center; padding: 0 3rem; overflow: hidden;
+  }
+  .hero-grid-bg {
+    position: absolute; inset: 0;
+    background-image: linear-gradient(rgba(74,158,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(74,158,255,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+  .hero-gradient { position: absolute; bottom: -200px; left: -200px; width: 800px; height: 800px; background: radial-gradient(circle, rgba(45,212,191,0.04) 0%, transparent 70%); pointer-events: none; }
+  .hero-gradient-2 { position: absolute; top: -100px; right: -100px; width: 600px; height: 600px; background: radial-gradient(circle, rgba(74,158,255,0.05) 0%, transparent 70%); pointer-events: none; }
+  .hero-content { position: relative; z-index: 1; max-width: 1100px; width: 100%; padding-top: 6rem; }
+  .hero-eyebrow { font-family: var(--mono); font-size: 0.7rem; color: var(--text-tertiary); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 1.5rem; }
+  .hero-eyebrow span { color: var(--accent-amber); }
+
+  h1 { font-family: var(--serif); font-size: clamp(3rem, 6vw, 5.5rem); line-height: 1.05; font-weight: 400; color: var(--text-primary); margin-bottom: 1.5rem; }
+  h1 em { font-style: italic; color: var(--accent-teal); }
+  h1 strong { font-weight: 400; display: block; color: var(--text-secondary); font-size: 0.7em; }
+
+  .hero-sub { font-family: var(--sans); font-size: 1.05rem; color: var(--text-secondary); max-width: 640px; line-height: 1.7; margin-bottom: 3rem; font-weight: 400; }
+  .hero-stats { display: flex; gap: 3rem; flex-wrap: wrap; }
+  .hero-stat { border-left: 2px solid var(--border-accent); padding-left: 1.25rem; }
+  .hero-stat-num { font-family: var(--serif); font-size: 2rem; color: var(--text-primary); line-height: 1; margin-bottom: 0.25rem; }
+  .hero-stat-label { font-family: var(--mono); font-size: 0.62rem; color: var(--text-tertiary); letter-spacing: 0.1em; text-transform: uppercase; }
+
+  /* ─── CONTAINERS ─── */
+  .section { position: relative; padding: 7rem 3rem; max-width: 1200px; margin: 0 auto; }
+  .section-divider { height: 1px; background: linear-gradient(90deg, transparent, var(--border-accent), transparent); margin: 0 3rem; }
+  .section-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 3rem; margin-bottom: 4rem; }
+  .section-title-block { flex: 1; }
+  .section-num { font-family: var(--mono); font-size: 0.62rem; color: var(--text-tertiary); letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 0.75rem; }
+
+  h2 { font-family: var(--serif); font-size: clamp(2rem, 3.5vw, 3rem); font-weight: 400; line-height: 1.1; color: var(--text-primary); margin-bottom: 0.75rem; }
+  h2 em { font-style: italic; color: var(--accent-teal); }
+  .section-desc { font-size: 0.95rem; color: var(--text-secondary); max-width: 440px; line-height: 1.7; }
+
+  /* ─── CHANGE NOTICE BANNER ─── */
+  .revision-banner {
+    background: rgba(244,63,94,0.06);
+    border: 1px solid rgba(244,63,94,0.2);
+    border-left: 3px solid var(--accent-red);
+    padding: 0.75rem 1.25rem;
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    color: var(--accent-red);
+    letter-spacing: 0.08em;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0 3rem;
+  }
+  .revision-banner-items { display: flex; gap: 1.5rem; flex-wrap: wrap; }
+  .revision-item { color: var(--text-tertiary); }
+  .revision-item span { color: var(--accent-red); }
+
+  /* ─── ADKAR FRAMEWORK ─── */
+  .adkar-pipeline { display: flex; gap: 0; margin-bottom: 4rem; overflow-x: auto; }
+  .adkar-step { flex: 1; min-width: 140px; padding: 1.25rem 1.5rem; border: 1px solid var(--border); border-right: none; background: var(--bg-card); position: relative; transition: background 0.2s; }
+  .adkar-step:last-child { border-right: 1px solid var(--border); }
+  .adkar-step::after { content: ''; position: absolute; right: -10px; top: 50%; transform: translateY(-50%); width: 0; height: 0; border-top: 10px solid transparent; border-bottom: 10px solid transparent; border-left: 10px solid var(--border-accent); z-index: 2; }
+  .adkar-step:last-child::after { display: none; }
+  .adkar-letter { font-family: var(--serif); font-size: 2.5rem; color: var(--accent-teal); line-height: 1; margin-bottom: 0.4rem; opacity: 0.6; }
+  .adkar-word { font-family: var(--mono); font-size: 0.6rem; color: var(--accent-teal); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.5rem; }
+  .adkar-desc { font-size: 0.78rem; color: var(--text-tertiary); line-height: 1.5; }
+
+  /* ─── PERSONA CARDS ─── */
+  .persona-grid { display: grid; gap: 1.5rem; }
+  .persona-card { border: 1px solid var(--border); background: var(--bg-card); border-radius: 2px; overflow: hidden; }
+  .persona-header { display: flex; align-items: center; gap: 1.5rem; padding: 1.75rem 2rem; border-bottom: 1px solid var(--border); cursor: pointer; user-select: none; }
+  .persona-icon { width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; flex-shrink: 0; }
+  .persona-icon-dp { background: rgba(74,158,255,0.1); border: 1px solid rgba(74,158,255,0.2); }
+  .persona-icon-pr { background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.2); }
+  .persona-icon-qm { background: rgba(167,139,250,0.1); border: 1px solid rgba(167,139,250,0.2); }
+  .persona-icon-sc { background: rgba(45,212,191,0.1); border: 1px solid rgba(45,212,191,0.2); }
+  .persona-icon-dpo { background: rgba(244,63,94,0.1); border: 1px solid rgba(244,63,94,0.2); }
+  .persona-icon-csrd { background: rgba(34,211,167,0.1); border: 1px solid rgba(34,211,167,0.2); }
+  .persona-meta { flex: 1; }
+  .persona-role { font-family: var(--sans); font-weight: 600; font-size: 1rem; color: var(--text-primary); margin-bottom: 0.25rem; }
+  .persona-hitl-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+  .hitl-tag { font-family: var(--mono); font-size: 0.58rem; letter-spacing: 0.08em; padding: 0.2rem 0.5rem; border-radius: 2px; border: 1px solid var(--border); color: var(--text-tertiary); }
+  .persona-toggle { font-family: var(--mono); font-size: 0.65rem; color: var(--text-tertiary); letter-spacing: 0.08em; }
+  .persona-body { display: grid; grid-template-columns: repeat(5, 1fr); border-top: 1px solid var(--border); }
+  .adkar-cell { padding: 1.5rem; border-right: 1px solid var(--border); }
+  .adkar-cell:last-child { border-right: none; }
+  .adkar-cell-letter { font-family: var(--mono); font-size: 0.58rem; color: var(--text-tertiary); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.4rem; }
+  .adkar-cell-letter::before { content: attr(data-letter); font-family: var(--serif); font-size: 1rem; color: var(--accent-teal); opacity: 0.5; }
+  .adkar-cell p { font-size: 0.8rem; color: var(--text-secondary); line-height: 1.55; }
+  .adkar-cell strong { color: var(--text-primary); font-weight: 500; }
+
+  /* ─── TRAINING TRACKS ─── */
+  .track-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+  .track-card { border: 1px solid var(--border); background: var(--bg-card); border-radius: 2px; overflow: hidden; }
+  .track-header { padding: 1.75rem 2rem 1.25rem; border-bottom: 1px solid var(--border); }
+  .track-badge { display: inline-block; font-family: var(--mono); font-size: 0.58rem; letter-spacing: 0.12em; text-transform: uppercase; padding: 0.2rem 0.5rem; border-radius: 2px; margin-bottom: 0.85rem; }
+  .track-a .track-badge { background: rgba(74,158,255,0.1); color: var(--accent-blue); border: 1px solid rgba(74,158,255,0.25); }
+  .track-b .track-badge { background: rgba(245,158,11,0.1); color: var(--accent-amber); border: 1px solid rgba(245,158,11,0.25); }
+  .track-c .track-badge { background: rgba(167,139,250,0.1); color: var(--accent-purple); border: 1px solid rgba(167,139,250,0.25); }
+  .track-title { font-family: var(--sans); font-size: 0.95rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.3rem; }
+  .track-audience { font-size: 0.78rem; color: var(--text-tertiary); }
+  .track-modules { padding: 0; list-style: none; }
+  .track-module { display: flex; align-items: flex-start; gap: 1rem; padding: 1rem 2rem; border-bottom: 1px solid var(--border); transition: background 0.15s; }
+  .track-module:last-child { border-bottom: none; }
+  .track-module:hover { background: var(--bg-card-hover); }
+  .module-num { font-family: var(--mono); font-size: 0.6rem; color: var(--text-tertiary); letter-spacing: 0.08em; flex-shrink: 0; padding-top: 0.15rem; }
+  .module-content { flex: 1; }
+  .module-title { font-size: 0.82rem; font-weight: 500; color: var(--text-primary); margin-bottom: 0.2rem; line-height: 1.4; }
+  .module-duration { font-family: var(--mono); font-size: 0.62rem; color: var(--text-tertiary); letter-spacing: 0.06em; }
+  .track-cert { padding: 1.25rem 2rem; background: rgba(255,255,255,0.02); border-top: 1px solid var(--border); display: flex; align-items: center; gap: 0.75rem; }
+  .cert-icon { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; flex-shrink: 0; }
+  .track-a .cert-icon { background: rgba(74,158,255,0.1); color: var(--accent-blue); }
+  .track-b .cert-icon { background: rgba(245,158,11,0.1); color: var(--accent-amber); }
+  .track-c .cert-icon { background: rgba(167,139,250,0.1); color: var(--accent-purple); }
+  .cert-text { font-family: var(--mono); font-size: 0.65rem; color: var(--text-secondary); letter-spacing: 0.04em; line-height: 1.4; }
+
+  /* ─── KPI FRAMEWORK ─── */
+  .kpi-timeline { position: relative; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); }
+  .kpi-horizon { background: var(--bg-card); padding: 2.5rem 2rem; }
+  .horizon-header { margin-bottom: 2rem; }
+  .horizon-label { font-family: var(--mono); font-size: 0.6rem; color: var(--text-tertiary); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.4rem; }
+  .horizon-period { font-family: var(--serif); font-size: 1.75rem; color: var(--text-primary); line-height: 1; margin-bottom: 0.3rem; }
+  .horizon-sub { font-size: 0.78rem; color: var(--text-tertiary); }
+  .kpi-list { list-style: none; display: flex; flex-direction: column; gap: 1rem; }
+  .kpi-item { border-left: 2px solid var(--border-accent); padding-left: 1rem; transition: border-color 0.2s; }
+  .kpi-item:hover { border-color: var(--accent-teal); }
+  .kpi-name { font-size: 0.82rem; font-weight: 500; color: var(--text-primary); margin-bottom: 0.2rem; line-height: 1.4; }
+  .kpi-target { font-family: var(--mono); font-size: 0.65rem; color: var(--accent-teal); letter-spacing: 0.04em; }
+  .kpi-baseline { font-family: var(--mono); font-size: 0.6rem; color: var(--text-tertiary); letter-spacing: 0.04em; margin-top: 0.2rem; }
+  .kpi-owner { font-family: var(--mono); font-size: 0.58rem; color: var(--accent-amber); letter-spacing: 0.04em; margin-top: 0.15rem; }
+  .h1-accent { border-top: 3px solid var(--accent-blue); }
+  .h2-accent { border-top: 3px solid var(--accent-teal); }
+  .h3-accent { border-top: 3px solid var(--accent-amber); }
+
+  /* ─── RACI TABLE ─── */
+  .raci-section { margin-top: 3rem; }
+  .raci-label { font-family: var(--mono); font-size: 0.6rem; color: var(--text-tertiary); letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 1.25rem; }
+  .raci-table { width: 100%; border-collapse: collapse; border: 1px solid var(--border); font-size: 0.78rem; }
+  .raci-table th { font-family: var(--mono); font-size: 0.58rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-tertiary); background: rgba(255,255,255,0.02); padding: 0.75rem 1rem; text-align: left; border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); }
+  .raci-table td { padding: 0.65rem 1rem; border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); color: var(--text-secondary); vertical-align: middle; }
+  .raci-table tr:last-child td { border-bottom: none; }
+  .raci-table td:last-child, .raci-table th:last-child { border-right: none; }
+  .raci-table tr:hover td { background: rgba(255,255,255,0.01); }
+  .raci-r { color: var(--accent-red); font-weight: 600; font-family: var(--mono); font-size: 0.7rem; }
+  .raci-a { color: var(--accent-amber); font-weight: 600; font-family: var(--mono); font-size: 0.7rem; }
+  .raci-c { color: var(--accent-blue); font-weight: 600; font-family: var(--mono); font-size: 0.7rem; }
+  .raci-i { color: var(--text-tertiary); font-weight: 400; font-family: var(--mono); font-size: 0.7rem; }
+  .raci-legend { display: flex; gap: 2rem; margin-top: 0.75rem; }
+  .raci-legend-item { font-family: var(--mono); font-size: 0.6rem; color: var(--text-tertiary); display: flex; align-items: center; gap: 0.4rem; }
+
+  /* ─── RISK REGISTER ─── */
+  .risk-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+  .risk-card { border: 1px solid var(--border); background: var(--bg-card); border-radius: 2px; overflow: hidden; position: relative; }
+  .risk-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; }
+  .risk-critical::before { background: var(--accent-red); }
+  .risk-high::before { background: var(--accent-amber); }
+  .risk-medium::before { background: var(--accent-blue); }
+  .risk-header { padding: 1.5rem 2rem 1rem; display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
+  .risk-id { font-family: var(--mono); font-size: 0.6rem; color: var(--text-tertiary); letter-spacing: 0.1em; margin-bottom: 0.4rem; }
+  .risk-title { font-size: 0.95rem; font-weight: 600; color: var(--text-primary); line-height: 1.3; }
+  .risk-severity { font-family: var(--mono); font-size: 0.58rem; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.2rem 0.6rem; border-radius: 2px; flex-shrink: 0; }
+  .sev-critical { background: rgba(244,63,94,0.1); color: var(--accent-red); border: 1px solid rgba(244,63,94,0.25); }
+  .sev-high { background: rgba(245,158,11,0.1); color: var(--accent-amber); border: 1px solid rgba(245,158,11,0.25); }
+  .sev-medium { background: rgba(74,158,255,0.1); color: var(--accent-blue); border: 1px solid rgba(74,158,255,0.25); }
+  .risk-body { padding: 0 2rem 1.5rem; }
+  .risk-desc { font-size: 0.82rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: 1.25rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--border); }
+  .risk-mitigation-label { font-family: var(--mono); font-size: 0.6rem; color: var(--text-tertiary); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.6rem; }
+  .risk-mitigation { font-size: 0.82rem; color: var(--text-secondary); line-height: 1.6; }
+  .risk-mitigation strong { color: var(--accent-teal); font-weight: 500; }
+  .risk-rollback { margin-top: 1rem; padding: 0.75rem 1rem; background: rgba(45,212,191,0.04); border: 1px solid rgba(45,212,191,0.12); border-left: 2px solid var(--accent-teal); }
+  .risk-rollback-label { font-family: var(--mono); font-size: 0.56rem; color: var(--accent-teal); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.35rem; }
+  .risk-rollback p { font-size: 0.78rem; color: var(--text-tertiary); line-height: 1.5; }
+
+  /* ─── CLOSING STATEMENT ─── */
+  .closing { padding: 7rem 3rem; max-width: 1200px; margin: 0 auto; }
+  .closing-inner { border: 1px solid var(--border); background: var(--bg-card); position: relative; overflow: hidden; }
+  .closing-glow { position: absolute; bottom: -100px; right: -100px; width: 500px; height: 500px; background: radial-gradient(circle, rgba(45,212,191,0.06) 0%, transparent 70%); pointer-events: none; }
+  .closing-content { position: relative; z-index: 1; padding: 4rem; }
+  .closing-kicker { font-family: var(--mono); font-size: 0.65rem; color: var(--accent-teal); letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 2rem; display: flex; align-items: center; gap: 0.6rem; }
+  .closing-kicker::before { content: ''; display: block; width: 24px; height: 1px; background: var(--accent-teal); }
+  .closing-title { font-family: var(--serif); font-size: clamp(2rem, 3.5vw, 3.5rem); font-weight: 400; line-height: 1.15; color: var(--text-primary); margin-bottom: 2.5rem; max-width: 820px; }
+  .closing-title em { font-style: italic; color: var(--accent-teal); }
+  .closing-stats { display: grid; grid-template-columns: repeat(6, 1fr); gap: 1px; background: var(--border); margin-bottom: 3rem; }
+  .closing-stat { background: var(--bg-card); padding: 1.5rem 1.25rem; text-align: center; }
+  .closing-stat-num { font-family: var(--serif); font-size: 2.25rem; color: var(--text-primary); line-height: 1; margin-bottom: 0.35rem; }
+  .closing-stat-label { font-family: var(--mono); font-size: 0.58rem; color: var(--text-tertiary); letter-spacing: 0.1em; text-transform: uppercase; line-height: 1.4; }
+  .closing-body { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; margin-bottom: 3rem; }
+  .closing-p { font-size: 0.95rem; color: var(--text-secondary); line-height: 1.75; }
+  .closing-p strong { color: var(--text-primary); font-weight: 500; }
+  .closing-final { border-top: 1px solid var(--border); padding-top: 2rem; display: flex; align-items: center; justify-content: space-between; gap: 2rem; }
+  .closing-quote { font-family: var(--serif); font-size: 1.2rem; font-style: italic; color: var(--text-primary); max-width: 640px; line-height: 1.5; }
+  .closing-badge { display: flex; flex-direction: column; align-items: flex-end; gap: 0.4rem; flex-shrink: 0; }
+  .badge-pill { font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.08em; padding: 0.25rem 0.75rem; border-radius: 100px; white-space: nowrap; }
+  .badge-teal { background: rgba(45,212,191,0.1); color: var(--accent-teal); border: 1px solid rgba(45,212,191,0.2); }
+  .badge-blue { background: rgba(74,158,255,0.1); color: var(--accent-blue); border: 1px solid rgba(74,158,255,0.2); }
+  .badge-amber { background: rgba(245,158,11,0.1); color: var(--accent-amber); border: 1px solid rgba(245,158,11,0.2); }
+
+  /* ─── FOOTER ─── */
+  footer { border-top: 1px solid var(--border); padding: 2.5rem 3rem; display: flex; align-items: center; justify-content: space-between; gap: 2rem; }
+  .footer-brand { font-family: var(--serif); font-size: 1.1rem; color: var(--text-primary); }
+  .footer-brand span { color: var(--accent-teal); }
+  .footer-meta { font-family: var(--mono); font-size: 0.62rem; color: var(--text-tertiary); letter-spacing: 0.06em; text-align: center; line-height: 1.6; }
+  .footer-links { display: flex; gap: 1.5rem; }
+  .footer-links a { font-family: var(--mono); font-size: 0.62rem; color: var(--text-tertiary); text-decoration: none; letter-spacing: 0.08em; transition: color 0.2s; }
+  .footer-links a:hover { color: var(--text-primary); }
+
+  /* ─── UTILITY ─── */
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-up { opacity: 0; animation: fadeUp 0.7s ease forwards; }
+  .fade-up-1 { animation-delay: 0.1s; }
+  .fade-up-2 { animation-delay: 0.2s; }
+  .fade-up-3 { animation-delay: 0.35s; }
+  .fade-up-4 { animation-delay: 0.5s; }
+  .accent-teal { color: var(--accent-teal); }
+  .accent-amber { color: var(--accent-amber); }
+  .accent-blue { color: var(--accent-blue); }
+  .accent-red { color: var(--accent-red); }
+  .font-mono { font-family: var(--mono); }
+  .full-width-rule { height: 1px; background: var(--border); margin: 0; }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 900px) {
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { display: none; }
+    .hero { padding: 0 1.5rem; }
+    .section { padding: 4rem 1.5rem; }
+    .section-divider { margin: 0 1.5rem; }
+    .revision-banner { margin: 0 1.5rem; }
+    .persona-body { grid-template-columns: 1fr 1fr; }
+    .track-grid { grid-template-columns: 1fr; }
+    .kpi-timeline { grid-template-columns: 1fr; }
+    .risk-grid { grid-template-columns: 1fr; }
+    .closing { padding: 4rem 1.5rem; }
+    .closing-content { padding: 2rem; }
+    .closing-stats { grid-template-columns: repeat(3, 1fr); }
+    .closing-body { grid-template-columns: 1fr; }
+    .closing-final { flex-direction: column; align-items: flex-start; }
+    .closing-badge { align-items: flex-start; }
+    footer { flex-direction: column; gap: 1rem; }
+    .raci-table { font-size: 0.7rem; }
+    .raci-table th, .raci-table td { padding: 0.5rem 0.6rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-brand">The <span>Autonomous</span> Supply Chain</a>
+  <ul class="nav-links">
+    <li><a href="#change">Change</a></li>
+    <li><a href="#training">Training</a></li>
+    <li><a href="#kpis">KPIs</a></li>
+    <li><a href="#risks">Risks</a></li>
+    <li><a href="#closing">Closing</a></li>
+  </ul>
+  <div class="nav-page-badge">PG 09 / 09 · Adoption Architecture</div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-grid-bg"></div>
+  <div class="hero-gradient"></div>
+  <div class="hero-gradient-2"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow fade-up fade-up-1">
+      Architecture Portfolio · Page 09 of 09 · <span>Final Page</span>
+    </div>
+    <h1 class="fade-up fade-up-2">
+      You have designed it.<br>
+      Now <em>make it land.</em>
+      <strong>Adoption Architecture · MedDevice AG · 6,800 People · 22 Countries</strong>
+    </h1>
+    <p class="hero-sub fade-up fade-up-3">
+      The gap that separates architects from consultants is not the quality of the design — it is the credibility of the landing. This page answers how a six-module AI system actually takes root across a regulated global manufacturer: change management by persona, role-based training, measurable KPIs with baselines, a RACI, and a risk register that is honest about the full adoption surface.
+    </p>
+    <div class="hero-stats fade-up fade-up-4">
+      <div class="hero-stat">
+        <div class="hero-stat-num">6</div>
+        <div class="hero-stat-label">Personas mapped<br>through ADKAR</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">3</div>
+        <div class="hero-stat-label">Training tracks<br>role-based</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">18</div>
+        <div class="hero-stat-label">Month KPI<br>horizon</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">7</div>
+        <div class="hero-stat-label">Adoption risks<br>mitigated</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="full-width-rule"></div>
+
+<!-- SECTION 01: CHANGE MANAGEMENT -->
+<section class="section" id="change">
+  <div class="section-header">
+    <div class="section-title-block">
+      <div class="section-num">SECTION 01 · CHANGE MANAGEMENT FRAMEWORK</div>
+      <h2>Prosci ADKAR mapped to<br>SAFe <em>ART cadence</em></h2>
+    </div>
+    <p class="section-desc">
+      Every adoption risk is a people problem before it is a technical problem. ADKAR gives us the diagnostic. SAFe gives us the delivery vehicle. Mapped by persona — not by module. Six personas cover all eight HITL checkpoints.
+    </p>
+  </div>
+
+  <!-- ADKAR Pipeline Visual -->
+  <div class="adkar-pipeline" style="margin-bottom:3rem;">
+    <div class="adkar-step">
+      <div class="adkar-letter">A</div>
+      <div class="adkar-word">Awareness</div>
+      <div class="adkar-desc">Why change is necessary. PI-01 showcases, live demos with real data.</div>
+    </div>
+    <div class="adkar-step">
+      <div class="adkar-letter">D</div>
+      <div class="adkar-word">Desire</div>
+      <div class="adkar-desc">Personal motivation to participate. Business case, KPI alignment.</div>
+    </div>
+    <div class="adkar-step">
+      <div class="adkar-letter">K</div>
+      <div class="adkar-word">Knowledge</div>
+      <div class="adkar-desc">How to change. Interface training, SHAP literacy, workflow walkthrough.</div>
+    </div>
+    <div class="adkar-step">
+      <div class="adkar-letter">A</div>
+      <div class="adkar-word">Ability</div>
+      <div class="adkar-desc">Practical skill in the new system. Shadowed decisions, parallel running.</div>
+    </div>
+    <div class="adkar-step">
+      <div class="adkar-letter">R</div>
+      <div class="adkar-word">Reinforcement</div>
+      <div class="adkar-desc">Sustain the change. Scorecards, PI retrospective reviews, quality audits.</div>
+    </div>
+  </div>
+
+  <!-- Persona Cards -->
+  <div class="persona-grid">
+
+    <!-- Demand Planners -->
+    <div class="persona-card">
+      <div class="persona-header">
+        <div class="persona-icon persona-icon-dp">📊</div>
+        <div class="persona-meta">
+          <div class="persona-role">Demand Planners</div>
+          <div class="persona-hitl-tags">
+            <span class="hitl-tag">HITL-01 · DemandIQ</span>
+          </div>
+        </div>
+        <div class="persona-toggle">ADKAR BY STAGE →</div>
+      </div>
+      <div class="persona-body">
+        <div class="adkar-cell">
+          <div class="adkar-cell-letter" data-letter="A">Awareness</div>
+          <p><strong>PI-01 showcase.</strong> DemandIQ demo with real MedDevice demand patterns. Forecast vs Excel accuracy comparison shown side-by-side.</p>
+        </div>
+        <div class="adkar-cell">
+          <div class="adkar-cell-letter" data-letter="D">Desire</div>
+          <p><strong>€180M</strong> inventory cost reduction case. Personal KPI alignment — forecast accuracy becomes a tracked metric for every planner.</p>
+        </div>
+        <div class="adkar-cell">
+          <div class="adkar-cell-letter" data-letter="K">Knowledge</div>
+          <p><strong>2-day</strong> HITL interface training. SHAP explanation literacy workshop — "what the model is telling you and why."</p>
+        </div>
+        <div class="adkar-cell">
+          <div class="adkar-cell-letter" data-letter="A">Ability</div>
+          <p>Shadowed HITL decisions for <strong>first 30 days.</strong> ML Engineer on-call support during H2 go-live window.</p>
+        </div>
+        <div class="adkar-cell">
+          <div class="adkar-cell-letter" data-letter="R">Reinforce</div>
+          <p>Monthly forecast accuracy scorecard. HITL decision quality review in <strong>PI retrospective.</strong></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Procurement Directors -->
+    <div class="persona-card">
+      <div class="persona-header">
+        <div class="persona-icon persona-icon-pr">🔗</div>
+        <div class="persona-meta">
+          <div class="persona-role">Procurement Directors</div>
+          <div class="persona-hitl-tags">
+            <span class="hitl-tag">HITL-02</span>
+            <span class="hitl-tag">HITL-05</span>
+            <span class="hitl-tag">HITL-06</span>
+          </div>
+        </div>
+        <div class="persona-toggle">ADKAR BY STAGE →</div>
+      </div>
+      <div class="persona-body">
+        <div class="adkar-cell">
+          <div class="adkar-cell-letter" data-letter="A">Awareness</div>
+          <p><strong>SupplierSentinel demo.</strong> 2024 Malaysian supplier event reconstructed in the system — 30-day advance warning demonstrated live.</p>
+        </div>
+        <div class="adkar-cell">
+          <div class="adkar-cell-letter" data-letter="D">Desire</div>
+          <p><strong>A2A Commerce demo.</strong> PO issued to supplier agent in under 10 minutes vs current 3-day manual process. Shown on screen.</p>
+        </div>
+        <div class="adkar-cell">
+          <div class="adkar-cell-letter" data-letter="K">Knowledge</div>
+          <p>ProcureGuard + ContractIntelligence HITL interface training. <strong>A2A Commerce</strong> workflow walkthrough end-to-end.</p>
+        </div>
+        <div class="adkar-cell">
+          <div class="adkar-cell-letter" data-letter="A">Ability</div>
+          <p><strong>60-day parallel run</strong> — old process and new system simultaneously. Procurement Director retains override authority at all times.</p>
+        </div>
+        <div class="adkar-cell">
+          <div class="adkar-cell-letter" data-letter="R">Reinforce</div>
+          <p>Supplier risk prediction accuracy scorecard. <strong>A2A transaction</strong> success rate in monthly ops review.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quality Managers -->
+    <div class="persona-card">
+      <div class="persona-header">
+        <div class="persona-icon persona-icon-qm">🔬</div>
+        <div class="persona-meta">
+          <div class="persona-role">Quality Managers</div>
+          <div class="persona-hitl-tags">
+            <span class="hitl-tag">HITL-03 · QualityTrace</span>
+            <span class="hitl-tag">HITL-08 · MDR</span>
+          </div>
+        </div>
+        <div class="persona-toggle">ADKAR BY STAGE →</div>
+      </div>
+      <div class="persona-body">
+        <div class="adkar-cell">
+          <div class="adkar-cell-letter" data-letter="A">Awareness</div>
+          <p><strong>QualityTrace demo.</strong> NCR root cause identified in 2 hours vs current 23-day manual investigation process.</p>
+        </div>
+        <div class="adkar-cell">
+          <div class="adkar-cell-letter" data-letter="D">Desire</div>
+          <p><strong>MDR Article 87</strong> compliance risk made visible. 23-day gap vs 72-hour SLA shown as a quantified regulatory liability.</p>
+        </div>
+        <div class="adkar-cell">
+          <div class="adkar-cell-letter" data-letter="K">Knowledge</div>
+          <p>QualityTrace HITL interface training. <strong>MDR device lineage</strong> trace walkthrough with real NCR scenario data.</p>
+        </div>
+        <div class="adkar-cell">
+          <div class="adkar-cell-letter" data-letter="A">Ability</div>
+          <p>All NCRs through QualityTrace in <strong>shadow mode for 30 days.</strong> Quality Manager validates AI root cause vs manual investigation.</p>
+        </div>
+        <div class="adkar-cell">
+          <div class="adkar-cell-letter" data-letter="R">Reinforce</div>
+          <p>NCR resolution time tracked in PI metrics. <strong>MDR SLA</strong> compliance rate in monthly quality board review.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Supply Chain Operations Managers — NEW -->
+    <div class="persona-card">
+      <div class="persona-header">
+        <div class="persona-icon persona-icon-sc">⛓</div>
+        <div class="persona-meta">
+          <div class="persona-role">Supply Chain Operations Managers</div>
+          <div class="persona-hitl-tags">
+            <span class="hitl-tag">HITL-04 · SupplierSentinel</span>
+            <span class="hitl-tag">HITL-07 · ScopeTracer</span>
+          </div>
+        </div>
+        <div class="persona-toggle">ADKAR BY STAGE →</div>
+      </div>
+      <div class="persona-body">
+        <div class="adkar-cell">
+          <div class="adkar-cell-letter" data-letter="A">Awareness</div>
+          <p><strong>SupplierSentinel live briefing.</strong> Sub-tier supplier risk map for top 50 strategic suppliers shown against current blind spots.</p>
+        </div>
+        <div class="adkar-cell">
+          <div class="adkar-cell-letter" data-letter="D">Desire</div>
+          <p>Current reactive posture translated into <strong>financial exposure figure.</strong> One missed 30-day advance signal = quantified cost to production line.</p>
+        </div>
+        <div class="adkar-cell">
+          <div class="adkar-cell-letter" data-letter="K">Knowledge</div>
+          <p>SupplierSentinel HITL interface and <strong>ScopeTracer Scope 3 dashboard</strong> walkthrough. Risk threshold configuration workshop.</p>
+        </div>
+        <div class="adkar-cell">
+          <div class="adkar-cell-letter" data-letter="A">Ability</div>
+          <p><strong>30-day shadow mode</strong> — existing manual risk reviews run in parallel. Alert quality scored against current process outcomes.</p>
+        </div>
+        <div class="adkar-cell">
+          <div class="adkar-cell-letter" data-letter="R">Reinforce</div>
+          <p>Supplier risk signal accuracy in monthly ops review. <strong>CSRD Scope 3 accuracy</strong> metric published to sustainability board.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- DPO — NEW -->
+    <div class="persona-card">
+      <div class="persona-header">
+        <div class="persona-icon persona-icon-dpo">🔒</div>
+        <div class="persona-meta">
+          <div class="persona-role">Data Protection Officer</div>
+          <div class="persona-hitl-tags">
+            <span class="hitl-tag">GDPR Art. 17 · Audit Log Tension</span>
+            <span class="hitl-tag">EU AI Act Art. 12</span>
+          </div>
+        </div>
+        <div class="persona-toggle">ADKAR BY STAGE →</div>
+      </div>
+      <div class="persona-body">
+        <div class="adkar-cell">
+          <div class="adkar-cell-letter" data-letter="A">Awareness</div>
+          <p><strong>Architecture briefing.</strong> GDPR Article 17 right-to-erasure vs EU AI Act Article 12 immutable audit trail tension presented as a design decision — not a risk to discover post-deployment.</p>
+        </div>
+        <div class="adkar-cell">
+          <div class="adkar-cell-letter" data-letter="D">Desire</div>
+          <p>DPO is named as <strong>Accountable</strong> in the RACI for GDPR compliance KPI. Outcome ownership creates personal stake in getting the architecture right.</p>
+        </div>
+        <div class="adkar-cell">
+          <div class="adkar-cell-letter" data-letter="K">Knowledge</div>
+          <p>Pseudonymisation architecture workshop. CMEK key management model. <strong>Data residency europe-west3</strong> walkthrough with CISO.</p>
+        </div>
+        <div class="adkar-cell">
+          <div class="adkar-cell-letter" data-letter="A">Ability</div>
+          <p>DPO sign-off is a formal <strong>H1 prerequisite gate.</strong> DPO reviews DPIA for all five high-risk AI modules before production go-live.</p>
+        </div>
+        <div class="adkar-cell">
+          <div class="adkar-cell-letter" data-letter="R">Reinforce</div>
+          <p>Quarterly GDPR compliance review. <strong>Data subject request</strong> resolution time tracked. Immutable log scope reviewed annually.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- CSRD Officer — NEW -->
+    <div class="persona-card">
+      <div class="persona-header">
+        <div class="persona-icon persona-icon-csrd">🌿</div>
+        <div class="persona-meta">
+          <div class="persona-role">Sustainability / CSRD Officer</div>
+          <div class="persona-hitl-tags">
+            <span class="hitl-tag">ScopeTracer · CSRD</span>
+            <span class="hitl-tag">Scope 3 Reporting</span>
+          </div>
+        </div>
+        <div class="persona-toggle">ADKAR BY STAGE →</div>
+      </div>
+      <div class="persona-body">
+        <div class="adkar-cell">
+          <div class="adkar-cell-letter" data-letter="A">Awareness</div>
+          <p><strong>CSRD reporting demo.</strong> Current quarterly manual process (error-prone, retrospective) vs ScopeTracer real-time automated output shown side-by-side.</p>
+        </div>
+        <div class="adkar-cell">
+          <div class="adkar-cell-letter" data-letter="D">Desire</div>
+          <p>CSRD FY2026 reporting deadline made concrete. <strong>Regulatory penalty risk</strong> for non-compliant reporting quantified as a cost-of-inaction figure.</p>
+        </div>
+        <div class="adkar-cell">
+          <div class="adkar-cell-letter" data-letter="K">Knowledge</div>
+          <p>ScopeTracer methodology walkthrough. <strong>BigQuery Omni</strong> logistics data pipeline review. CSRD Article boundary training with external auditor.</p>
+        </div>
+        <div class="adkar-cell">
+          <div class="adkar-cell-letter" data-letter="A">Ability</div>
+          <p>Manual CSRD calculations run <strong>in parallel with ScopeTracer</strong> for two reporting periods. Variance reconciliation owned by CSRD Officer.</p>
+        </div>
+        <div class="adkar-cell">
+          <div class="adkar-cell-letter" data-letter="R">Reinforce</div>
+          <p>Scope 3 data completeness score in monthly sustainability board. <strong>External CSRD auditor</strong> sign-off required annually.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- SECTION 02: TRAINING -->
+<section class="section" id="training">
+  <div class="section-header">
+    <div class="section-title-block">
+      <div class="section-num">SECTION 02 · TRAINING PROGRAMME</div>
+      <h2>Three tracks.<br>Role-based.<br><em>Certification-gated.</em></h2>
+    </div>
+    <p class="section-desc">
+      No role accesses the production HITL interface without a certified training record. Track assignment is automatic by RBAC role — but entry is gated by a competency pre-assessment that exempts roles already holding equivalent certification. Certification is a prerequisite — not a suggestion.
+    </p>
+  </div>
+
+  <div class="track-grid">
+
+    <!-- Track A -->
+    <div class="track-card track-a">
+      <div class="track-header">
+        <div class="track-badge">Track A</div>
+        <div class="track-title">HITL Approvers</div>
+        <div class="track-audience">All eight approver roles across the ASC · competency pre-assessed</div>
+      </div>
+      <ul class="track-modules">
+        <li class="track-module">
+          <span class="module-num">M1</span>
+          <div class="module-content">
+            <div class="module-title">What is the Autonomous Supply Chain and why it exists</div>
+            <div class="module-duration">90 min · e-learning · self-paced</div>
+          </div>
+        </li>
+        <li class="track-module">
+          <span class="module-num">M2</span>
+          <div class="module-content">
+            <div class="module-title">Reading SHAP explanations — what the model is showing you and what it is not</div>
+            <div class="module-duration">1 day · instructor-led · classroom</div>
+          </div>
+        </li>
+        <li class="track-module">
+          <span class="module-num">M3</span>
+          <div class="module-content">
+            <div class="module-title">HITL interface hands-on — approve, reject, escalate, override with reason code</div>
+            <div class="module-duration">1 day · hands-on lab · sandbox environment · WCAG 2.1 AA interface</div>
+          </div>
+        </li>
+        <li class="track-module">
+          <span class="module-num">M4</span>
+          <div class="module-content">
+            <div class="module-title">EU AI Act obligations for approvers — your role in Article 14 compliance</div>
+            <div class="module-duration">3 hours · e-learning + assessment · pass threshold 80%</div>
+          </div>
+        </li>
+        <li class="track-module">
+          <span class="module-num">M5</span>
+          <div class="module-content">
+            <div class="module-title">Emergency override and break-glass procedures — when and how to invoke</div>
+            <div class="module-duration">90 min · scenario-based · mandatory for all approvers</div>
+          </div>
+        </li>
+      </ul>
+      <div class="track-cert">
+        <div class="cert-icon">✦</div>
+        <div class="cert-text">HITL Approver Certified — required before production access is granted. Recertification annual. Competency pre-assessment may waive M1.</div>
+      </div>
+    </div>
+
+    <!-- Track B -->
+    <div class="track-card track-b">
+      <div class="track-header">
+        <div class="track-badge">Track B</div>
+        <div class="track-title">ML &amp; Data Engineers</div>
+        <div class="track-audience">MedDevice internal technical team · GCP MLE cert holders waive M1–M2</div>
+      </div>
+      <ul class="track-modules">
+        <li class="track-module">
+          <span class="module-num">M1</span>
+          <div class="module-content">
+            <div class="module-title">Vertex AI Pipelines + Feature Store — production patterns</div>
+            <div class="module-duration">2 days · GCP official training · lab-based</div>
+          </div>
+        </li>
+        <li class="track-module">
+          <span class="module-num">M2</span>
+          <div class="module-content">
+            <div class="module-title">SHAP and XAI for production ML — explanation contracts</div>
+            <div class="module-duration">1 day · instructor-led · notebook labs</div>
+          </div>
+        </li>
+        <li class="track-module">
+          <span class="module-num">M3</span>
+          <div class="module-content">
+            <div class="module-title">Drift detection and retraining triggers — monitoring architecture</div>
+            <div class="module-duration">1 day · hands-on · Vertex AI Model Monitoring</div>
+          </div>
+        </li>
+        <li class="track-module">
+          <span class="module-num">M4</span>
+          <div class="module-content">
+            <div class="module-title">ADK agent development and state machine design</div>
+            <div class="module-duration">2 days · workshop · ADK sandbox</div>
+          </div>
+        </li>
+        <li class="track-module">
+          <span class="module-num">M5</span>
+          <div class="module-content">
+            <div class="module-title">A2A Commerce protocol implementation</div>
+            <div class="module-duration">1 day · technical workshop · protocol lab</div>
+          </div>
+        </li>
+      </ul>
+      <div class="track-cert">
+        <div class="cert-icon">✦</div>
+        <div class="cert-text">GCP Professional ML Engineer — external exam. Required within 90 days of platform go-live. Existing cert holders proceed to M3.</div>
+      </div>
+    </div>
+
+    <!-- Track C -->
+    <div class="track-card track-c">
+      <div class="track-header">
+        <div class="track-badge">Track C</div>
+        <div class="track-title">CISO &amp; IT Security</div>
+        <div class="track-audience">Data residency, VPC-SC, CMEK, incident response ownership</div>
+      </div>
+      <ul class="track-modules">
+        <li class="track-module">
+          <span class="module-num">M1</span>
+          <div class="module-content">
+            <div class="module-title">GCP VPC-SC and BeyondCorp for the Autonomous Supply Chain</div>
+            <div class="module-duration">1 day · instructor-led · GCP security lab</div>
+          </div>
+        </li>
+        <li class="track-module">
+          <span class="module-num">M2</span>
+          <div class="module-content">
+            <div class="module-title">CMEK key management — MedDevice's obligations and ownership model</div>
+            <div class="module-duration">3 hours · workshop · Cloud KMS hands-on</div>
+          </div>
+        </li>
+        <li class="track-module">
+          <span class="module-num">M3</span>
+          <div class="module-content">
+            <div class="module-title">EU AI Act security obligations — what Article 9 requires of IT</div>
+            <div class="module-duration">3 hours · e-learning + CISO sign-off assessment</div>
+          </div>
+        </li>
+        <li class="track-module">
+          <span class="module-num">M4</span>
+          <div class="module-content">
+            <div class="module-title">A2A inter-enterprise trust model — authentication, attack surface, and cross-boundary data flow security</div>
+            <div class="module-duration">1 day · technical workshop · A2A protocol threat model review</div>
+          </div>
+        </li>
+        <li class="track-module">
+          <span class="module-num">M5</span>
+          <div class="module-content">
+            <div class="module-title">Incident response for agentic AI systems — GDPR Art. 33 breach notification in an agent-mediated data flow</div>
+            <div class="module-duration">1 day · tabletop exercise · DPO co-facilitated</div>
+          </div>
+        </li>
+      </ul>
+      <div class="track-cert">
+        <div class="cert-icon">✦</div>
+        <div class="cert-text">CISO sign-off on all five modules required before H1 infrastructure cutover. No exceptions. DPO co-signs M5.</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- SECTION 03: KPI FRAMEWORK -->
+<section class="section" id="kpis">
+  <div class="section-header">
+    <div class="section-title-block">
+      <div class="section-num">SECTION 03 · KPI FRAMEWORK</div>
+      <h2>Three horizons.<br><em>Eighteen months.</em><br>Every metric named.</h2>
+    </div>
+    <p class="section-desc">
+      KPIs are the contractual instrument of a programme. Every metric below has a baseline, a target, a measurement frequency, and an owner traceable to the RACI. Vague targets produce vague outcomes.
+    </p>
+  </div>
+
+  <div class="kpi-timeline">
+
+    <div class="kpi-horizon h1-accent">
+      <div class="horizon-header">
+        <div class="horizon-label">First Horizon</div>
+        <div class="horizon-period">H1</div>
+        <div class="horizon-sub">Months 1–4 · Foundation</div>
+      </div>
+      <ul class="kpi-list">
+        <li class="kpi-item">
+          <div class="kpi-name">GCP Foundation Health</div>
+          <div class="kpi-target">VPC-SC operational · CMEK active · SAP integrations live</div>
+          <div class="kpi-baseline">Baseline: 0% — greenfield build · Weekly · Owner: CISO</div>
+        </li>
+        <li class="kpi-item">
+          <div class="kpi-name">SupplierSentinel Signals</div>
+          <div class="kpi-target">Risk signals firing on schedule · HITL queue operational · false positive rate &lt;15%</div>
+          <div class="kpi-baseline">Baseline: No automated signals (manual quarterly) · Daily · Owner: SCOps Manager</div>
+        </li>
+        <li class="kpi-item">
+          <div class="kpi-name">HITL Compliance Rate</div>
+          <div class="kpi-target">100% of high-risk decisions routed through HITL · zero bypass events</div>
+          <div class="kpi-baseline">Baseline: 0% automated routing (all manual) · Real-time · Owner: VP Supply Chain</div>
+        </li>
+        <li class="kpi-item">
+          <div class="kpi-name">Training Completion Rate</div>
+          <div class="kpi-target">100% of HITL approver roles Track A certified before H2 go-live</div>
+          <div class="kpi-baseline">Baseline: 0% certified · Weekly · Owner: Programme Manager</div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="kpi-horizon h2-accent">
+      <div class="horizon-header">
+        <div class="horizon-label">Second Horizon</div>
+        <div class="horizon-period">H2</div>
+        <div class="horizon-sub">Months 5–10 · Performance</div>
+      </div>
+      <ul class="kpi-list">
+        <li class="kpi-item">
+          <div class="kpi-name">DemandIQ Forecast Error</div>
+          <div class="kpi-target">Target ≤12% MAPE</div>
+          <div class="kpi-baseline">Baseline: 34% MAPE (manual Excel cycle) · Monthly · Owner: VP Supply Chain</div>
+        </li>
+        <li class="kpi-item">
+          <div class="kpi-name">NCR Resolution Time</div>
+          <div class="kpi-target">≤5 days · QualityTrace active across all sites</div>
+          <div class="kpi-baseline">Baseline: 23 days (manual trace, 3 disconnected systems) · Per-NCR · Owner: QMR</div>
+        </li>
+        <li class="kpi-item">
+          <div class="kpi-name">HITL SLO Adherence</div>
+          <div class="kpi-target">≥95% of HITL decisions resolved within defined SLO windows</div>
+          <div class="kpi-baseline">Baseline: N/A (no SLO exists — all decisions untracked) · Weekly · Owner: Programme Manager</div>
+        </li>
+        <li class="kpi-item">
+          <div class="kpi-name">Model Drift Events</div>
+          <div class="kpi-target">Zero undetected drift events · all drift caught before business impact</div>
+          <div class="kpi-baseline">Baseline: Zero monitoring capability · Continuous · Owner: ML Engineer</div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="kpi-horizon h3-accent">
+      <div class="horizon-header">
+        <div class="horizon-label">Third Horizon</div>
+        <div class="horizon-period">H3</div>
+        <div class="horizon-sub">Months 11–18 · Intelligence</div>
+      </div>
+      <ul class="kpi-list">
+        <li class="kpi-item">
+          <div class="kpi-name">A2A Commerce Adoption</div>
+          <div class="kpi-target">≥80% of emergency re-sourcing events handled via A2A loop vs manual</div>
+          <div class="kpi-baseline">Baseline: 0% A2A-enabled suppliers · Monthly · Owner: CPO</div>
+        </li>
+        <li class="kpi-item">
+          <div class="kpi-name">CSRD Scope 3 Reporting</div>
+          <div class="kpi-target">Automated, real-time, CSRD-compliant output delivered by FY2026 reporting cycle</div>
+          <div class="kpi-baseline">Baseline: Manual quarterly — 14-week lag, error rate ~18% · Per-cycle · Owner: CSRD Officer</div>
+        </li>
+        <li class="kpi-item">
+          <div class="kpi-name">EU AI Act Conformity</div>
+          <div class="kpi-target">All five high-risk models with completed conformity assessment documentation</div>
+          <div class="kpi-baseline">Baseline: Zero compliant models (programme start) · At go-live gate · Owner: CCO</div>
+        </li>
+        <li class="kpi-item">
+          <div class="kpi-name">Strategic Sourcing Usage</div>
+          <div class="kpi-target">ContractIntelligence TCO recommendation used in ≥70% of strategic decisions</div>
+          <div class="kpi-baseline">Baseline: 0% AI-assisted sourcing decisions · Quarterly · Owner: CPO</div>
+        </li>
+      </ul>
+    </div>
+
+  </div>
+
+  <!-- RACI TABLE — NEW SECTION -->
+  <div class="raci-section">
+    <div class="raci-label">KPI Ownership · RACI Matrix</div>
+    <table class="raci-table">
+      <thead>
+        <tr>
+          <th>KPI / Deliverable</th>
+          <th>VP Supply Chain</th>
+          <th>CCO</th>
+          <th>CPO</th>
+          <th>CISO</th>
+          <th>QMR</th>
+          <th>DPO</th>
+          <th>CSRD Officer</th>
+          <th>ML Engineer</th>
+          <th>Programme Mgr</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>GCP Foundation Health</td>
+          <td><span class="raci-i">I</span></td>
+          <td><span class="raci-i">I</span></td>
+          <td><span class="raci-i">—</span></td>
+          <td><span class="raci-r">R/A</span></td>
+          <td><span class="raci-i">—</span></td>
+          <td><span class="raci-c">C</span></td>
+          <td><span class="raci-i">—</span></td>
+          <td><span class="raci-c">C</span></td>
+          <td><span class="raci-i">I</span></td>
+        </tr>
+        <tr>
+          <td>DemandIQ Forecast Error</td>
+          <td><span class="raci-a">A</span></td>
+          <td><span class="raci-i">I</span></td>
+          <td><span class="raci-c">C</span></td>
+          <td><span class="raci-i">—</span></td>
+          <td><span class="raci-i">—</span></td>
+          <td><span class="raci-i">—</span></td>
+          <td><span class="raci-i">—</span></td>
+          <td><span class="raci-r">R</span></td>
+          <td><span class="raci-i">I</span></td>
+        </tr>
+        <tr>
+          <td>NCR Resolution Time</td>
+          <td><span class="raci-i">I</span></td>
+          <td><span class="raci-c">C</span></td>
+          <td><span class="raci-i">—</span></td>
+          <td><span class="raci-i">—</span></td>
+          <td><span class="raci-r">R/A</span></td>
+          <td><span class="raci-i">—</span></td>
+          <td><span class="raci-i">—</span></td>
+          <td><span class="raci-c">C</span></td>
+          <td><span class="raci-i">I</span></td>
+        </tr>
+        <tr>
+          <td>HITL Compliance Rate</td>
+          <td><span class="raci-a">A</span></td>
+          <td><span class="raci-c">C</span></td>
+          <td><span class="raci-c">C</span></td>
+          <td><span class="raci-i">I</span></td>
+          <td><span class="raci-c">C</span></td>
+          <td><span class="raci-i">I</span></td>
+          <td><span class="raci-i">—</span></td>
+          <td><span class="raci-r">R</span></td>
+          <td><span class="raci-i">I</span></td>
+        </tr>
+        <tr>
+          <td>A2A Commerce Adoption</td>
+          <td><span class="raci-c">C</span></td>
+          <td><span class="raci-i">I</span></td>
+          <td><span class="raci-r">R/A</span></td>
+          <td><span class="raci-c">C</span></td>
+          <td><span class="raci-i">—</span></td>
+          <td><span class="raci-i">—</span></td>
+          <td><span class="raci-i">—</span></td>
+          <td><span class="raci-c">C</span></td>
+          <td><span class="raci-i">I</span></td>
+        </tr>
+        <tr>
+          <td>CSRD Scope 3 Reporting</td>
+          <td><span class="raci-i">I</span></td>
+          <td><span class="raci-c">C</span></td>
+          <td><span class="raci-i">—</span></td>
+          <td><span class="raci-i">—</span></td>
+          <td><span class="raci-i">—</span></td>
+          <td><span class="raci-i">I</span></td>
+          <td><span class="raci-r">R/A</span></td>
+          <td><span class="raci-c">C</span></td>
+          <td><span class="raci-i">I</span></td>
+        </tr>
+        <tr>
+          <td>EU AI Act Conformity</td>
+          <td><span class="raci-i">I</span></td>
+          <td><span class="raci-r">R/A</span></td>
+          <td><span class="raci-i">—</span></td>
+          <td><span class="raci-c">C</span></td>
+          <td><span class="raci-c">C</span></td>
+          <td><span class="raci-c">C</span></td>
+          <td><span class="raci-i">—</span></td>
+          <td><span class="raci-c">C</span></td>
+          <td><span class="raci-i">I</span></td>
+        </tr>
+        <tr>
+          <td>GDPR Compliance</td>
+          <td><span class="raci-i">I</span></td>
+          <td><span class="raci-c">C</span></td>
+          <td><span class="raci-i">—</span></td>
+          <td><span class="raci-c">C</span></td>
+          <td><span class="raci-i">—</span></td>
+          <td><span class="raci-r">R/A</span></td>
+          <td><span class="raci-i">—</span></td>
+          <td><span class="raci-i">I</span></td>
+          <td><span class="raci-i">I</span></td>
+        </tr>
+        <tr>
+          <td>Model Drift Events</td>
+          <td><span class="raci-i">I</span></td>
+          <td><span class="raci-i">I</span></td>
+          <td><span class="raci-i">—</span></td>
+          <td><span class="raci-i">—</span></td>
+          <td><span class="raci-i">—</span></td>
+          <td><span class="raci-i">—</span></td>
+          <td><span class="raci-i">—</span></td>
+          <td><span class="raci-r">R/A</span></td>
+          <td><span class="raci-i">I</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="raci-legend">
+      <div class="raci-legend-item"><span class="raci-r">R</span> Responsible — does the work</div>
+      <div class="raci-legend-item"><span class="raci-a">A</span> Accountable — owns the outcome</div>
+      <div class="raci-legend-item"><span class="raci-c">C</span> Consulted — input required</div>
+      <div class="raci-legend-item"><span class="raci-i">I</span> Informed — kept updated</div>
+    </div>
+  </div>
+
+</section>
+
+<div class="section-divider"></div>
+
+<!-- SECTION 04: RISK REGISTER -->
+<section class="section" id="risks">
+  <div class="section-header">
+    <div class="section-title-block">
+      <div class="section-num">SECTION 04 · ADOPTION RISK REGISTER</div>
+      <h2>Seven risks.<br>All <em>mitigated</em><br>architecturally.</h2>
+    </div>
+    <p class="section-desc">
+      Adoption risks are not HR problems. They are architectural failure modes. Each risk below has a technical mitigation, a cultural or process mitigation, and — where relevant — an explicit rollback trigger that makes an unsafe steady-state structurally impossible to sustain undetected.
+    </p>
+  </div>
+
+  <div class="risk-grid">
+
+    <div class="risk-card risk-critical">
+      <div class="risk-header">
+        <div>
+          <div class="risk-id">R-01</div>
+          <div class="risk-title">HITL Bypass Risk</div>
+        </div>
+        <div class="risk-severity sev-critical">Critical</div>
+      </div>
+      <div class="risk-body">
+        <p class="risk-desc">Procurement and quality staff routing around the HITL approval interface to meet operational pressure. Risk compounds under quarter-end and regulatory audit cycles.</p>
+        <div class="risk-mitigation-label">Mitigation</div>
+        <p class="risk-mitigation">
+          <strong>Technical:</strong> No SAP write operation completes without a valid HITL JWT token — the bypass path does not exist at the database layer.<br><br>
+          <strong>Cultural:</strong> PI retrospective reviews of all bypass attempts. Executive sponsor escalation path with mandatory reporting to QMR.
+        </p>
+        <div class="risk-rollback">
+          <div class="risk-rollback-label">Break-Glass / Emergency Override</div>
+          <p>Documented emergency override procedure exists for production-line stoppage or imminent patient-safety events. Override requires dual authorisation (VP Supply Chain + QMR), generates an immutable audit record, and triggers a mandatory root-cause review within 48 hours. Override path is covered in Track A Module 5.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="risk-card risk-critical">
+      <div class="risk-header">
+        <div>
+          <div class="risk-id">R-02</div>
+          <div class="risk-title">SHAP Literacy Gap</div>
+        </div>
+        <div class="risk-severity sev-critical">Critical</div>
+      </div>
+      <div class="risk-body">
+        <p class="risk-desc">Approvers rubber-stamping HITL decisions without engaging with SHAP explanations. EU AI Act Article 14 requires meaningful human oversight — a click is not oversight.</p>
+        <div class="risk-mitigation-label">Mitigation</div>
+        <p class="risk-mitigation">
+          <strong>Technical:</strong> HITL interface requires approver to identify the top contributing feature before the Approve button activates. Confirmation is part of the form — it cannot be bypassed.<br><br>
+          <strong>Audit:</strong> Random quarterly audit of HITL decisions by ML Engineer. Rubber-stamp patterns trigger retraining under Track A Module 2.
+        </p>
+        <div class="risk-rollback">
+          <div class="risk-rollback-label">Rollback Trigger</div>
+          <p>If rubber-stamp rate (approvals with &lt;5s review time) exceeds 20% in any 30-day window, module enters supervised mode: ML Engineer co-signs all approvals until root cause is resolved.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="risk-card risk-high">
+      <div class="risk-header">
+        <div>
+          <div class="risk-id">R-03</div>
+          <div class="risk-title">A2A Supplier Adoption Lag</div>
+        </div>
+        <div class="risk-severity sev-high">High</div>
+      </div>
+      <div class="risk-body">
+        <p class="risk-desc">Pre-qualified suppliers must deploy or integrate with the A2A Commerce protocol. Adoption lag in the supply base creates a two-speed system that undermines H3 targets. Suppliers in certain jurisdictions may have data sovereignty constraints that block cross-border agent data exchange.</p>
+        <div class="risk-mitigation-label">Mitigation</div>
+        <p class="risk-mitigation">
+          <strong>Programme:</strong> A2A onboarding programme for top 20 strategic suppliers launched in H3. Dedicated integration support and protocol documentation provided. Supplier data sovereignty reviewed during onboarding — non-EU suppliers assessed under SCCs.<br><br>
+          <strong>Fallback:</strong> Manual PO preserved for suppliers not yet A2A-enabled, tracked as an explicit adoption metric in monthly ops review.
+        </p>
+        <div class="risk-rollback">
+          <div class="risk-rollback-label">Rollback Trigger</div>
+          <p>If A2A adoption rate &lt;40% of top-20 suppliers by end H3, programme steering committee reviews whether H3 KPI target is revised or commercial incentives are introduced.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="risk-card risk-high">
+      <div class="risk-header">
+        <div>
+          <div class="risk-id">R-04</div>
+          <div class="risk-title">GDPR Art. 17 vs Immutable Audit Log Tension</div>
+        </div>
+        <div class="risk-severity sev-high">High</div>
+      </div>
+      <div class="risk-body">
+        <p class="risk-desc">EU AI Act Article 12 mandates immutable audit logs for high-risk AI systems. GDPR Article 17 grants data subjects the right to erasure. Where supplier personnel data appears in an audit log, these obligations conflict. This is not a theoretical risk — it is a known EU regulatory tension with no settled resolution.</p>
+        <div class="risk-mitigation-label">Mitigation</div>
+        <p class="risk-mitigation">
+          <strong>Architecture:</strong> Audit logs pseudonymised at source — personal identifiers replaced by opaque tokens before log write. Token-to-identity mapping held separately under DPO governance with defined retention policy.<br><br>
+          <strong>Legal:</strong> DPO documents the legitimate interest / regulatory obligation basis for retaining pseudonymised logs. DPIA completed pre-H1 cutover. External legal opinion obtained on Art. 17 vs Art. 12 boundary.
+        </p>
+        <div class="risk-rollback">
+          <div class="risk-rollback-label">Escalation Path</div>
+          <p>Any data subject erasure request touching an audit log record is escalated to DPO + CCO within 24 hours. Response within the 30-day GDPR window is tracked as a compliance KPI.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="risk-card risk-high">
+      <div class="risk-header">
+        <div>
+          <div class="risk-id">R-05</div>
+          <div class="risk-title">Model Confidence Miscalibration / Hallucination</div>
+        </div>
+        <div class="risk-severity sev-high">High</div>
+      </div>
+      <div class="risk-body">
+        <p class="risk-desc">A high-confidence wrong recommendation from DemandIQ or SupplierSentinel — particularly in the first 90 days of deployment — erodes approver trust faster than any training programme can restore it. Trust loss leads to rubber-stamping or HITL bypass, compounding the risk.</p>
+        <div class="risk-mitigation-label">Mitigation</div>
+        <p class="risk-mitigation">
+          <strong>Technical:</strong> Calibration metrics (ECE, reliability diagrams) tracked on all models from day one. Confidence thresholds set conservatively for H2 go-live — high-confidence threshold raised incrementally as calibration data accumulates.<br><br>
+          <strong>Process:</strong> Shadow mode operation for 30 days pre-go-live. Prediction log made available to approvers so they can compare AI recommendation vs outcome retrospectively.
+        </p>
+        <div class="risk-rollback">
+          <div class="risk-rollback-label">Rollback Trigger</div>
+          <p>If any model's ECE exceeds 0.15 or calibration drift is detected via Vertex AI Model Monitoring, model is suspended from HITL queue and returns to shadow mode pending retraining.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="risk-card risk-medium">
+      <div class="risk-header">
+        <div>
+          <div class="risk-id">R-06</div>
+          <div class="risk-title">SAP Master Data Quality</div>
+        </div>
+        <div class="risk-severity sev-medium">Medium</div>
+      </div>
+      <div class="risk-body">
+        <p class="risk-desc">Fragmented supplier master data across 4 Ariba instances degrades DemandIQ and SupplierSentinel model performance before training even begins.</p>
+        <div class="risk-mitigation-label">Mitigation</div>
+        <p class="risk-mitigation">
+          <strong>Prerequisite gate:</strong> Supplier master harmonisation is an H1 prerequisite — DemandIQ training is gated on master data quality score ≥85%.<br><br>
+          <strong>Ongoing:</strong> Data quality dashboard with MDM team ownership. Score published weekly to programme steering committee.
+        </p>
+        <div class="risk-rollback">
+          <div class="risk-rollback-label">Rollback Trigger</div>
+          <p>If master data quality score falls below 80% post-go-live, DemandIQ confidence thresholds are tightened automatically — model operates in conservative mode until score recovers.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="risk-card risk-medium">
+      <div class="risk-header">
+        <div>
+          <div class="risk-id">R-07</div>
+          <div class="risk-title">EAA Accessibility Non-Compliance (HITL Interface)</div>
+        </div>
+        <div class="risk-severity sev-medium">Medium</div>
+      </div>
+      <div class="risk-body">
+        <p class="risk-desc">The European Accessibility Act (EAA) applies to enterprise software used by employees in the EU from June 2025. The HITL interface is a mission-critical enterprise tool deployed to approvers across 22 countries. WCAG 2.1 AA compliance is a legal obligation, not an option.</p>
+        <div class="risk-mitigation-label">Mitigation</div>
+        <p class="risk-mitigation">
+          <strong>Design:</strong> HITL interface built to WCAG 2.1 AA from the first sprint. Accessibility audit contracted before H2 go-live — remediation items treated as critical defects in the release backlog.<br><br>
+          <strong>Ongoing:</strong> Automated accessibility testing (axe-core or equivalent) integrated into CI/CD pipeline. Accessibility regression is a build failure condition.
+        </p>
+        <div class="risk-rollback">
+          <div class="risk-rollback-label">Gate Condition</div>
+          <p>No HITL interface release passes H2 go-live gate without a signed external accessibility audit report. CISO and CCO co-sign. EAA compliance is a launch blocker — not a post-launch remediation item.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- SECTION 05: PORTFOLIO CLOSING STATEMENT -->
+<section class="closing" id="closing">
+  <div class="closing-inner">
+    <div class="closing-glow"></div>
+    <div class="closing-content">
+
+      <div class="closing-kicker">Portfolio Closing Statement · Page 09 of 09</div>
+
+      <h2 class="closing-title">
+        This is not a proof of concept.<br>
+        It is the blueprint for how a regulated manufacturer<br>
+        <em>wins the intelligence gap.</em>
+      </h2>
+
+      <div class="closing-stats">
+        <div class="closing-stat">
+          <div class="closing-stat-num">9</div>
+          <div class="closing-stat-label">Portfolio<br>Pages</div>
+        </div>
+        <div class="closing-stat">
+          <div class="closing-stat-num">6</div>
+          <div class="closing-stat-label">TOGAF ADM<br>Phases Covered</div>
+        </div>
+        <div class="closing-stat">
+          <div class="closing-stat-num">8</div>
+          <div class="closing-stat-label">Intelligent<br>Modules</div>
+        </div>
+        <div class="closing-stat">
+          <div class="closing-stat-num">5</div>
+          <div class="closing-stat-label">EU AI Act<br>High-Risk AI</div>
+        </div>
+        <div class="closing-stat">
+          <div class="closing-stat-num">8</div>
+          <div class="closing-stat-label">HITL<br>Checkpoints</div>
+        </div>
+        <div class="closing-stat">
+          <div class="closing-stat-num" style="color:var(--accent-teal);">1</div>
+          <div class="closing-stat-label">A2A Pattern<br>Unique in field</div>
+        </div>
+      </div>
+
+      <div class="closing-body">
+        <p class="closing-p">
+          Every design decision across these nine pages traces to a named GCP service, a TOGAF phase, a regulatory obligation, or a real supply chain pain point. <strong>Nothing is decorative. Everything is buildable.</strong> The architecture is production-grade — not a concept document dressed in technical language. TOGAF ADM Phases A–F are covered across the portfolio; Phases G (Implementation Governance) and H (Architecture Change Management) are represented in this adoption page's KPI framework, RACI, and risk register.
+        </p>
+        <p class="closing-p">
+          The A2A Commerce pattern — a supplier agent negotiating and transacting with a procurement agent across organisational boundaries — <strong>does not appear in any other public supply chain AI portfolio</strong>. It is original architectural thinking, expressed as a concrete implementation against a named GCP service stack, with a defined fallback, a supplier onboarding programme, and an adoption KPI with a baseline.
+        </p>
+      </div>
+
+      <div class="closing-final">
+        <p class="closing-quote">
+          "The Autonomous Supply Chain is what enterprise AI architecture looks like when every decision is traceable, every agent is auditable, and every human checkpoint is intentional."
+        </p>
+        <div class="closing-badge">
+          <span class="badge-pill badge-teal">TOGAF EA · GCP CA · MLE</span>
+          <span class="badge-pill badge-blue">Google Cloud Architecture</span>
+          <span class="badge-pill badge-amber">EU AI Act Compliant</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-brand">The <span>Autonomous</span> Supply Chain</div>
+  <div class="footer-meta">
+    Architecture Portfolio · 2025–2026 · Page 09 of 09<br>
+    TOGAF 10 · Google Cloud · Vertex AI · ADK · A2A · EU AI Act
+  </div>
+  <div class="footer-links">
+    <a href="https://github.com" target="_blank" rel="noopener">GitHub →</a>
+    <a href="https://linkedin.com" target="_blank" rel="noopener">LinkedIn →</a>
+    <a href="page-08.html">← PG 08</a>
+  </div>
+</footer>
+
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.opacity = '1';
+        entry.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('.persona-card, .track-card, .kpi-horizon, .risk-card, .closing-inner').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(20px)';
+    el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+    observer.observe(el);
+  });
+</script>
+
+</body>
+</html>

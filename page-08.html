@@ -1,0 +1,2336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Page 08 — Infrastructure & GCP Architecture · The Autonomous Supply Chain</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=Sora:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0b;
+    --bg-2: #0f0f11;
+    --bg-3: #141418;
+    --bg-card: #111114;
+    --border: rgba(255,255,255,0.07);
+    --border-accent: rgba(66,133,244,0.3);
+    --text-primary: #f0eff4;
+    --text-secondary: #8b8a95;
+    --text-muted: #4a4955;
+    --blue: #4285f4;
+    --blue-dim: rgba(66,133,244,0.12);
+    --blue-bright: #6ba4ff;
+    --green: #34a853;
+    --green-dim: rgba(52,168,83,0.12);
+    --amber: #fbbc04;
+    --amber-dim: rgba(251,188,4,0.1);
+    --red: #ea4335;
+    --red-dim: rgba(234,67,53,0.1);
+    --teal: #00bcd4;
+    --teal-dim: rgba(0,188,212,0.1);
+    --purple: #7c4dff;
+    --purple-dim: rgba(124,77,255,0.1);
+    --serif: 'DM Serif Display', Georgia, serif;
+    --mono: 'DM Mono', 'Courier New', monospace;
+    --sans: 'Sora', system-ui, sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text-primary);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 48px;
+    background: rgba(10,10,11,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-brand {
+    font-family: var(--serif);
+    font-size: 17px;
+    color: var(--text-primary);
+    text-decoration: none;
+    letter-spacing: -0.01em;
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 0.02em;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--text-primary); }
+
+  .nav-pill {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--blue);
+    background: var(--blue-dim);
+    border: 1px solid var(--border-accent);
+    padding: 4px 10px;
+    border-radius: 2px;
+    letter-spacing: 0.05em;
+  }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 0 48px 80px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 70% 40%, rgba(66,133,244,0.05) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 40% at 20% 70%, rgba(52,168,83,0.04) 0%, transparent 60%);
+  }
+
+  .hero-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+    background-size: 80px 80px;
+    mask-image: radial-gradient(ellipse 80% 60% at 50% 100%, black, transparent);
+  }
+
+  .hero-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+
+  .eyebrow-tag {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .eyebrow-divider {
+    width: 40px;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .eyebrow-page {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--blue);
+    letter-spacing: 0.1em;
+  }
+
+  .hero h1 {
+    font-family: var(--serif);
+    font-size: clamp(48px, 6vw, 88px);
+    line-height: 1.02;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+    max-width: 900px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero h1 em {
+    font-style: italic;
+    color: var(--blue-bright);
+  }
+
+  .hero-sub {
+    margin-top: 28px;
+    font-size: 17px;
+    color: var(--text-secondary);
+    max-width: 580px;
+    font-weight: 300;
+    line-height: 1.65;
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero-meta {
+    margin-top: 48px;
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .hero-stat-value {
+    font-family: var(--mono);
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--text-primary);
+    letter-spacing: -0.02em;
+  }
+
+  .hero-stat-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .hero-stat-divider {
+    width: 1px;
+    height: 40px;
+    background: var(--border);
+  }
+
+  .scroll-indicator {
+    position: absolute;
+    bottom: 40px;
+    right: 48px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text-muted);
+    font-size: 11px;
+    font-family: var(--mono);
+    letter-spacing: 0.1em;
+    animation: pulse-fade 3s ease-in-out infinite;
+  }
+
+  .scroll-line {
+    width: 32px;
+    height: 1px;
+    background: var(--text-muted);
+  }
+
+  @keyframes pulse-fade {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 1; }
+  }
+
+  /* SECTIONS */
+  section {
+    padding: 100px 48px;
+    border-top: 1px solid var(--border);
+    position: relative;
+  }
+
+  .section-header {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: 32px;
+    align-items: start;
+    margin-bottom: 64px;
+  }
+
+  .section-number {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding-top: 6px;
+  }
+
+  .section-title {
+    font-family: var(--serif);
+    font-size: clamp(32px, 3.5vw, 52px);
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+  }
+
+  .section-title em {
+    font-style: italic;
+    color: var(--blue-bright);
+  }
+
+  .section-intro {
+    font-size: 16px;
+    color: var(--text-secondary);
+    font-weight: 300;
+    line-height: 1.7;
+    max-width: 680px;
+    margin-top: 16px;
+  }
+
+  /* ===== SECTION 01: GCP REFERENCE ARCHITECTURE ===== */
+  .region-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 48px;
+  }
+
+  .region-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    padding: 36px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .region-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+  }
+
+  .region-primary::before { background: linear-gradient(90deg, var(--blue), transparent); }
+  .region-dr::before { background: linear-gradient(90deg, var(--green), transparent); }
+
+  .region-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  .badge-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+  }
+
+  .primary-dot { background: var(--blue); }
+  .dr-dot { background: var(--green); }
+
+  .region-name {
+    font-family: var(--mono);
+    font-size: 14px;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+  }
+
+  .region-location {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 24px;
+  }
+
+  .region-specs {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .spec-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    font-size: 13px;
+  }
+
+  .spec-key {
+    font-family: var(--mono);
+    color: var(--text-muted);
+    font-size: 11px;
+    min-width: 80px;
+    padding-top: 2px;
+    flex-shrink: 0;
+  }
+
+  .spec-val { color: var(--text-secondary); }
+  .spec-val strong { color: var(--text-primary); font-weight: 500; }
+
+  .slo-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 16px;
+  }
+
+  .slo-chip {
+    background: var(--bg-3);
+    border: 1px solid var(--border);
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .slo-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .slo-value {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--green);
+  }
+
+  .project-structure {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    padding: 36px;
+    margin-top: 0;
+  }
+
+  .project-structure-title {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+
+  .project-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .project-item {
+    display: grid;
+    grid-template-columns: 260px 1fr 120px;
+    gap: 24px;
+    align-items: center;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .project-item:last-child { border-bottom: none; }
+
+  .project-id {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--blue);
+  }
+
+  .project-desc {
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+
+  .project-env {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-align: right;
+  }
+
+  .env-prod { color: var(--red); }
+  .env-staging { color: var(--amber); }
+  .env-dev { color: var(--green); }
+  .env-shared { color: var(--blue); }
+
+  .org-note {
+    margin-top: 16px;
+    font-size: 12px;
+    color: var(--text-muted);
+    font-family: var(--mono);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .org-note::before {
+    content: '→';
+    color: var(--text-muted);
+  }
+
+  /* ===== SECTION 02: COMPUTE ===== */
+  .compute-stack {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 2px;
+    background: var(--border);
+  }
+
+  .compute-tier {
+    background: var(--bg-card);
+    padding: 36px;
+    position: relative;
+  }
+
+  .compute-tier-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 24px;
+  }
+
+  .compute-service {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--blue);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .compute-name {
+    font-family: var(--serif);
+    font-size: 22px;
+    color: var(--text-primary);
+    line-height: 1.2;
+  }
+
+  .compute-region-tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-muted);
+    background: var(--bg-3);
+    border: 1px solid var(--border);
+    padding: 4px 8px;
+    white-space: nowrap;
+  }
+
+  .compute-details {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+  }
+
+  .compute-detail {
+    font-size: 13px;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    line-height: 1.5;
+  }
+
+  .detail-bullet {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--text-muted);
+    margin-top: 7px;
+    flex-shrink: 0;
+  }
+
+  .compute-highlight {
+    margin-top: 24px;
+    padding: 14px 16px;
+    background: var(--bg-3);
+    border-left: 2px solid var(--blue);
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-family: var(--mono);
+    line-height: 1.6;
+  }
+
+  /* ===== SECTION 03: EVENT FABRIC ===== */
+  .event-fabric-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+
+  .topic-list-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    padding: 36px;
+  }
+
+  .topic-list-title {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .topic-item {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 16px;
+    align-items: start;
+  }
+
+  .topic-item:last-child { border-bottom: none; }
+
+  .topic-name {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--blue);
+    margin-bottom: 4px;
+  }
+
+  .topic-desc {
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+
+  .topic-tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    padding: 3px 7px;
+    border-radius: 2px;
+    white-space: nowrap;
+    align-self: flex-start;
+    margin-top: 2px;
+  }
+
+  .tag-realtime { color: var(--blue); background: var(--blue-dim); border: 1px solid rgba(66,133,244,0.2); }
+  .tag-hitl { color: var(--amber); background: var(--amber-dim); border: 1px solid rgba(251,188,4,0.2); }
+  .tag-audit { color: var(--red); background: var(--red-dim); border: 1px solid rgba(234,67,53,0.2); }
+  .tag-a2a { color: var(--teal); background: var(--teal-dim); border: 1px solid rgba(0,188,212,0.2); }
+  .tag-batch { color: var(--text-muted); background: var(--bg-3); border: 1px solid var(--border); }
+
+  .sub-pattern-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    padding: 36px;
+  }
+
+  .pattern-item {
+    padding: 20px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .pattern-item:first-child { padding-top: 0; }
+  .pattern-item:last-child { border-bottom: none; padding-bottom: 0; }
+
+  .pattern-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+  }
+
+  .pattern-desc {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  .pattern-spec {
+    margin-top: 8px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--blue);
+  }
+
+  /* ===== SECTION 04: DATA ARCHITECTURE ===== */
+  .dataset-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2px;
+    background: var(--border);
+    margin-bottom: 24px;
+  }
+
+  .dataset-card {
+    background: var(--bg-card);
+    padding: 28px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .dataset-name {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--blue);
+    margin-bottom: 10px;
+  }
+
+  .dataset-contents {
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  .dataset-accent {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 60px;
+    height: 60px;
+    border-top: 1px solid var(--border);
+    border-left: 1px solid var(--border);
+    opacity: 0.4;
+  }
+
+  .firestore-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2px;
+    background: var(--border);
+    margin-top: 24px;
+  }
+
+  .firestore-card {
+    background: var(--bg-card);
+    padding: 24px;
+  }
+
+  .firestore-path {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--teal);
+    margin-bottom: 8px;
+  }
+
+  .firestore-purpose {
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+
+  .access-control-block {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    padding: 36px;
+    margin-top: 24px;
+  }
+
+  .access-title {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+
+  .access-rules {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .access-rule {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    padding: 14px 16px;
+    background: var(--bg-3);
+    border-left: 2px solid var(--border);
+  }
+
+  .access-rule.critical {
+    border-left-color: var(--red);
+  }
+
+  .access-rule.moderate {
+    border-left-color: var(--amber);
+  }
+
+  .rule-icon {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text-muted);
+    flex-shrink: 0;
+    padding-top: 1px;
+  }
+
+  /* ===== SECTION 05: SECURITY ===== */
+  .security-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+
+  .security-block {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    padding: 36px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .security-block::after {
+    content: '';
+    position: absolute;
+    top: -40px;
+    right: -40px;
+    width: 120px;
+    height: 120px;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    opacity: 0.3;
+  }
+
+  .security-block-title {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .security-items {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .security-item {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .security-item-icon {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--green);
+    flex-shrink: 0;
+    padding-top: 1px;
+  }
+
+  .iam-example {
+    margin-top: 20px;
+    padding: 16px;
+    background: var(--bg-3);
+    border: 1px solid var(--border);
+  }
+
+  .iam-example-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .iam-binding {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-secondary);
+    line-height: 1.8;
+  }
+
+  .iam-sa { color: var(--blue); }
+  .iam-allow { color: var(--green); }
+  .iam-resource { color: var(--amber); }
+
+  .cmek-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-top: 20px;
+  }
+
+  .cmek-chip {
+    background: var(--bg-3);
+    border: 1px solid var(--border);
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .cmek-service {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--amber);
+  }
+
+  .cmek-detail {
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+
+  /* ===== SECTION 06: TERRAFORM ===== */
+  .terraform-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+
+  .module-tree {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    padding: 36px;
+  }
+
+  .module-tree-header {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+
+  .module-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .module-item {
+    padding: 11px 0;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  .module-item:last-child { border-bottom: none; }
+
+  .module-path {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--blue);
+    min-width: 200px;
+  }
+
+  .module-contents {
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+
+  .state-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    padding: 36px;
+  }
+
+  .state-items {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 8px;
+  }
+
+  .state-item {
+    padding: 16px 18px;
+    background: var(--bg-3);
+    border: 1px solid var(--border);
+  }
+
+  .state-item-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 5px;
+  }
+
+  .state-item-desc {
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.55;
+  }
+
+  /* ===== SECTION 07: CI/CD ===== */
+  .cicd-pipeline {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    background: var(--border);
+    margin-bottom: 32px;
+  }
+
+  .pipeline-trigger-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    background: var(--border);
+    margin-bottom: 2px;
+  }
+
+  .trigger-card {
+    background: var(--bg-card);
+    padding: 24px;
+  }
+
+  .trigger-event {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--amber);
+    letter-spacing: 0.08em;
+    margin-bottom: 6px;
+  }
+
+  .trigger-action {
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+
+  .stage-row {
+    background: var(--bg-card);
+    display: grid;
+    grid-template-columns: 48px 1fr auto;
+    gap: 24px;
+    align-items: center;
+    padding: 20px 28px;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.2s;
+  }
+
+  .stage-row:last-child { border-bottom: none; }
+  .stage-row:hover { background: var(--bg-3); }
+
+  .stage-num {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  .stage-name {
+    font-size: 14px;
+    color: var(--text-primary);
+    font-weight: 400;
+    margin-bottom: 3px;
+  }
+
+  .stage-detail {
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+
+  .stage-badge {
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 4px 10px;
+    border-radius: 2px;
+    white-space: nowrap;
+  }
+
+  .badge-auto { color: var(--green); background: var(--green-dim); border: 1px solid rgba(52,168,83,0.25); }
+  .badge-gate { color: var(--amber); background: var(--amber-dim); border: 1px solid rgba(251,188,4,0.25); }
+  .badge-security { color: var(--red); background: var(--red-dim); border: 1px solid rgba(234,67,53,0.25); }
+  .badge-compliance { color: var(--purple); background: var(--purple-dim); border: 1px solid rgba(124,77,255,0.25); }
+
+  /* ===== SECTION 08: OBSERVABILITY ===== */
+  .obs-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 24px;
+  }
+
+  .slo-def-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    padding: 36px;
+  }
+
+  .slo-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 8px;
+  }
+
+  .slo-table th {
+    text-align: left;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0 0 14px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .slo-table td {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+    color: var(--text-secondary);
+    vertical-align: top;
+  }
+
+  .slo-table tr:last-child td { border-bottom: none; }
+
+  .slo-table td:first-child { color: var(--text-primary); font-weight: 400; padding-right: 16px; }
+
+  .slo-target {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--green);
+  }
+
+  .alerting-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    padding: 36px;
+  }
+
+  .alert-tier {
+    padding: 16px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .alert-tier:last-child { border-bottom: none; }
+
+  .alert-tier-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+
+  .alert-level {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 500;
+    padding: 3px 10px;
+    border-radius: 2px;
+  }
+
+  .p1 { color: var(--red); background: var(--red-dim); border: 1px solid rgba(234,67,53,0.25); }
+  .p2 { color: var(--amber); background: var(--amber-dim); border: 1px solid rgba(251,188,4,0.25); }
+  .p3 { color: var(--green); background: var(--green-dim); border: 1px solid rgba(52,168,83,0.25); }
+
+  .alert-route {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .alert-conditions {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .alert-cond {
+    font-size: 12px;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .alert-cond::before {
+    content: '';
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--text-muted);
+    flex-shrink: 0;
+  }
+
+  /* ===== SECTION 09: FINOPS + GREENOPS ===== */
+  .ops-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+
+  .ops-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    padding: 36px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .ops-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+  }
+
+  .finops-card::before { background: linear-gradient(90deg, var(--amber), transparent); }
+  .greenops-card::before { background: linear-gradient(90deg, var(--green), transparent); }
+
+  .ops-icon {
+    font-family: var(--mono);
+    font-size: 24px;
+    margin-bottom: 16px;
+  }
+
+  .finops-icon { color: var(--amber); }
+  .greenops-icon { color: var(--green); }
+
+  .ops-title {
+    font-family: var(--serif);
+    font-size: 26px;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+  }
+
+  .ops-subtitle {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 28px;
+  }
+
+  .ops-items {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .ops-item {
+    font-size: 13px;
+    color: var(--text-secondary);
+    padding: 14px 16px;
+    background: var(--bg-3);
+    line-height: 1.6;
+    border-left: 2px solid var(--border);
+  }
+
+  .ops-item.highlight-finops { border-left-color: var(--amber); }
+  .ops-item.highlight-green { border-left-color: var(--green); }
+
+  .ops-item strong { color: var(--text-primary); font-weight: 500; }
+
+  /* FOOTER NAV */
+  .page-nav {
+    padding: 80px 48px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .page-nav-link {
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .nav-link-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .nav-link-title {
+    font-size: 15px;
+    color: var(--text-primary);
+    font-weight: 400;
+  }
+
+  .nav-link-arrow {
+    font-size: 18px;
+    color: var(--text-muted);
+  }
+
+  .footer {
+    padding: 40px 48px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .footer-brand {
+    font-family: var(--serif);
+    font-size: 15px;
+    color: var(--text-muted);
+  }
+
+  .footer-copy {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .footer-tags {
+    display: flex;
+    gap: 16px;
+  }
+
+  .footer-tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.06em;
+  }
+
+  /* UTILITY */
+  .card-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .highlight-bar {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    padding: 24px 32px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    margin-top: 24px;
+  }
+
+  .highlight-icon {
+    font-family: var(--mono);
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .highlight-text {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  .highlight-text strong { color: var(--text-primary); font-weight: 500; }
+
+  @media (max-width: 1024px) {
+    nav { padding: 16px 24px; }
+    .hero { padding: 0 24px 64px; }
+    section { padding: 72px 24px; }
+    .region-grid { grid-template-columns: 1fr; }
+    .compute-stack { grid-template-columns: 1fr; }
+    .event-fabric-grid { grid-template-columns: 1fr; }
+    .dataset-grid { grid-template-columns: repeat(2, 1fr); }
+    .security-layout { grid-template-columns: 1fr; }
+    .terraform-layout { grid-template-columns: 1fr; }
+    .obs-layout { grid-template-columns: 1fr; }
+    .ops-grid { grid-template-columns: 1fr; }
+    .pipeline-trigger-row { grid-template-columns: 1fr; }
+    .firestore-grid { grid-template-columns: 1fr; }
+    .cmek-grid { grid-template-columns: repeat(2, 1fr); }
+    .footer { flex-direction: column; gap: 16px; text-align: center; }
+    .page-nav { flex-direction: column; gap: 32px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="#" class="nav-brand">The Autonomous Supply Chain</a>
+  <ul class="nav-links">
+    <li><a href="#">Overview</a></li>
+    <li><a href="#">Architecture</a></li>
+    <li><a href="#">Agents</a></li>
+    <li><a href="#">MLOps</a></li>
+    <li><span class="nav-pill">PG 08 — Infrastructure</span></li>
+  </ul>
+</nav>
+
+<!-- ===== HERO ===== -->
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+
+  <div class="hero-eyebrow">
+    <span class="eyebrow-tag">Architecture Portfolio · 2025–2026</span>
+    <div class="eyebrow-divider"></div>
+    <span class="eyebrow-page">Page 08 of 09</span>
+  </div>
+
+  <h1>Infrastructure &amp; GCP<br><em>Architecture.</em></h1>
+  <p class="hero-sub">
+    The full GCP reference architecture for a medical-device autonomous supply chain.
+    EU data residency, zero-trust networking, Terraform IaC, and GreenOps scheduling —
+    compliance as infrastructure, not policy.
+  </p>
+
+  <div class="hero-meta">
+    <div class="hero-stat">
+      <span class="hero-stat-value">europe-west3</span>
+      <span class="hero-stat-label">Primary Region</span>
+    </div>
+    <div class="hero-stat-divider"></div>
+    <div class="hero-stat">
+      <span class="hero-stat-value">1h RPO</span>
+      <span class="hero-stat-label">HITL Modules</span>
+    </div>
+    <div class="hero-stat-divider"></div>
+    <div class="hero-stat">
+      <span class="hero-stat-value">10 Topics</span>
+      <span class="hero-stat-label">Pub/Sub Event Fabric</span>
+    </div>
+    <div class="hero-stat-divider"></div>
+    <div class="hero-stat">
+      <span class="hero-stat-value">8 Datasets</span>
+      <span class="hero-stat-label">BigQuery</span>
+    </div>
+    <div class="hero-stat-divider"></div>
+    <div class="hero-stat">
+      <span class="hero-stat-value">CMEK</span>
+      <span class="hero-stat-label">All Data at Rest</span>
+    </div>
+  </div>
+
+  <div class="scroll-indicator">
+    <div class="scroll-line"></div>
+    SCROLL TO EXPLORE
+  </div>
+</div>
+
+<!-- ===== SECTION 01: GCP REFERENCE ARCHITECTURE ===== -->
+<section id="gcp-architecture">
+  <div class="section-header">
+    <div class="section-number">01 — GCP Reference Architecture</div>
+    <div>
+      <h2 class="section-title">Two regions.<br><em>One jurisdiction.</em></h2>
+      <p class="section-intro">
+        EU data residency is not a configuration toggle — it is a Terraform constraint enforced at the organisation policy level.
+        All workloads, all data, all encryption keys remain within the EU at all times.
+        Frankfurt anchors the system. Amsterdam holds the recovery posture.
+      </p>
+    </div>
+  </div>
+
+  <div class="region-grid">
+    <div class="region-card region-primary">
+      <div class="region-badge">
+        <span class="badge-dot primary-dot"></span>
+        <span style="color: var(--blue); letter-spacing: 0.1em; font-family: var(--mono); font-size: 10px;">PRIMARY REGION</span>
+      </div>
+      <div class="region-name">europe-west3 · Frankfurt</div>
+      <div class="region-location">All production workloads · All MDR &amp; ISO 13485 device records</div>
+      <div class="region-specs">
+        <div class="spec-row">
+          <span class="spec-key">MDR/GDPR</span>
+          <span class="spec-val">EU data residency enforced. All PII and device records confined to <strong>europe-west3</strong>. Org Policy constraint active.</span>
+        </div>
+        <div class="spec-row">
+          <span class="spec-key">ISO 13485</span>
+          <span class="spec-val">Device history records, batch records, and NCR audit trails written and stored exclusively within this region.</span>
+        </div>
+        <div class="spec-row">
+          <span class="spec-key">CMEK</span>
+          <span class="spec-val">All data encrypted with customer-managed keys. Key ring <strong>meddevice-asc-keyring</strong> in europe-west3. Google cannot access data at rest.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="region-card region-dr">
+      <div class="region-badge">
+        <span class="badge-dot dr-dot"></span>
+        <span style="color: var(--green); letter-spacing: 0.1em; font-family: var(--mono); font-size: 10px;">DR REGION</span>
+      </div>
+      <div class="region-name">europe-west4 · Netherlands</div>
+      <div class="region-location">Disaster recovery · Async replication · EU jurisdiction maintained</div>
+      <div class="region-specs">
+        <div class="spec-row">
+          <span class="spec-key">HITL modules</span>
+          <span class="spec-val"><strong>RPO: 1 hour · RTO: 4 hours</strong> — all human-in-the-loop gated modules. Approval interfaces remain available during failover.</span>
+        </div>
+        <div class="spec-row">
+          <span class="spec-key">Analytics</span>
+          <span class="spec-val"><strong>RPO: 4 hours · RTO: 8 hours</strong> — reporting and analytics modules. No patient safety or compliance impact during extended window.</span>
+        </div>
+      </div>
+      <div class="slo-grid">
+        <div class="slo-chip">
+          <span class="slo-label">HITL RPO</span>
+          <span class="slo-value">1 hour</span>
+        </div>
+        <div class="slo-chip">
+          <span class="slo-label">HITL RTO</span>
+          <span class="slo-value">4 hours</span>
+        </div>
+        <div class="slo-chip">
+          <span class="slo-label">Analytics RPO</span>
+          <span class="slo-value">4 hours</span>
+        </div>
+        <div class="slo-chip">
+          <span class="slo-label">Analytics RTO</span>
+          <span class="slo-value">8 hours</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="project-structure" style="margin-top: 24px;">
+    <div class="project-structure-title">DR Test Regime · ISO 13485 §4.1 — Procedures Must Be Validated, Not Just Documented</div>
+    <div class="project-list">
+      <div class="project-item">
+        <span class="project-id" style="color:var(--amber);">DR-TEST-01 · Quarterly</span>
+        <span class="project-desc">Automated failover drill: europe-west3 → europe-west4 for all HITL modules. Cloud DNS failover policy triggers simulated primary region failure. Approver interface availability verified in DR region within RTO window. Results logged to asc_audit and reviewed by QMS owner.</span>
+        <span class="project-env env-staging">SCHEDULED</span>
+      </div>
+      <div class="project-item">
+        <span class="project-id" style="color:var(--amber);">DR-TEST-02 · Annual</span>
+        <span class="project-desc">Full DR scenario: complete primary region loss. All modules failed over. MDR traceability continuity confirmed. RPO validated by comparing last committed Firestore snapshot against declared 1-hour target. Runbook owner: Platform Engineering Lead + QMS Lead sign-off required.</span>
+        <span class="project-env env-prod">ANNUAL</span>
+      </div>
+      <div class="project-item">
+        <span class="project-id" style="color:var(--blue);">DR-MECH-01</span>
+        <span class="project-desc">Cloud DNS failover policy with health check on HITL approval interface endpoint. Automatic DNS TTL of 60s. Cloud Run multi-region deploy (europe-west3 primary, europe-west4 warm standby). Firestore cross-region replication active — no manual data sync step required during failover.</span>
+        <span class="project-env env-shared">MECHANISM</span>
+      </div>
+    </div>
+    <div class="org-note">RPO/RTO targets without a validated test regime are aspirational, not architectural. These tests make the targets enforceable under ISO 13485 §4.1.</div>
+  </div>
+
+  <div class="project-structure">
+    <div class="project-structure-title">GCP Project Structure · Single Organisation · Org Policy Constraints Applied</div>
+    <div class="project-list">
+      <div class="project-item">
+        <span class="project-id">meddevice-asc-prod</span>
+        <span class="project-desc">All production workloads. VPC-SC perimeter active. CMEK enforced. BeyondCorp access only.</span>
+        <span class="project-env env-prod">PRODUCTION</span>
+      </div>
+      <div class="project-item">
+        <span class="project-id">meddevice-asc-staging</span>
+        <span class="project-desc">Pre-production environment. Integration tests, smoke tests, EU AI Act compliance checks run here before prod promotion.</span>
+        <span class="project-env env-staging">STAGING</span>
+      </div>
+      <div class="project-item">
+        <span class="project-id">meddevice-asc-dev</span>
+        <span class="project-desc">Development environment. Feature branch deploys. No real PII or device records. Synthetic data only.</span>
+        <span class="project-env env-dev">DEVELOPMENT</span>
+      </div>
+      <div class="project-item">
+        <span class="project-id">meddevice-asc-shared</span>
+        <span class="project-desc">Shared services: VPC, Secret Manager, Cloud Build, Artifact Registry. Consumed by all environments.</span>
+        <span class="project-env env-shared">SHARED SERVICES</span>
+      </div>
+    </div>
+    <div class="org-note">All projects under a single GCP Organisation. Org Policy constraints applied at org level — no project can opt out.</div>
+  </div>
+</section>
+
+<!-- ===== SECTION 02: COMPUTE ===== -->
+<section id="compute">
+  <div class="section-header">
+    <div class="section-number">02 — Compute Architecture</div>
+    <div>
+      <h2 class="section-title">Stateful agents.<br><em>Stateless inference.</em></h2>
+      <p class="section-intro">
+        Agent workloads are inherently stateful and long-running — they belong on GKE with namespace isolation and Workload Identity.
+        ML inference modules are stateless and spiky — Cloud Run with per-module service accounts and zero min-instances for batch.
+        The SAP integration surface lives on Apigee X. Three runtimes. One security model.
+      </p>
+    </div>
+  </div>
+
+  <div class="compute-stack">
+    <div class="compute-tier">
+      <div class="compute-tier-header">
+        <div>
+          <div class="compute-service">GKE Autopilot</div>
+          <div class="compute-name">ADK Agent Swarm</div>
+        </div>
+        <div class="compute-region-tag">europe-west3</div>
+      </div>
+      <div class="compute-details">
+        <div class="compute-detail"><div class="detail-bullet"></div><span>Workload class: <strong style="color:var(--text-primary)">e2-standard-8 equivalent</strong> via Autopilot resource requests — node provisioning fully managed</span></div>
+        <div class="compute-detail"><div class="detail-bullet"></div><span><strong style="color:var(--amber);">GPU inference workloads run on a separate GKE Standard cluster</strong> — GKE Autopilot does not support custom GPU node pools in europe-west3. Standard cluster uses <strong style="color:var(--text-primary)">n1-standard-32 + T4 GPU</strong> node pool with node auto-provisioning enabled</span></div>
+        <div class="compute-detail"><div class="detail-bullet"></div><span>Namespace isolation per agent — no cross-namespace secret access at the infrastructure level</span></div>
+        <div class="compute-detail"><div class="detail-bullet"></div><span>Workload Identity per agent service account — no static service account key files anywhere</span></div>
+      </div>
+      <div class="compute-highlight">
+        Autopilot: stateful agents · long-running<br>
+        Standard (GPU): accelerated ML inference<br>
+        Persistent agent state in Firestore
+      </div>
+    </div>
+
+    <div class="compute-tier">
+      <div class="compute-tier-header">
+        <div>
+          <div class="compute-service">Cloud Run (Fully Managed)</div>
+          <div class="compute-name">ML Inference &amp; API Modules</div>
+        </div>
+        <div class="compute-region-tag">europe-west3</div>
+      </div>
+      <div class="compute-details">
+        <div class="compute-detail"><div class="detail-bullet"></div><span><strong style="color:var(--text-primary)">Min 2 instances</strong> for HITL-gated modules — no cold start latency on approval interfaces</span></div>
+        <div class="compute-detail"><div class="detail-bullet"></div><span><strong style="color:var(--text-primary)">Min 0 instances</strong> for batch and reporting modules — cost savings in off-peak</span></div>
+        <div class="compute-detail"><div class="detail-bullet"></div><span>Concurrency: <strong style="color:var(--text-primary)">80 per instance</strong> · Max instances: <strong style="color:var(--text-primary)">50 per module</strong></span></div>
+        <div class="compute-detail"><div class="detail-bullet"></div><span>Dedicated service account per module — principle of least privilege enforced at runtime</span></div>
+      </div>
+      <div class="compute-highlight">
+        Stateless · Event-driven<br>
+        Triggered via Pub/Sub push subscriptions<br>
+        VPC-native egress only
+      </div>
+    </div>
+
+    <div class="compute-tier">
+      <div class="compute-tier-header">
+        <div>
+          <div class="compute-service">Apigee X</div>
+          <div class="compute-name">SAP Integration Layer</div>
+        </div>
+        <div class="compute-region-tag">europe-west3</div>
+      </div>
+      <div class="compute-details">
+        <div class="compute-detail"><div class="detail-bullet"></div><span>Manages: <strong style="color:var(--text-primary)">SAP Ariba REST · Salesforce REST · Veeva Vault REST</strong></span></div>
+        <div class="compute-detail"><div class="detail-bullet"></div><span>API versioning, rate limiting, and circuit breaker policies configured per API — not shared defaults. <strong style="color:var(--text-primary)">Bulkhead isolation per upstream:</strong> Ariba, Salesforce, and Veeva Vault each have dedicated connection pools and independent circuit breaker state. An Ariba timeout or rate limit does not degrade Veeva Vault NCR pathway throughput.</span></div>
+        <div class="compute-detail"><div class="detail-bullet"></div><span>Per-upstream timeout policy: <strong style="color:var(--text-primary)">Ariba 30s · Salesforce 15s · Veeva Vault 20s</strong>. Timeout breach → circuit open → fallback response → P2 alert</span></div>
+        <div class="compute-detail"><div class="detail-bullet"></div><span>Only Apigee X is permitted to call external APIs — enforced by VPC-SC egress rules</span></div>
+        <div class="compute-detail"><div class="detail-bullet"></div><span>All API keys stored in Secret Manager — zero secrets in code or API proxy configurations</span></div>
+      </div>
+      <div class="compute-highlight">
+        External API gateway<br>
+        Sole egress point for SAP / Salesforce / Veeva<br>
+        VPC-SC ingress/egress rule enforced
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SECTION 03: EVENT FABRIC ===== -->
+<section id="event-fabric">
+  <div class="section-header">
+    <div class="section-number">03 — Event Fabric</div>
+    <div>
+      <h2 class="section-title">Ten topics.<br><em>One nervous system.</em></h2>
+      <p class="section-intro">
+        Pub/Sub is the connective tissue of the ASC — the mechanism by which demand signals reach agents before they age,
+        HITL decisions flow to named approvers in under five seconds, and the audit log captures every action immutably.
+        Topic design is intentional, not convenience.
+      </p>
+    </div>
+  </div>
+
+  <div class="event-fabric-grid">
+    <div class="topic-list-card">
+      <div class="topic-list-title">Topic Design · asc.* namespace</div>
+
+      <div class="topic-item">
+        <div>
+          <div class="topic-name">asc.demand.signals</div>
+          <div class="topic-desc">Salesforce opportunity events + SAP IBP forecast updates + procurement index feeds</div>
+        </div>
+        <span class="topic-tag tag-realtime">REAL-TIME</span>
+      </div>
+
+      <div class="topic-item">
+        <div>
+          <div class="topic-name">asc.supplier.events</div>
+          <div class="topic-desc">Financial filings + news sentiment + ESG scoring events + geopolitical risk signals</div>
+        </div>
+        <span class="topic-tag tag-realtime">REAL-TIME</span>
+      </div>
+
+      <div class="topic-item">
+        <div>
+          <div class="topic-name">asc.inventory.events</div>
+          <div class="topic-desc">SAP S/4HANA MRP run events + stock level updates + safety stock threshold breaches</div>
+        </div>
+        <span class="topic-tag tag-realtime">REAL-TIME</span>
+      </div>
+
+      <div class="topic-item">
+        <div>
+          <div class="topic-name">asc.quality.events</div>
+          <div class="topic-desc">Veeva Vault NCR events + batch record updates + deviation notifications</div>
+        </div>
+        <span class="topic-tag tag-realtime">REAL-TIME</span>
+      </div>
+
+      <div class="topic-item">
+        <div>
+          <div class="topic-name">asc.logistics.events</div>
+          <div class="topic-desc">6 freight portal feeds + 3PL shipment status updates + customs clearance events</div>
+        </div>
+        <span class="topic-tag tag-batch">BATCH</span>
+      </div>
+
+      <div class="topic-item">
+        <div>
+          <div class="topic-name">asc.agent.commands</div>
+          <div class="topic-desc">Orchestrator → specialist agent routing. Task assignments and context packages.</div>
+        </div>
+        <span class="topic-tag tag-realtime">REAL-TIME</span>
+      </div>
+
+      <div class="topic-item">
+        <div>
+          <div class="topic-name">asc.hitl.queue</div>
+          <div class="topic-desc">All HITL checkpoints routed to approval interface. SLO: p99 ≤5s delivery.</div>
+        </div>
+        <span class="topic-tag tag-hitl">HITL</span>
+      </div>
+
+      <div class="topic-item">
+        <div>
+          <div class="topic-name">asc.audit.log</div>
+          <div class="topic-desc">Immutable write-only audit topic. All events sink to BigQuery asc_audit dataset. No delete permission on any principal.</div>
+        </div>
+        <span class="topic-tag tag-audit">IMMUTABLE</span>
+      </div>
+
+      <div class="topic-item">
+        <div>
+          <div class="topic-name">asc.a2a.outbound</div>
+          <div class="topic-desc">ProcureGuard agent → supplier A2A protocol messages. Purchase order negotiations.</div>
+        </div>
+        <span class="topic-tag tag-a2a">A2A</span>
+      </div>
+
+      <div class="topic-item">
+        <div>
+          <div class="topic-name">asc.a2a.inbound</div>
+          <div class="topic-desc">Supplier agent responses → ProcureGuard. Offers, confirmations, counter-proposals.</div>
+        </div>
+        <span class="topic-tag tag-a2a">A2A</span>
+      </div>
+    </div>
+
+    <div class="sub-pattern-card">
+      <div class="card-label">Subscription Patterns</div>
+
+      <div class="pattern-item">
+        <div class="pattern-title">Push Subscriptions — Real-Time Agent Triggers</div>
+        <div class="pattern-desc">Push subscriptions deliver events directly to Cloud Run endpoints, triggering agent modules within the latency SLO. No polling. No queue depth accumulation under normal load.</div>
+        <div class="pattern-spec">SLO: ≤60s end-to-end latency for real-time topics</div>
+      </div>
+
+      <div class="pattern-item">
+        <div class="pattern-title">Pull Subscriptions — Batch Analytics Consumers</div>
+        <div class="pattern-desc">BigQuery sink consumers and reporting pipelines use pull subscriptions. Designed for throughput over latency — they batch-read at scheduled intervals during off-peak windows.</div>
+        <div class="pattern-spec">Scheduled: 22:00–06:00 CET for ML training and bulk analytics jobs</div>
+      </div>
+
+      <div class="pattern-item">
+        <div class="pattern-title">Dead Letter Topics — All Failures Captured</div>
+        <div class="pattern-desc">Every subscription has a corresponding dead letter topic. No message is silently dropped. Failed deliveries after maximum retry exhaustion are captured, alarted, and available for replay. Failure rate is a P2 alert condition.</div>
+        <div class="pattern-spec">Dead letter per subscription · P2 alert on DLT accumulation</div>
+      </div>
+
+      <div class="pattern-item">
+        <div class="pattern-title">Message Retention</div>
+        <div class="pattern-desc">All topics retain messages for 7 days. This provides a replay window for any consumer that falls behind or needs to reprocess events during an incident.</div>
+        <div class="pattern-spec">7 days retention · All topics uniform policy</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SECTION 04: DATA ARCHITECTURE ===== -->
+<section id="data">
+  <div class="section-header">
+    <div class="section-number">04 — Data Architecture</div>
+    <div>
+      <h2 class="section-title">BigQuery datasets.<br><em>Firestore collections.</em></h2>
+      <p class="section-intro">
+        Eight BigQuery datasets, each with a single domain owner and explicit access bindings.
+        The audit dataset is write-only by design — no principal holds delete permission.
+        Supplier PII fields carry column-level security. Site managers see only their site.
+      </p>
+    </div>
+  </div>
+
+  <div class="dataset-grid">
+    <div class="dataset-card">
+      <div class="dataset-name">asc_demand</div>
+      <div class="dataset-contents">Demand signals · Forecast history · SHAP explanation records per forecast run</div>
+      <div class="dataset-accent"></div>
+    </div>
+    <div class="dataset-card">
+      <div class="dataset-name">asc_supplier</div>
+      <div class="dataset-contents">Risk scores · Financial data · ESG records · Column-level PII security enforced</div>
+      <div class="dataset-accent"></div>
+    </div>
+    <div class="dataset-card">
+      <div class="dataset-name">asc_quality</div>
+      <div class="dataset-contents">NCR records · Batch records · Device lineage · MDR-compliant structure</div>
+      <div class="dataset-accent"></div>
+    </div>
+    <div class="dataset-card">
+      <div class="dataset-name">asc_inventory</div>
+      <div class="dataset-contents">Stock levels · Reorder history · Safety stock computations</div>
+      <div class="dataset-accent"></div>
+    </div>
+    <div class="dataset-card">
+      <div class="dataset-name">asc_contracts</div>
+      <div class="dataset-contents">Contract metadata · Clause risk scores only — contract text stays in Ariba, not in BQ</div>
+      <div class="dataset-accent"></div>
+    </div>
+    <div class="dataset-card">
+      <div class="dataset-name">asc_scope3</div>
+      <div class="dataset-contents">Emissions data · CSRD reporting tables · Supplier emissions contributions</div>
+      <div class="dataset-accent"></div>
+    </div>
+    <div class="dataset-card" style="border: 1px solid rgba(234,67,53,0.2);">
+      <div class="dataset-name" style="color: var(--red);">asc_audit</div>
+      <div class="dataset-contents">Immutable audit log. Append-only. <strong style="color:var(--text-primary);">No delete permission granted to any principal</strong> — including service accounts.</div>
+      <div class="dataset-accent"></div>
+    </div>
+    <div class="dataset-card">
+      <div class="dataset-name">asc_ml_metadata</div>
+      <div class="dataset-contents">Model versions · Drift metrics · Evaluation results · Model Card references</div>
+      <div class="dataset-accent"></div>
+    </div>
+  </div>
+
+  <div class="access-control-block">
+    <div class="access-title">BigQuery Access Control</div>
+    <div class="access-rules">
+      <div class="access-rule moderate">
+        <span class="rule-icon">COL</span>
+        <span>Column-level security on all supplier PII fields in <strong style="color:var(--text-primary)">asc_supplier</strong>. Procurement analyst roles see aggregated risk scores. Raw PII requires explicit data steward approval.</span>
+      </div>
+      <div class="access-rule moderate">
+        <span class="rule-icon">ROW</span>
+        <span>Row-level security by manufacturing site across inventory and quality datasets. Site managers see only their site's data. No cross-site visibility without explicit admin grant.</span>
+      </div>
+      <div class="access-rule critical">
+        <span class="rule-icon">AUD</span>
+        <span><strong style="color:var(--text-primary)">asc_audit: write-only service account.</strong> The audit log writer can only append. No principal — human or service account — holds delete permission on asc_audit. Immutability is enforced at the IAM layer, not by convention.</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="firestore-grid" style="margin-top: 24px;">
+    <div class="firestore-card">
+      <div class="firestore-path">/agent_state/{'{'}agentId{'}'}/{'{'}sessionId{'}'}</div>
+      <div class="firestore-purpose">Current agent execution state. Read/write by the owning agent service account only. Cross-agent state access is not permitted — agents communicate via Pub/Sub.</div>
+    </div>
+    <div class="firestore-card">
+      <div class="firestore-path">/hitl_queue/{'{'}checkpointId{'}'}</div>
+      <div class="firestore-purpose">Pending HITL decisions. Written by agent, read by approval interface, updated by reviewer action. Timeout behaviour triggers escalation path after configured window.</div>
+    </div>
+    <div class="firestore-card">
+      <div class="firestore-path">/a2a_transactions/{'{'}transactionId{'}'}</div>
+      <div class="firestore-purpose">A2A Commerce loop state. Tracks the full negotiation lifecycle: offer → counter → accept/reject. Each state transition is atomic and logged to asc_audit.</div>
+    </div>
+    <div class="firestore-card">
+      <div class="firestore-path">/supplier_risk/{'{'}supplierId{'}'}</div>
+      <div class="firestore-purpose">Latest supplier risk score plus history of score changes. Written by SupplierSentinel agent. Read by ProcureGuard for purchase decision context.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SECTION 05: SECURITY ===== -->
+<section id="security">
+  <div class="section-header">
+    <div class="section-number">05 — Security Architecture</div>
+    <div>
+      <h2 class="section-title">Zero trust.<br><em>No exceptions.</em></h2>
+      <p class="section-intro">
+        BeyondCorp for all human access. Workload Identity for all service-to-service calls.
+        VPC-SC perimeter makes data exfiltration structurally impossible, not just policy-prohibited.
+        CMEK means Google cannot access ClaraVis data at rest — not by accident, not by legal compulsion.
+      </p>
+    </div>
+  </div>
+
+  <div class="security-layout">
+    <div class="security-block">
+      <div class="security-block-title">VPC Service Controls Perimeter</div>
+      <div class="security-items">
+        <div class="security-item">
+          <span class="security-item-icon">SC</span>
+          <span>VPC-SC perimeter: <strong style="color:var(--text-primary)">meddevice-asc-prod</strong>. Resources inside: BigQuery, Firestore, Vertex AI, Cloud Storage, Secret Manager, Pub/Sub. No resource inside the perimeter is reachable from outside except through defined access levels.</span>
+        </div>
+        <div class="security-item">
+          <span class="security-item-icon">AL</span>
+          <span>Access levels: <strong style="color:var(--text-primary)">Corporate network + BeyondCorp device policy</strong>. Both must be satisfied simultaneously. A corporate network connection from an unmanaged device does not satisfy the access level.</span>
+        </div>
+        <div class="security-item">
+          <span class="security-item-icon">EG</span>
+          <span>Ingress/egress rules enforce that <strong style="color:var(--text-primary)">only Apigee X</strong> is permitted to call external APIs (SAP Ariba, Salesforce, Veeva Vault). No other service inside the perimeter can make external API calls.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="security-block">
+      <div class="security-block-title">Identity &amp; Access Control</div>
+      <div class="security-items">
+        <div class="security-item">
+          <span class="security-item-icon">BC</span>
+          <span><strong style="color:var(--text-primary)">BeyondCorp Enterprise</strong> — all human access to GCP Console and HITL approval interfaces. Context-aware access. Device trust required. No VPN. No implicit perimeter trust.</span>
+        </div>
+        <div class="security-item">
+          <span class="security-item-icon">WI</span>
+          <span><strong style="color:var(--text-primary)">Workload Identity Federation</strong> — all service-to-service calls. No service account key files generated or stored anywhere. Short-lived credentials only.</span>
+        </div>
+        <div class="security-item">
+          <span class="security-item-icon">SM</span>
+          <span><strong style="color:var(--text-primary)">Secret Manager</strong> — all API keys, CMEK key references, and connection strings. Zero secrets in code, environment variables, or container images. <strong style="color:var(--text-primary)">Automatic rotation enforced:</strong> external API keys (SAP Ariba, Salesforce, Veeva Vault) rotate every <strong style="color:var(--text-primary)">90 days</strong> via Secret Manager rotation notifications → Cloud Functions rotation handler. Rotation events are logged to asc_audit. Any secret version older than 90 days without a rotation event triggers a P2 alert.</span>
+        </div>
+      </div>
+      <div class="iam-example">
+        <div class="iam-example-label">IAM Binding Example — SupplierSentinel SA</div>
+        <div class="iam-binding">
+          <span class="iam-sa">supplier-sentinel-sa</span> →<br>
+          <span class="iam-allow">BigQuery.dataViewer</span> on <span class="iam-resource">asc_supplier</span><br>
+          <span class="iam-allow">Pubsub.publisher</span> on <span class="iam-resource">asc.hitl.queue</span><br>
+          <span class="iam-allow">Pubsub.subscriber</span> on <span class="iam-resource">asc.supplier.events</span><br>
+          <span style="color:var(--red);">Nothing else.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="background: var(--bg-card); border: 1px solid var(--border); padding: 36px; margin-top: 24px;">
+    <div class="card-label">CMEK — Customer-Managed Encryption Keys · Key Ring: meddevice-asc-keyring (europe-west3)</div>
+    <div class="cmek-grid">
+      <div class="cmek-chip">
+        <span class="cmek-service">BigQuery</span>
+        <span class="cmek-detail">All 8 datasets encrypted with CMEK. Default table encryption overridden at dataset level in Terraform.</span>
+      </div>
+      <div class="cmek-chip">
+        <span class="cmek-service">Firestore</span>
+        <span class="cmek-detail">All 4 collections CMEK-encrypted. Agent state, HITL queue, A2A transactions, supplier risk scores.</span>
+      </div>
+      <div class="cmek-chip">
+        <span class="cmek-service">Cloud Storage</span>
+        <span class="cmek-detail">All GCS buckets CMEK-encrypted. Model artifacts, training data, Terraform state bucket.</span>
+      </div>
+      <div class="cmek-chip">
+        <span class="cmek-service">Vertex AI</span>
+        <span class="cmek-detail">Model training jobs, Feature Store, and Vertex AI Pipelines use CMEK via the <span style="color:var(--amber);font-family:var(--mono);font-size:10px;">vertexai-key</span> key. Training data processed in-memory never leaves the CMEK-protected storage layer.</span>
+      </div>
+      <div class="cmek-chip">
+        <span class="cmek-service">Pub/Sub</span>
+        <span class="cmek-detail">All 10 topics encrypted at rest with CMEK. Message payloads containing supplier PII or device event data are covered. CMEK enforced at topic creation in Terraform — not applied retroactively.</span>
+      </div>
+      <div class="cmek-chip">
+        <span class="cmek-service">Secret Manager</span>
+        <span class="cmek-detail">All secrets encrypted with CMEK. Secret versions are immutable; access grants are logged to Cloud Audit Logs and sink to asc_audit.</span>
+      </div>
+    </div>
+    <div class="org-note" style="margin-top: 20px;">MedDevice holds the encryption keys. Google cannot access data at rest through operational access or legal compulsion <em>directed at Google</em>. Note: CMEK does not protect against legal compulsion directed at MedDevice as the key holder. Key access governance and legal hold procedures are addressed in the Data Protection Impact Assessment.</div>
+  </div>
+</section>
+
+<!-- ===== SECTION 06: TERRAFORM ===== -->
+<section id="terraform">
+  <div class="section-header">
+    <div class="section-number">06 — Terraform IaC Structure</div>
+    <div>
+      <h2 class="section-title">Infrastructure as<br><em>code. No drift.</em></h2>
+      <p class="section-intro">
+        Every GCP resource in this architecture is defined in Terraform. Eight modules. Three state files.
+        Nightly drift detection. Any unplanned change to production infrastructure triggers a P1 alert before
+        it causes a compliance violation.
+      </p>
+    </div>
+  </div>
+
+  <div class="terraform-layout">
+    <div class="module-tree">
+      <div class="module-tree-header">Module Structure · /modules/*</div>
+      <div class="module-list">
+        <div class="module-item">
+          <span class="module-path">/modules/networking</span>
+          <span class="module-contents">VPC, VPC-SC perimeter, firewall rules, Private Service Connect</span>
+        </div>
+        <div class="module-item">
+          <span class="module-path">/modules/compute</span>
+          <span class="module-contents">GKE Autopilot cluster, Cloud Run services, node pool definitions</span>
+        </div>
+        <div class="module-item">
+          <span class="module-path">/modules/data</span>
+          <span class="module-contents">BigQuery datasets, Firestore collections, GCS buckets, access controls</span>
+        </div>
+        <div class="module-item">
+          <span class="module-path">/modules/messaging</span>
+          <span class="module-contents">Pub/Sub topics, push/pull subscriptions, dead letter topics, retention policies</span>
+        </div>
+        <div class="module-item">
+          <span class="module-path">/modules/security</span>
+          <span class="module-contents">IAM bindings, Secret Manager secrets, CMEK key rings, VPC-SC access levels</span>
+        </div>
+        <div class="module-item">
+          <span class="module-path">/modules/ml</span>
+          <span class="module-contents">Vertex AI Feature Store, Model Registry, Pipeline definitions, endpoint configs</span>
+        </div>
+        <div class="module-item">
+          <span class="module-path">/modules/integration</span>
+          <span class="module-contents">Apigee X proxies, API product configs, rate limit policies, circuit breakers</span>
+        </div>
+        <div class="module-item">
+          <span class="module-path">/modules/observability</span>
+          <span class="module-contents">Cloud Monitoring dashboards, alerting policies, log sinks, SLO definitions</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="state-card">
+      <div class="card-label">State Management</div>
+      <div class="state-items">
+        <div class="state-item" style="border-left: 2px solid var(--amber);">
+          <div class="state-item-title">Remote State — GCS Bucket · Inside VPC-SC Perimeter</div>
+          <div class="state-item-desc">Terraform state stored in <strong>meddevice-asc-tf-state</strong> GCS bucket. CMEK-encrypted. Versioned. No local state files. <strong style="color:var(--text-primary)">The state bucket is inside the VPC-SC perimeter</strong> — it contains a complete infrastructure map (resource IDs, IAM bindings, secret references) and must be treated as sensitive. A dedicated VPC-SC Access Level grants the Cloud Build service account (<span style="color:var(--blue);font-family:var(--mono);font-size:11px;">cloudbuild-sa@meddevice-asc-shared.iam</span>) perimeter ingress solely for Terraform plan/apply operations. No other principal or pipeline may access the state bucket from outside the perimeter.</div>
+        </div>
+        <div class="state-item">
+          <div class="state-item-title">State Locking — GCS Native + Firestore</div>
+          <div class="state-item-desc">State locking via <strong>GCS object versioning + Firestore lock table</strong> (europe-west3). Terraform Cloud is explicitly avoided — it is a US-hosted SaaS product that would receive infrastructure metadata and create a GDPR data residency question. All locking state remains inside the EU org boundary. Concurrent apply prevention is enforced without any dependency on a non-EU third party.</div>
+        </div>
+        <div class="state-item">
+          <div class="state-item-title">Environment Isolation</div>
+          <div class="state-item-desc">Separate state files per environment: <strong>prod</strong> / <strong>staging</strong> / <strong>dev</strong>. A staging deploy cannot modify prod state under any circumstance.</div>
+        </div>
+        <div class="state-item" style="border-left: 2px solid var(--red);">
+          <div class="state-item-title">Drift Detection</div>
+          <div class="state-item-desc"><strong>Terraform plan runs nightly via Cloud Build.</strong> Any diff between Terraform state and actual GCP resource configuration triggers a P2 alert. Unresolved drift for 24 hours escalates to P1 — it is a potential compliance event.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SECTION 07: CI/CD ===== -->
+<section id="cicd">
+  <div class="section-header">
+    <div class="section-number">07 — CI/CD Pipeline</div>
+    <div>
+      <h2 class="section-title">Eight stages.<br><em>One named approver.</em></h2>
+      <p class="section-intro">
+        Cloud Build orchestrates every deployment. Feature branches deploy to dev automatically.
+        Production requires a named human approver. Integration tests validate cross-agent A2A flows before any container is built.
+        The EU AI Act compliance check is not optional —
+        no ML deployment reaches production without a validated Model Card.
+        Binary Authorization ensures only attested images reach GKE and Cloud Run.
+      </p>
+    </div>
+  </div>
+
+  <div class="pipeline-trigger-row">
+    <div class="trigger-card">
+      <div class="trigger-event">TRIGGER 01 · Push to feature branch</div>
+      <div class="trigger-action">Automatic deploy to <strong style="color:var(--text-primary)">dev</strong> environment. All stages run. No manual gate.</div>
+    </div>
+    <div class="trigger-card">
+      <div class="trigger-event">TRIGGER 02 · PR merge to main</div>
+      <div class="trigger-action">Automatic deploy to <strong style="color:var(--text-primary)">staging</strong> + full integration test suite.</div>
+    </div>
+    <div class="trigger-card">
+      <div class="trigger-event">TRIGGER 03 · Manual approval</div>
+      <div class="trigger-action">Deploy to <strong style="color:var(--text-primary)">production</strong>. Named approver required. Audit record written on approval.</div>
+    </div>
+  </div>
+
+  <div class="cicd-pipeline">
+    <div class="stage-row">
+      <span class="stage-num">01</span>
+      <div>
+        <div class="stage-name">Lint + Unit Tests</div>
+        <div class="stage-detail">Cloud Build · Python/TypeScript lint, unit test suite, coverage threshold check</div>
+      </div>
+      <span class="stage-badge badge-auto">AUTOMATIC</span>
+    </div>
+    <div class="stage-row">
+      <span class="stage-num">02</span>
+      <div>
+        <div class="stage-name">Integration Tests</div>
+        <div class="stage-detail">Cross-agent A2A message flow validation, Pub/Sub end-to-end delivery, HITL queue round-trip (dev environment). Agent orchestration contracts tested against stub supplier endpoints. Failures block container build.</div>
+      </div>
+      <span class="stage-badge badge-gate">INTEGRATION GATE</span>
+    </div>
+    <div class="stage-row">
+      <span class="stage-num">03</span>
+      <div>
+        <div class="stage-name">Container Build + Push</div>
+        <div class="stage-detail">Container build → push to Artifact Registry (europe-west3). Image tagged with commit SHA and environment. Binary Authorization attestation signed by Cloud Build SA at this stage.</div>
+      </div>
+      <span class="stage-badge badge-auto">AUTOMATIC</span>
+    </div>
+    <div class="stage-row">
+      <span class="stage-num">04</span>
+      <div>
+        <div class="stage-name">Terraform Plan — Review Gate</div>
+        <div class="stage-detail">Terraform plan runs against target environment. Plan output surfaced in PR. No apply at this stage — plan output is the review artefact.</div>
+      </div>
+      <span class="stage-badge badge-gate">REVIEW GATE</span>
+    </div>
+    <div class="stage-row">
+      <span class="stage-num">05</span>
+      <div>
+        <div class="stage-name">Terraform Apply</div>
+        <div class="stage-detail">Dev/staging: automatic apply after plan review. Production: requires named approver before apply executes. Approver identity written to audit log.</div>
+      </div>
+      <span class="stage-badge badge-gate">NAMED APPROVER (PROD)</span>
+    </div>
+    <div class="stage-row">
+      <span class="stage-num">06</span>
+      <div>
+        <div class="stage-name">Smoke Tests Per Module</div>
+        <div class="stage-detail">Post-deploy smoke tests validate each module endpoint. Health check, HITL queue connectivity, Pub/Sub publish/subscribe round-trip.</div>
+      </div>
+      <span class="stage-badge badge-auto">AUTOMATIC</span>
+    </div>
+    <div class="stage-row">
+      <span class="stage-num">07</span>
+      <div>
+        <div class="stage-name">EU AI Act Compliance Check</div>
+        <div class="stage-detail">Automated Model Card validation for all ML deployments. Missing, incomplete, or unversioned Model Cards block promotion to production. Non-negotiable gate.</div>
+      </div>
+      <span class="stage-badge badge-compliance">EU AI ACT</span>
+    </div>
+    <div class="stage-row">
+      <span class="stage-num">08</span>
+      <div>
+        <div class="stage-name">Security Scan + Binary Authorization</div>
+        <div class="stage-detail">Container Analysis scans all images for known CVEs. Binary Authorization policy enforces that only Cloud Build-attested images may be deployed to GKE and Cloud Run — unverified container images are rejected at the admission controller. Cloud Security Command Center validates posture. Findings above MEDIUM severity block production deploy.</div>
+      </div>
+      <span class="stage-badge badge-security">SECURITY GATE</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SECTION 08: OBSERVABILITY ===== -->
+<section id="observability">
+  <div class="section-header">
+    <div class="section-number">08 — Observability Stack</div>
+    <div>
+      <h2 class="section-title">One global dashboard.<br><em>Eight SLO definitions.</em></h2>
+      <p class="section-intro">
+        Cloud Monitoring owns the observability surface. Six dashboards — one global, one per module.
+        SLOs are formal definitions with error budgets, not informal targets. All eight modules carry a named SLO.
+        PagerDuty receives P1 alerts within 30 seconds of any HITL queue failure or VPC-SC violation.
+      </p>
+    </div>
+  </div>
+
+  <div class="obs-layout">
+    <div class="slo-def-card">
+      <div class="card-label">SLO Definitions</div>
+      <table class="slo-table">
+        <thead>
+          <tr>
+            <th>Module / Operation</th>
+            <th>Metric</th>
+            <th>Target</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>DemandIQ Forecast</td>
+            <td style="color:var(--text-muted); font-size:12px;">Request latency</td>
+            <td><span class="slo-target">p95 ≤ 30s</span></td>
+          </tr>
+          <tr>
+            <td>SupplierSentinel Risk Refresh</td>
+            <td style="color:var(--text-muted); font-size:12px;">Full refresh cycle</td>
+            <td><span class="slo-target">p95 ≤ 60s</span></td>
+          </tr>
+          <tr>
+            <td>HITL Queue Delivery</td>
+            <td style="color:var(--text-muted); font-size:12px;">Event → approver interface</td>
+            <td><span class="slo-target">p99 ≤ 5s</span></td>
+          </tr>
+          <tr>
+            <td>A2A Message Round-Trip</td>
+            <td style="color:var(--text-muted); font-size:12px;">Outbound → inbound</td>
+            <td><span class="slo-target">p95 ≤ 10s</span></td>
+          </tr>
+          <tr>
+            <td>QualityTrace NCR Root Cause</td>
+            <td style="color:var(--text-muted); font-size:12px;">End-to-end analysis</td>
+            <td><span class="slo-target">p95 ≤ 2h</span></td>
+          </tr>
+          <tr>
+            <td>ProcureGuard PO Issuance</td>
+            <td style="color:var(--text-muted); font-size:12px;">Decision → SAP Ariba write</td>
+            <td><span class="slo-target">p95 ≤ 45s</span></td>
+          </tr>
+          <tr>
+            <td>ContractIntelligence Clause Score</td>
+            <td style="color:var(--text-muted); font-size:12px;">Contract ingestion → risk score</td>
+            <td><span class="slo-target">p95 ≤ 120s</span></td>
+          </tr>
+          <tr>
+            <td>ScopeTracer CSRD Report</td>
+            <td style="color:var(--text-muted); font-size:12px;">Data availability → report ready</td>
+            <td><span class="slo-target">p95 ≤ 4h</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <div style="margin-top: 20px; padding: 14px 16px; background: var(--bg-3); font-size: 12px; color: var(--text-secondary);">
+        Global ASC dashboard: all-module health · HITL queue depth · A2A transaction success rate · EU AI Act compliance status. Per-module: request latency p50/p95/p99 · error rate · HITL resolution time · model prediction distribution drift.
+      </div>
+    </div>
+
+    <div class="alerting-card">
+      <div class="card-label">Alerting Policy → PagerDuty</div>
+
+      <div class="alert-tier">
+        <div class="alert-tier-header">
+          <span class="alert-level p1">P1</span>
+          <span class="alert-route">→ PagerDuty immediate · on-call wake</span>
+        </div>
+        <div class="alert-conditions">
+          <div class="alert-cond">Any HITL queue failure — compliance event</div>
+          <div class="alert-cond">Any MDR SLA breach risk detected</div>
+          <div class="alert-cond">Any VPC-SC access violation — potential data exfiltration</div>
+        </div>
+      </div>
+
+      <div class="alert-tier">
+        <div class="alert-tier-header">
+          <span class="alert-level p2">P2</span>
+          <span class="alert-route">→ PagerDuty · business hours response</span>
+        </div>
+        <div class="alert-conditions">
+          <div class="alert-cond">Model drift threshold breach — retraining required</div>
+          <div class="alert-cond">Any A2A transaction failure — supplier impact</div>
+          <div class="alert-cond">SLO breach on any named metric</div>
+          <div class="alert-cond">Terraform drift detected in production</div>
+        </div>
+      </div>
+
+      <div class="alert-tier">
+        <div class="alert-tier-header">
+          <span class="alert-level p3">P3</span>
+          <span class="alert-route">→ Slack notification · next day</span>
+        </div>
+        <div class="alert-conditions">
+          <div class="alert-cond">Cost anomaly: &gt;20% above FinOps budget</div>
+          <div class="alert-cond">Non-critical service degradation within SLO</div>
+          <div class="alert-cond">Dead letter topic accumulation &gt; threshold</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SECTION 09: FINOPS + GREENOPS ===== -->
+<section id="finops-greenops">
+  <div class="section-header">
+    <div class="section-number">09 — FinOps + GreenOps</div>
+    <div>
+      <h2 class="section-title">Cost as code.<br><em>Carbon as signal.</em></h2>
+      <p class="section-intro">
+        Every GCP resource carries a cost label that maps to a module, environment, and cost centre.
+        Batch ML training jobs run between 22:00 and 06:00 CET — when the grid is clean.
+        ScopeTracer calculates its own GCP carbon footprint and includes it in the Scope 3 report it generates.
+      </p>
+    </div>
+  </div>
+
+  <div class="ops-grid">
+    <div class="ops-card finops-card">
+      <div class="ops-icon finops-icon">€</div>
+      <div class="ops-title">FinOps</div>
+      <div class="ops-subtitle">Cost visibility by module, by environment, by cost centre</div>
+      <div class="ops-items">
+        <div class="ops-item highlight-finops">
+          <strong>Cost labels on all resources:</strong> module · environment · cost_centre (per MedDevice department) · eu_ai_act_classification. Every GCP invoice line maps to a business owner. <strong style="color:var(--text-primary)">Label taxonomy (eu_ai_act_classification enum):</strong> <span style="font-family:var(--mono);font-size:11px;color:var(--blue);">high-risk-annex-iii</span> · <span style="font-family:var(--mono);font-size:11px;color:var(--amber);">limited-risk</span> · <span style="font-family:var(--mono);font-size:11px;color:var(--green);">minimal-risk</span> · <span style="font-family:var(--mono);font-size:11px;color:var(--text-muted);">non-ai-infra</span>. Terraform enforces the enum — invalid values fail the plan stage. Labels map directly to EU AI Act Annex III classifications defined in the TOGAF Phase B register.
+        </div>
+        <div class="ops-item highlight-finops">
+          <strong>BigQuery slot reservations</strong> per environment prevent ad-hoc query cost spikes from analytics consumers. Query cost alerts at <strong>€500/day</strong> — before the problem is visible in the monthly bill.
+        </div>
+        <div class="ops-item highlight-finops">
+          <strong>Cloud Run min-instances=0</strong> for all batch and reporting modules during off-peak. No idle compute for workloads that run on a schedule.
+        </div>
+        <div class="ops-item highlight-finops">
+          <strong>Monthly FinOps review:</strong> cost per module mapped against value delivered. Modules with poor cost-to-value ratios are candidates for architectural revision, not just optimisation.
+        </div>
+      </div>
+    </div>
+
+    <div class="ops-card greenops-card">
+      <div class="ops-icon greenops-icon">◈</div>
+      <div class="ops-title">GreenOps</div>
+      <div class="ops-subtitle">Carbon scheduling + Scope 3 self-reporting</div>
+      <div class="ops-items">
+        <div class="ops-item highlight-green">
+          <strong>Carbon-aware batch ML scheduling via the Carbon-Aware SDK.</strong> Training jobs are submitted to Cloud Scheduler with a carbon-intensity signal from the <strong style="color:var(--text-primary)">Google Carbon-Aware Batch Scheduling API</strong> (europe-west3). The 22:00–06:00 CET window is a fallback default only — the primary scheduling signal is real-time grid carbon intensity data, not a hardcoded time heuristic. This ensures training runs on clean energy by measurement, not assumption.
+        </div>
+        <div class="ops-item highlight-green">
+          <strong>ScopeTracer reports its own GCP carbon footprint</strong> as part of the Scope 3 calculation it generates for MedDevice. The tool that measures supply chain emissions accounts for its own.
+        </div>
+        <div class="ops-item highlight-green">
+          <strong>Cloud Carbon Footprint API</strong> integrated into the SupplyChain Command Dashboard. Carbon intensity for GCP workloads is a first-class metric alongside cost and latency — visible to the same leadership audience as FinOps figures.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="highlight-bar">
+    <span class="highlight-icon" style="color: var(--green);">↺</span>
+    <span class="highlight-text">
+      <strong>The loop closes here:</strong> ScopeTracer calculates supplier Scope 3 emissions, reports them to MedDevice's CSRD dashboard,
+      and accounts for its own GCP compute carbon footprint in the same calculation. Infrastructure carbon is not an exemption.
+      It is line one of the Scope 3 calculation.
+    </span>
+  </div>
+</section>
+
+<!-- ===== PAGE NAV ===== -->
+<div class="page-nav">
+  <a href="#" class="page-nav-link" style="text-align:left;">
+    <span class="nav-link-label">← Previous</span>
+    <span class="nav-link-title">PG 07 — ML Engineering &amp; MLOps</span>
+  </a>
+  <div style="text-align:center;">
+    <div style="font-family: var(--mono); font-size: 11px; color: var(--text-muted); letter-spacing: 0.1em; margin-bottom: 6px;">PAGE 08 OF 09</div>
+    <div style="font-family: var(--serif); font-size: 15px; color: var(--text-secondary);">Infrastructure &amp; GCP Architecture</div>
+  </div>
+  <a href="#" class="page-nav-link" style="text-align:right;">
+    <span class="nav-link-label">Next →</span>
+    <span class="nav-link-title">PG 09 — The ASC Suite</span>
+  </a>
+</div>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer">
+  <span class="footer-brand">The Autonomous Supply Chain</span>
+  <div class="footer-tags">
+    <span class="footer-tag">TOGAF 10</span>
+    <span class="footer-tag">Google Cloud</span>
+    <span class="footer-tag">EU AI Act</span>
+    <span class="footer-tag">ISO 13485</span>
+    <span class="footer-tag">MDR</span>
+    <span class="footer-tag">Terraform IaC</span>
+  </div>
+  <span class="footer-copy">© 2026 · Architecture Portfolio</span>
+</footer>
+
+</body>
+</html>
