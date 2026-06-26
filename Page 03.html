@@ -1,0 +1,1253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Workflow Simulation — The Autonomous Supply Chain</title>
+<meta name="description" content="An explainability-first, EU AI Act-compliant enterprise AI architecture for regulated manufacturers — The Autonomous Supply Chain by Siddharth Rao.">
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg: #fafaf8; --bg2: #f2f0eb; --bg3: #e8e5de;
+  --text: #1a1917; --text2: #5a5852; --text3: #8a8880;
+  --border: #d8d5ce; --border2: #c8c5be;
+  --blue: #1850a0; --blue-bg: #eaf2fe; --blue-border: #90b8e8;
+  --purple: #4a40b0; --purple-bg: #f0effe; --purple-border: #b0a8e8;
+  --teal: #0a6b52; --teal-bg: #e8f5f0; --teal-border: #80c8b0;
+  --amber: #b07010; --amber-bg: #fdf4e3; --amber-border: #e8c870;
+  --coral: #b03820; --coral-bg: #fdf0ec; --coral-border: #e8a090;
+  --serif: 'DM Serif Display', Georgia, serif;
+  --mono: 'IBM Plex Mono', monospace;
+  --sans: 'Inter', system-ui, sans-serif;
+  --r: 6px; --r-lg: 10px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--sans); background: var(--bg); color: var(--text); font-size: 15px; line-height: 1.7; -webkit-font-smoothing: antialiased; }
+
+.skip-link {
+  position: absolute; top: -40px; left: 16px;
+  background: var(--blue); color: #fff;
+  padding: 8px 16px; border-radius: 4px; z-index: 9999;
+  font-family: var(--mono); font-size: 13px; text-decoration: none;
+  transition: top 0.2s;
+}
+.skip-link:focus { top: 8px; }
+
+.page-wrap { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
+
+/* SIDEBAR */
+.sidebar {
+  position: sticky; top: 0; height: 100vh; overflow-y: auto;
+  background: var(--bg2); border-right: 1px solid var(--border);
+  padding: 2rem 1.25rem; display: flex; flex-direction: column; gap: 0;
+}
+.sidebar-logo { font-family: var(--mono); font-size: 11px; font-weight: 500; color: var(--text3); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.25rem; }
+.sidebar-project { font-family: var(--serif); font-size: 20px; color: var(--text); margin-bottom: 2rem; line-height: 1.2; }
+.sidebar-project span { color: var(--blue); }
+.sidebar-nav { list-style: none; display: flex; flex-direction: column; gap: 2px; }
+.sidebar-nav a { display: block; font-size: 12.5px; color: var(--text2); text-decoration: none; padding: 6px 10px; border-radius: var(--r); transition: background 0.15s, color 0.15s; }
+.sidebar-nav a:hover { background: var(--bg3); color: var(--text); }
+.sidebar-nav a.active { background: var(--text); color: var(--bg); }
+.sidebar-divider { height: 1px; background: var(--border); margin: 1.25rem 0; }
+
+.stack-block { margin-top: auto; padding-top: 1.5rem; border-top: 1px solid var(--border); }
+.stack-title { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text3); margin-bottom: 0.75rem; }
+.stack-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+.stack-tag { font-family: var(--mono); font-size: 9.5px; padding: 2px 6px; background: var(--bg3); border-radius: 4px; color: var(--text2); border: 1px solid transparent; }
+.stack-tag.accent { color: var(--blue); background: var(--blue-bg); border-color: var(--blue-border); }
+.stack-tag.green { color: var(--teal); background: var(--teal-bg); border-color: var(--teal-border); }
+.stack-tag.amber { color: var(--amber); background: var(--amber-bg); border-color: var(--amber-border); }
+.stack-tag.red { color: var(--coral); background: var(--coral-bg); border-color: var(--coral-border); }
+
+/* MAIN */
+.main { padding: 0; overflow-x: hidden; }
+.topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0.75rem 2.5rem; border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; background: rgba(250,250,248,0.95); backdrop-filter: blur(8px); z-index: 100;
+}
+.topbar-breadcrumb { font-family: var(--mono); font-size: 11px; color: var(--text3); }
+.topbar-breadcrumb a { color: var(--text3); text-decoration: none; }
+.topbar-right { display: flex; align-items: center; gap: 12px; }
+.topbar-tag { font-family: var(--mono); font-size: 10px; padding: 3px 10px; background: var(--bg3); border-radius: 99px; color: var(--text2); }
+.nav-cta { font-family: var(--mono); font-size: 11px; font-weight: 500; color: var(--blue); text-decoration: none; border: 1px solid var(--blue-border); padding: 3px 10px; border-radius: 4px; background: white; transition: all 0.2s; }
+.nav-cta:hover { background: var(--blue-bg); }
+
+/* CONTENT */
+.content { padding: 3rem 2.5rem 5rem; max-width: 940px; }
+
+/* SCHEMA DISCLAIMER */
+.schema-disclaimer {
+  background: var(--blue-bg); border: 1px solid var(--blue-border);
+  padding: 12px 20px; border-radius: var(--r);
+  display: flex; align-items: flex-start; gap: 12px;
+  font-size: 13px; color: var(--text2); margin-bottom: 2rem; line-height: 1.6;
+}
+.schema-disclaimer strong { color: var(--blue); }
+.schema-disclaimer-icon { font-size: 16px; flex-shrink: 0; }
+
+/* HEADER */
+.doc-header { margin-bottom: 3.5rem; padding-bottom: 3rem; border-bottom: 1px solid var(--border); }
+.doc-eyebrow { display: flex; align-items: center; gap: 12px; font-family: var(--mono); font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1.5rem; }
+.doc-eyebrow::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.doc-title { font-family: var(--serif); font-size: clamp(32px, 5vw, 46px); font-weight: 400; line-height: 1.12; letter-spacing: -0.02em; color: var(--text); margin-bottom: 1rem; }
+.doc-title em { font-style: italic; color: var(--blue); }
+.doc-subtitle { font-size: 16px; line-height: 1.7; color: var(--text2); font-weight: 300; border-left: 2px solid var(--blue-border); padding-left: 20px; margin-bottom: 2.5rem; }
+
+/* CONTEXT CARD */
+.context-card { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0; border: 1px solid var(--border); border-radius: var(--r-lg); overflow: hidden; background: white; margin: 2rem 0; }
+.context-stat { padding: 1.25rem 1.5rem; border-right: 1px solid var(--border); }
+.context-stat:last-child { border-right: none; }
+.context-stat .label { font-family: var(--mono); font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px; display: block; }
+.context-stat .value { font-family: var(--serif); font-size: 20px; color: var(--text); font-weight: 400; }
+
+/* PROACTIVE RISK NOTE */
+.proactive-note {
+  display: flex; align-items: flex-start; gap: 12px;
+  background: var(--amber-bg); border: 1px solid var(--amber-border);
+  border-radius: var(--r); padding: 14px 18px; margin-bottom: 2rem;
+  font-size: 13.5px; color: var(--text2); line-height: 1.6;
+}
+.proactive-note-icon { font-size: 16px; flex-shrink: 0; }
+.proactive-note strong { color: var(--amber); }
+
+/* CONTROLS */
+.sim-actions { display: flex; align-items: center; gap: 12px; margin-top: 2rem; }
+.btn-run {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: var(--text); color: var(--bg); border: none;
+  border-radius: var(--r); padding: 12px 28px;
+  font-family: var(--sans); font-size: 14px; font-weight: 500;
+  cursor: pointer; transition: opacity 0.2s;
+}
+.btn-run:hover { opacity: 0.9; }
+.btn-restart {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: white; color: var(--text2);
+  border: 1px solid var(--border); border-radius: var(--r);
+  padding: 11px 20px; font-family: var(--sans);
+  font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s;
+}
+.btn-restart:hover { background: var(--bg2); color: var(--text); }
+
+/* SIMULATION ENVIRONMENT */
+.simulation-shell { display: none; margin-top: 2rem; border-top: 1px solid var(--border); padding-top: 3rem; }
+.simulation-shell.active { display: block; }
+
+/* PROGRESS BAR */
+.progress-bar-wrap { margin-bottom: 2.5rem; }
+.progress-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.progress-meta .label { font-family: var(--mono); font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.08em; }
+.progress-meta .counter { font-family: var(--mono); font-size: 12px; color: var(--blue); font-weight: 500; }
+.progress-track { height: 4px; background: var(--bg2); border-radius: 99px; overflow: hidden; }
+.progress-fill { height: 100%; background: var(--blue); border-radius: 99px; transition: width 0.4s cubic-bezier(0.4,0,0.2,1); }
+
+/* LAYOUT MULTI-COL */
+.sim-layout { display: grid; grid-template-columns: 200px 1fr; gap: 32px; }
+.step-timeline { position: sticky; top: 100px; align-self: start; display: flex; flex-direction: column; gap: 0; }
+.timeline-item { display: flex; flex-direction: column; padding: 6px 12px; border-left: 2px solid var(--border); cursor: pointer; transition: all 0.15s; margin-bottom: 2px; }
+.timeline-item:hover { border-left-color: var(--border2); }
+.timeline-item.active { border-left-color: var(--blue); background: var(--bg2); }
+.timeline-item.done { border-left-color: var(--teal); }
+.timeline-item.error-path { border-left-color: var(--coral); }
+.tl-dot { font-family: var(--mono); font-size: 11px; color: var(--text3); margin-bottom: 2px; }
+.timeline-item.active .tl-dot { color: var(--blue); font-weight: 500; }
+.tl-label { font-size: 12px; color: var(--text2); line-weight: 1.3; }
+.timeline-item.active .tl-label { color: var(--text); font-weight: 500; }
+
+/* STEP CARD PANEL */
+.step-panel { min-width: 0; }
+.step-card { border: 1px solid var(--border); border-radius: var(--r-lg); background: white; overflow: hidden; }
+.step-header { display: flex; align-items: center; justify-content: space-between; padding: 1.25rem 1.5rem; background: var(--bg2); border-bottom: 1px solid var(--border); }
+.step-number-badge { font-family: var(--mono); font-size: 10px; text-transform: uppercase; color: var(--blue); font-weight: 500; }
+.step-title-group { flex: 1; margin-left: 1rem; }
+.step-title { font-family: var(--serif); font-size: 20px; color: var(--text); }
+.state-transition { display: inline-flex; align-items: center; gap: 6px; font-family: var(--mono); font-size: 10px; margin-top: 2px; color: var(--text3); }
+.state-to { color: var(--teal); font-weight: 500; }
+.state-to.error { color: var(--coral); font-weight: 500; }
+
+.actor-badge { font-family: var(--mono); font-size: 10px; padding: 3px 8px; border-radius: 99px; text-transform: uppercase; }
+.actor-badge.agent { background: var(--blue-bg); color: var(--blue); border: 1px solid var(--blue-border); }
+.actor-badge.human { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-border); }
+.actor-badge.system { background: var(--bg3); color: var(--text3); border: 1px solid var(--border); }
+.actor-badge.supplier { background: var(--teal-bg); color: var(--teal); border: 1px solid var(--teal-border); }
+
+.step-body { padding: 1.5rem; }
+.narration { font-size: 14.5px; line-height: 1.75; color: var(--text2); background: var(--bg2); padding: 1rem 1.25rem; border-left: 3px solid var(--blue); border-radius: 0 var(--r) var(--r) 0; margin-bottom: 1.5rem; font-weight: 300; }
+.section-label { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text3); margin: 1.5rem 0 0.5rem; display: block; }
+
+/* JSON STRUCTURES */
+.json-block { background: #16150f; border: 1px solid var(--border); border-radius: var(--r); padding: 1.25rem; font-family: var(--mono); font-size: 12px; line-height: 1.7; color: #8a8870; overflow-x: auto; margin-bottom: 1.5rem; }
+.json-key { color: #a09060; }
+.json-str { color: #78b890; }
+.json-num { color: #c08840; }
+.json-bool { color: #c0b8e8; }
+.json-punct { color: #4a4a38; }
+
+/* PUBSUB EVENT CARD */
+.pubsub-card { border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; background: white; margin-bottom: 1.5rem; }
+.pubsub-header { padding: 8px 12px; background: var(--bg2); border-bottom: 1px solid var(--border); font-family: var(--mono); font-size: 10px; color: var(--text3); text-transform: uppercase; }
+.pubsub-dot { inline-block; width: 6px; height: 6px; background: var(--blue); border-radius: 50%; display: inline-block; margin-right: 6px; }
+.pubsub-body { padding: 12px; }
+
+/* AUDIT LAYER CORES */
+.audit-entry { display: flex; align-items: flex-start; gap: 12px; border: 1px solid var(--border); border-radius: var(--r); padding: 12px 16px; margin-bottom: 1rem; background: white; font-size: 13.5px; color: var(--text2); }
+.audit-icon { font-size: 14px; flex-shrink: 0; }
+.audit-ref { font-family: var(--mono); font-size: 11px; color: var(--text3); margin-top: 4px; display: block; }
+
+/* EXCEPTION HANDLING PANELS */
+.error-path-section { border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; margin-top: 1.5rem; }
+.error-path-header { background: var(--bg2); padding: 10px 14px; display: flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 11px; color: var(--text3); text-transform: uppercase; cursor: pointer; }
+.error-path-header:hover { background: var(--bg3); }
+.error-path-body { padding: 14px; display: none; background: white; border-top: 1px solid var(--border); }
+.error-path-body.open { display: block; }
+.error-scenario { margin-bottom: 12px; padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--r); font-size: 13px; color: var(--text2); line-height: 1.6; }
+.error-scenario:last-child { margin-bottom: 0; }
+.error-scenario strong { color: var(--coral); display: block; margin-bottom: 4px; font-family: var(--sans); }
+
+/* PERFORMANCE RISK BARS */
+.composite-score { display: flex; align-items: center; gap: 16px; padding: 1.25rem; border: 1px solid var(--coral-border); background: var(--coral-bg); border-radius: var(--r); margin-bottom: 1.5rem; }
+.composite-score .score-num { font-family: var(--serif); font-size: 36px; color: var(--coral); line-height: 1; }
+.composite-score .score-label { font-size: 12px; color: var(--text2); }
+.composite-score .score-level { font-family: var(--mono); font-size: 10px; color: var(--coral); border: 1px solid var(--coral-border); padding: 2px 6px; border-radius: 4px; font-weight: 500; }
+
+.risk-bars { display: flex; flex-direction: column; gap: 10px; margin-bottom: 1.5rem; }
+.risk-row { display: flex; align-items: center; gap: 12px; }
+.risk-label { font-size: 13px; color: var(--text2); width: 220px; flex-shrink: 0; }
+.risk-track { flex: 1; height: 5px; background: var(--bg2); border-radius: 99px; overflow: hidden; }
+.risk-fill { height: 100%; border-radius: 99px; transition: width 0.8s ease; width: 0; }
+.risk-fill.high { background: var(--coral); }
+.risk-fill.med { background: var(--amber); }
+.risk-fill.low { background: var(--teal); }
+.risk-score-val { font-family: var(--mono); font-size: 12px; color: var(--text); width: 36px; text-align: right; }
+
+/* SHAP PLOTS */
+.shap-rows { display: flex; flex-direction: column; gap: 12px; margin-bottom: 1.5rem; }
+.shap-row { border: 1px solid var(--border); border-radius: var(--r); padding: 12px; background: white; }
+.shap-row-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+.shap-feature { font-size: 13px; font-weight: 500; color: var(--text); }
+.shap-impact { font-family: var(--mono); font-size: 11.5px; color: var(--coral); font-weight: 500; }
+.shap-bar-track { height: 4px; background: var(--bg2); border-radius: 99px; margin-bottom: 6px; }
+.shap-bar-fill { height: 100%; background: var(--coral); border-radius: 99px; transition: width 0.8s ease; width: 0; }
+.shap-explain { font-size: 12.5px; color: var(--text2); line-height: 1.5; font-weight: 300; }
+
+/* HITL MECHANISMS */
+.hitl-card { border: 1px solid var(--amber-border); background: var(--amber-bg); border-radius: var(--r-lg); overflow: hidden; margin-bottom: 1.5rem; }
+.hitl-header { padding: 12px 16px; border-bottom: 1px solid var(--amber-border); background: rgba(176,112,16,0.06); display: flex; align-items: center; justify-content: space-between; }
+.hitl-title { font-family: var(--mono); font-size: 11px; text-transform: uppercase; color: var(--amber); font-weight: 500; }
+.hitl-slo { font-family: var(--mono); font-size: 11px; color: var(--amber); display: flex; align-items: center; gap: 6px; }
+.slo-pulse { width: 6px; height: 6px; border-radius: 50%; background: var(--amber); animation: pulse-anim 1.5s infinite; }
+@keyframes pulse-anim { 0%,100%{opacity:1} 50%{opacity:0.4} }
+.hitl-body { padding: 14px 16px; }
+.hitl-field { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+.hitl-field:last-of-type { border-bottom: none; }
+.hitl-field-label { color: var(--text3); }
+.hitl-field-value { color: var(--text); font-weight: 500; text-align: right; max-width: 65%; }
+.hitl-actions { display: flex; gap: 10px; padding: 12px 16px; border-top: 1px solid var(--border); }
+.btn-approve { flex: 1; text-align: center; padding: 8px; background: var(--teal); color: white; border-radius: var(--r); font-size: 12px; font-weight: 500; cursor: default; }
+.btn-reject, .btn-escalate { padding: 8px 14px; background: white; border: 1px solid var(--border); border-radius: var(--r); font-size: 12px; color: var(--text2); cursor: default; }
+
+.approval-card { border: 1px solid var(--teal-border); background: var(--teal-bg); border-radius: var(--r-lg); padding: 1.25rem; display: flex; align-items: flex-start; gap: 14px; margin-bottom: 1.5rem; }
+.approval-check { font-size: 20px; line-height: 1; }
+.approval-body { flex: 1; }
+.approval-title { font-family: var(--serif); font-size: 16px; color: var(--teal); margin-bottom: 6px; }
+.approval-field { font-size: 13px; color: var(--text2); margin-bottom: 2px; }
+.approval-field span { color: var(--text); font-weight: 500; }
+.jwt-chip { display: inline-flex; align-items: center; gap: 8px; background: var(--bg2); border: 1px solid var(--border); border-radius: 4px; padding: 4px 8px; margin-top: 8px; }
+.jwt-label { font-family: var(--mono); font-size: 9px; color: var(--text3); text-transform: uppercase; }
+.jwt-value { font-family: var(--mono); font-size: 11px; color: var(--text2); }
+
+/* TRUST AND SECURITY ARCHITECTURE */
+.auth-boundary-note, .model-explainability-note, .registry-note { display: flex; align-items: flex-start; gap: 10px; background: var(--blue-bg); border: 1px solid var(--blue-border); border-radius: var(--r); padding: 12px 16px; margin-bottom: 1.5rem; font-size: 13px; color: var(--text2); line-height: 1.6; }
+.auth-boundary-note strong, .model-explainability-note strong, .registry-note strong { color: var(--blue); }
+.xborder-note { display: flex; align-items: flex-start; gap: 10px; background: var(--purple-bg); border: 1px solid var(--purple-border); border-radius: var(--r); padding: 12px 16px; margin-bottom: 1.5rem; font-size: 13px; color: var(--text2); line-height: 1.6; }
+.xborder-note strong { color: var(--purple); }
+
+/* A2A COMMERCE INTERFACES */
+.a2a-cards { display: flex; flex-direction: column; gap: 10px; margin-bottom: 1.5rem; }
+.a2a-card { border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; background: white; }
+.a2a-card-header { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; background: var(--bg2); border-bottom: 1px solid var(--border); }
+.a2a-to { font-size: 12.5px; font-weight: 500; color: var(--text); }
+.a2a-tag { font-family: var(--mono); font-size: 10px; color: var(--text3); }
+.a2a-body { padding: 10px 12px; font-family: var(--mono); font-size: 11.5px; color: var(--text2); line-height: 1.5; }
+.ai-disclosure-tag { font-family: var(--mono); font-size: 9px; padding: 1px 5px; background: var(--blue-bg); color: var(--blue); border: 1px solid var(--blue-border); border-radius: 3px; margin-left: 6px; }
+
+/* BID ORCHESTRATION */
+.bid-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 1.5rem; }
+.bid-card { border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; background: white; }
+.bid-card.recommended { border-color: var(--teal-border); }
+.bid-card.warning { border-color: var(--amber-border); }
+.bid-card-header { padding: 10px 12px; font-size: 13px; font-weight: 500; color: var(--text); border-bottom: 1px solid var(--border); background: var(--bg2); }
+.bid-card.recommended .bid-card-header { background: var(--teal-bg); color: var(--teal); }
+.bid-card.warning .bid-card-header { background: var(--amber-bg); color: var(--amber); }
+.bid-field { display: flex; justify-content: space-between; padding: 6px 12px; border-bottom: 1px solid var(--border); font-size: 12px; }
+.bid-field:last-child { border-bottom: none; }
+.bid-field-label { color: var(--text3); }
+.bid-field-value { font-family: var(--mono); color: var(--text); }
+.bid-field-value.green { color: var(--teal); }
+.bid-field-value.amber { color: var(--amber); }
+.bid-field-value.red { color: var(--coral); }
+
+.tco-table { width: 100%; border-collapse: collapse; margin-bottom: 1.5rem; font-size: 13px; }
+.tco-table th { font-family: var(--mono); font-size: 10px; text-transform: uppercase; color: var(--text3); padding: 8px 12px; border-bottom: 1px solid var(--border); text-align: left; }
+.tco-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); color: var(--text2); font-family: var(--mono); }
+.tco-table tr.recommended td { background: var(--teal-bg); color: var(--text); }
+.score-pill { font-family: var(--mono); font-size: 10.5px; padding: 2px 6px; border-radius: 4px; font-weight: 500; }
+.score-pill.high { background: var(--teal-bg); color: var(--teal); border: 1px solid var(--teal-border); }
+.score-pill.mid { background: var(--bg3); color: var(--text2); }
+.score-pill.low { background: var(--coral-bg); color: var(--coral); }
+
+/* PO ARTIFACTS */
+.po-card { border: 1px solid var(--border); border-radius: var(--r-lg); overflow: hidden; background: white; margin-bottom: 1.5rem; }
+.po-header { padding: 12px 16px; background: var(--bg2); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+.po-id { font-family: var(--mono); font-size: 13px; font-weight: 500; color: var(--text); }
+.po-status { font-family: var(--mono); font-size: 10px; color: var(--teal); text-transform: uppercase; }
+.po-fields { padding: 4px 0; }
+.po-field { display: flex; justify-content: space-between; padding: 8px 16px; border-bottom: 1px solid var(--border); font-size: 13px; }
+.po-field:last-child { border: none; }
+.po-field-label { color: var(--text3); }
+.po-field-value { font-family: var(--mono); color: var(--text); text-align: right; max-width: 65%; }
+.erp-async-note { margin: 12px 16px; background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r); padding: 10px 12px; font-size: 12.5px; color: var(--text2); line-height: 1.5; }
+.erp-async-note strong { color: var(--text); }
+
+.jwt-chain { padding: 10px 16px; border-top: 1px solid var(--border); background: var(--bg2); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.jwt-chain-label { font-family: var(--mono); font-size: 9px; color: var(--text3); text-transform: uppercase; }
+.jwt-link { font-family: var(--mono); font-size: 11px; background: white; border: 1px solid var(--border); border-radius: 4px; padding: 2px 6px; color: var(--text2); }
+.chain-separator { color: var(--text3); font-size: 12px; }
+
+/* AUDIT TIMELINE SUMMARY */
+.audit-timeline { margin-bottom: 1.5rem; border: 1px solid var(--border); border-radius: var(--r-lg); overflow: hidden; background: white; }
+.audit-chain-item { display: grid; grid-template-columns: 40px 120px 1fr 140px; align-items: center; padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 13px; }
+.audit-chain-item:last-child { border-bottom: none; }
+.audit-chain-icon { text-align: center; color: var(--text3); }
+.audit-chain-ref { font-family: var(--mono); color: var(--blue); font-weight: 500; }
+.audit-chain-desc { color: var(--text2); font-weight: 300; }
+.audit-chain-ts { font-family: var(--mono); font-size: 11px; color: var(--text3); text-align: right; }
+
+.summary-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 1.5rem; }
+.stat-card { border: 1px solid var(--border); border-radius: var(--r-lg); padding: 14px; text-align: center; background: white; }
+.stat-card .stat-icon { font-size: 16px; margin-bottom: 4px; color: var(--text3); }
+.stat-card .stat-value { font-family: var(--serif); font-size: 22px; color: var(--text); margin-bottom: 2px; }
+.stat-card .stat-label { font-family: var(--mono); font-size: 9px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.05em; }
+
+.compliance-checks { display: flex; flex-direction: column; gap: 8px; margin-bottom: 1.5rem; }
+.compliance-item { padding: 10px 14px; background: var(--teal-bg); border: 1px solid var(--teal-border); border-radius: var(--r); font-size: 13px; color: var(--teal); }
+
+.final-message { border: 1px solid var(--blue-border); background: var(--blue-bg); border-radius: var(--r-lg); padding: 2rem; text-align: center; margin-top: 2rem; }
+.final-message h3 { font-family: var(--serif); font-size: 24px; color: var(--text); margin-bottom: 6px; }
+.final-message p { font-size: 14px; color: var(--text2); font-weight: 300; }
+
+/* CONTROLS LOWER INTERFACES */
+.step-nav { display: flex; align-items: center; justify-content: space-between; margin-top: 2.5rem; border-top: 1px solid var(--border); padding-top: 1.5rem; }
+.btn-prev, .btn-next { font-family: var(--sans); font-size: 13.5px; font-weight: 500; padding: 10px 22px; border-radius: var(--r); cursor: pointer; border: none; transition: opacity 0.15s; }
+.btn-prev { background: white; border: 1px solid var(--border); color: var(--text2); }
+.btn-prev:hover:not(:disabled) { background: var(--bg2); color: var(--text); }
+.btn-prev:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn-next { background: var(--text); color: var(--bg); }
+.btn-next:hover:not(:disabled) { opacity: 0.9; }
+.step-counter-mid { font-family: var(--mono); font-size: 12px; color: var(--text3); }
+
+/* FOOTER */
+.doc-footer { padding: 2rem 2.5rem; border-top: 1px solid var(--border); background: var(--bg2); font-family: var(--mono); font-size: 11px; color: var(--text3); display: flex; justify-content: space-between; align-items: center; }
+
+@media (max-width: 1024px) {
+  .page-wrap { grid-template-columns: 1fr; }
+  .sidebar { display: none; }
+  .sim-layout { grid-template-columns: 1fr; }
+  .step-timeline { display: none; }
+  .bid-grid, .summary-stats { grid-template-columns: 1fr; }
+  .audit-chain-item { grid-template-columns: 30px 1fr; gap: 4px; }
+  .audit-chain-ts { text-align: left; }
+}
+</style>
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<div class="page-wrap">
+
+<aside class="sidebar">
+  <div class="sidebar-logo">portfolio / verification</div>
+  <div class="sidebar-project">ASC <span>·</span> Autonomous Supply Chain</div>
+  <nav aria-label="Main navigation">
+    <ul class="sidebar-nav">
+      <li><a href="index__1_.html">01. Overview</a></li>
+      <li><a href="page-02.html">02. Briefing</a></li>
+      <li><a href="page-04-autonomous-supply-chain.html">04. TOGAF ADM</a></li>
+      <li><a href="#" class="active">03. Simulation</a></li>
+      <li><a href="page-05.html">05. Delivery Model</a></li>
+    </ul>
+  </nav>
+
+  <div class="stack-block">
+    <div class="stack-title">Technology Stack</div>
+    <div class="stack-tags">
+      <span class="stack-tag accent">EU AI Act Compliant</span>
+      <span class="stack-tag">TOGAF 10</span>
+      <span class="stack-tag">GDPR</span>
+      <span class="stack-tag">MDR 2017/745</span>
+      <span class="stack-tag accent">Vertex AI</span>
+      <span class="stack-tag">Google Cloud</span>
+      <span class="stack-tag green">XAI / SHAP</span>
+      <span class="stack-tag amber">ISO 13485</span>
+      <span class="stack-tag red">CSRD Scope 3</span>
+      <span class="stack-tag">Gemini 2.5 Pro</span>
+      <span class="stack-tag">BigQuery</span>
+      <span class="stack-tag red">FDA 21 CFR Part 820</span>
+    </div>
+  </div>
+</aside>
+
+<main class="main" id="main-content">
+  <div class="topbar">
+    <div class="topbar-breadcrumb">
+      <a href="index__1_.html">asc</a> / <a href="#">workflow-simulation</a> · v2026
+    </div>
+    <div class="topbar-right">
+      <span class="topbar-tag">Inter-Enterprise Loop</span>
+      <span class="topbar-tag">XAI / SHAP Guardrails</span>
+      <a href="https://github.com/raosiddharthp" class="nav-cta" target="_blank" rel="noopener">GitHub →</a>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <div class="schema-disclaimer">
+      <span class="schema-disclaimer-icon">ℹ️</span>
+      <span>
+        <strong>Architectural Simulation:</strong> A2A message types (<code>SourcingRequest</code>, <code>BidResponse</code>, <code>PurchaseOrderAcknowledgement</code>) and schema identifiers (<code>A2A-SR-v2.1</code>) are illustrative domain extensions of the Google A2A Agent Card / Task protocol. Full schema definitions are in <strong>Appendix D — A2A Schema Registry</strong>. The A2A protocol itself is real; domain-specific message schemas are design proposals.
+      </span>
+    </div>
+
+    <header class="doc-header" id="intro">
+      <div class="doc-eyebrow">Live Workflow Simulation · A2A Commerce Loop</div>
+      <h1 class="doc-title">Emergency Re-Sourcing via <em>A2A Commerce</em></h1>
+      <p class="doc-subtitle">The architectural differentiator of The Autonomous Supply Chain — a complete, auditable, agent-native inter-enterprise commerce loop. No other public supply chain AI portfolio shows this end-to-end.</p>
+
+      <div class="proactive-note">
+        <span class="proactive-note-icon">⚠️</span>
+        <span>
+          <strong>Note on proactive risk architecture:</strong> SupplierSentinel continuously surfaces sole-source concentration as a <em>steady-state architectural risk</em> (P02 in the risk register, flagged at system go-live). This simulation shows the <em>escalation trigger</em> — a concurrent financial distress + geopolitical signal that crosses the HITL threshold. The sole-source dependency was a known constraint awaiting Horizon 2 supplier diversification (see Page 07 — Migration Plan).
+        </span>
+      </div>
+
+      <div class="context-card">
+        <div class="context-stat">
+          <span class="label">Enterprise</span>
+          <span class="value">ClaraVis Medical Systems GmbH</span>
+        </div>
+        <div class="context-stat">
+          <span class="label">Manufacturing Sites</span>
+          <span class="value">6 sites · 310 suppliers</span>
+        </div>
+        <div class="context-stat">
+          <span class="label">Trigger Event</span>
+          <span class="value">SupplierSentinel Risk Spike</span>
+        </div>
+      </div>
+
+      <p class="section-intro" style="text-align: center;">
+        Watch the Autonomous Supply Chain respond — from risk signal to executed purchase order — without a human touching a form.
+      </p>
+
+      <div class="sim-actions" style="justify-content: center;">
+        <button class="btn-run" onclick="startSimulation()">▶ Run Simulation</button>
+      </div>
+    </header>
+
+    <section class="simulation-shell" id="simulation">
+
+      <div class="progress-bar-wrap">
+        <div class="progress-meta">
+          <span class="label">Simulation Progress</span>
+          <span class="counter" id="progressCounter">Step 1 / 12</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progressFill" style="width:8.33%"></div>
+        </div>
+      </div>
+
+      <div class="sim-layout">
+        <aside class="step-timeline" id="stepTimeline"></aside>
+        <main class="step-panel">
+          <div id="stepCard"></div>
+          
+          <div class="step-nav">
+            <button class="btn-prev" id="btnPrev" onclick="prevStep()" disabled>← Previous</button>
+            <span class="step-counter-mid" id="navCounter">Step 1 of 12</span>
+            <div style="display:flex; align-items:center; gap:8px">
+              <button class="btn-restart" id="btnRestart" onclick="restartSimulation()" style="display:none">↺ Restart</button>
+              <button class="btn-next" id="btnNext" onclick="nextStep()">Next Step →</button>
+            </div>
+          </div>
+        </main>
+      </div>
+
+    </section>
+
+  </div>
+
+  <footer class="doc-footer">
+    <span>The <em>Autonomous</em> Supply Chain · Siddharth Rao Portfolio · 2026</span>
+    <span>Conformity-Ready EA Framework</span>
+  </footer>
+
+</main>
+</div>
+
+<script>
+// DYNAMIC DATE HELPERS
+const SIM_DATE = new Date('2026-03-14');
+function simDateStr(d) { return d.toISOString().split('T')[0]; }
+function addDays(d, n) { const r = new Date(d); r.setDate(r.getDate() + n); return r; }
+const D = SIM_DATE;
+const DELIVERY_DATE = simDateStr(addDays(D, 28));
+const CONFIRM_DATE  = simDateStr(addDays(D, 26));
+
+const STEPS = [
+  {
+    num: "01",
+    title: "Risk Event Detected",
+    shortTitle: "Risk Detected",
+    actorType: "agent",
+    actorLabel: "SupplierSentinel Agent",
+    stateFrom: "IDLE",
+    stateTo: "EVENT_RECEIVED",
+    narration: "A real-time financial distress signal and regional geopolitical alert have triggered SupplierSentinel for Penang PCB Components — ClaraVis's Tier-2 PCB sub-assembly supplier for imaging systems. Sole-source concentration was already registered as P02 in the risk register; this event pushes composite risk above the 0.75 HITL threshold.",
+    render: () => `
+      <span class="section-label">Pub/Sub Event — Incoming Message</span>
+      <div class="pubsub-card">
+        <div class="pubsub-header"><div class="pubsub-dot"></div>google.pubsub · topic: asc.supplier.events · partition: MY-APAC</div>
+        <div class="pubsub-body">
+          ${jsonBlock({
+            eventType: '"SUPPLIER_RISK_SPIKE"',
+            supplierId: '"SUP-4471-MY"',
+            supplierName: '"Penang PCB Components Sdn Bhd"',
+            country: '"Malaysia"',
+            timestamp: '"2026-03-14T07:23:11Z"',
+            riskRegisterRef: '"P02 — Sole-source concentration (steady-state)"'
+          })}
+        </div>
+      </div>
+      <span class="section-label">Agent Action</span>
+      <div class="audit-entry">
+        <span class="audit-icon">📡</span>
+        <div>
+          <div>SupplierSentinel received SUPPLIER_RISK_SPIKE event for SUP-4471-MY. Initiating multi-factor risk scoring pipeline.</div>
+          <span class="audit-ref">System clock: 2026-03-14T07:23:11Z · Latency: 38ms</span>
+        </div>
+      </div>
+      ${errorPathPanel("supplier-timeout", "What if the Pub/Sub event is malformed or schema-invalid?", [
+        { title: "Schema validation failure", body: "SupplierSentinel rejects the message, writes SCHEMA_VALIDATION_ERROR to the dead-letter topic (asc.supplier.events.DLQ), and alerts the platform ops team via Cloud Monitoring. No HITL is triggered for a malformed event — a human must investigate the source system." },
+        { title: "Duplicate event (idempotency)", body: "Every event carries a deduplicated eventId. SupplierSentinel checks Cloud Spanner for prior processing. If already processed, the event is ACK'd and discarded. No double-scoring occurs." }
+      ])}
+    `
+  },
+  {
+    num: "02",
+    title: "Risk Scoring",
+    shortTitle: "Risk Scoring",
+    actorType: "agent",
+    actorLabel: "SupplierSentinel Agent",
+    stateFrom: "EVENT_RECEIVED",
+    stateTo: "SCORING",
+    narration: "Composite risk score: 0.89. Above the 0.75 HITL threshold. Five dimensions scored. Financial distress and sole-source concentration are the dominant signals.",
+    render: () => `
+      <div class="composite-score">
+        <div>
+          <div class="score-num">0.89</div>
+          <div class="score-label">Composite Risk Score</div>
+        </div>
+        <div style="flex:1"></div>
+        <span class="score-level">HIGH RISK</span>
+      </div>
+      <span class="section-label">Risk Dimensions — Multi-Factor Classifier</span>
+      <div class="risk-bars" id="riskBars">
+        ${riskBar("Financial health (Altman Z-score: 1.2)", 0.91, "high")}
+        ${riskBar("Sub-tier concentration (sole source)", 0.94, "high")}
+        ${riskBar("Geopolitical index (Penang region)", 0.84, "high")}
+        ${riskBar("Delivery performance (90 days)", 0.71, "med")}
+        ${riskBar("ESG compliance (audit overdue)", 0.62, "med")}
+      </div>
+    `
+  },
+  {
+    num: "03",
+    title: "SHAP Explanation Generated",
+    shortTitle: "SHAP Explanation",
+    actorType: "agent",
+    actorLabel: "SupplierSentinel Agent",
+    stateFrom: "SCORING",
+    stateTo: "EXPLANATION_GENERATED",
+    narration: "SHAP explanation generated at inference time and written to the immutable audit log. The model's reasoning is on the record before any human or agent acts. EU AI Act Article 13 compliance: the HITL notification explicitly identifies this as an AI-generated assessment.",
+    render: () => `
+      <span class="section-label">SHAP TreeExplainer — Top 3 Feature Contributions</span>
+      <div class="shap-rows" id="shapRows">
+        <div class="shap-row">
+          <div class="shap-row-header">
+            <span class="shap-feature">1. Sub-tier concentration score</span>
+            <span class="shap-impact">+0.31 impact</span>
+          </div>
+          <div class="shap-bar-track"><div class="shap-bar-fill" style="width:0%" data-width="78%"></div></div>
+          <div class="shap-explain">Sole source for MDA-4471 PCB sub-assembly. No qualified alternate supplier on record. Any disruption halts imaging system production line within 18 days.</div>
+        </div>
+        <div class="shap-row">
+          <div class="shap-row-header">
+            <span class="shap-feature">2. Financial health (Altman Z-score)</span>
+            <span class="shap-impact">+0.28 impact</span>
+          </div>
+          <div class="shap-bar-track"><div class="shap-bar-fill" style="width:0%" data-width="70%"></div></div>
+          <div class="shap-explain">Z-score 1.2 — below distress threshold of 1.81. Consistent with elevated default probability. Trend deteriorating over 6 quarters.</div>
+        </div>
+        <div class="shap-row">
+          <div class="shap-row-header">
+            <span class="shap-feature">3. Geopolitical index</span>
+            <span class="shap-impact">+0.19 impact</span>
+          </div>
+          <div class="shap-bar-track"><div class="shap-bar-fill" style="width:0%" data-width="48%"></div></div>
+          <div class="shap-explain">Penang region: logistics disruption advisory issued 2026-03-13 by ClaraVis risk intelligence feed. Port congestion and customs delays reported.</div>
+        </div>
+      </div>
+      <span class="section-label">Audit Log Entry</span>
+      <div class="audit-entry">
+        <span class="audit-icon">🔒</span>
+        <div>
+          <div>SHAP explanation written to immutable audit log before any action proceeds. Explanation hash: sha256-4f3a... · <strong style="color:var(--blue)">EU AI Act Art. 13 — AI system identity disclosed in HITL notification payload.</strong></div>
+          <span class="audit-ref">Ref: AUDIT-2026-0314-0047 · Timestamp: 2026-03-14T07:24:39Z</span>
+        </div>
+      </div>
+    `
+  },
+  {
+    num: "04",
+    title: "HITL-02 Triggered",
+    shortTitle: "HITL-02 Triggered",
+    actorType: "agent",
+    actorLabel: "SupplierSentinel → HITL Queue",
+    stateFrom: "EXPLANATION_GENERATED",
+    stateTo: "HITL_QUEUED",
+    narration: "Agent is now paused. No sourcing action has been taken. The Head of Procurement receives this briefing — with full SHAP explanation — and must act within 2 hours. EU AI Act Article 14 satisfied. The notification explicitly identifies this as an AI-generated risk assessment (Article 13).",
+    render: () => `
+      <span class="section-label">HITL Event Payload — Published to asc.hitl.queue</span>
+      <div class="pubsub-card">
+        <div class="pubsub-header"><div class="pubsub-dot"></div>Pub/Sub · topic: asc.hitl.queue · checkpoint: HITL-02</div>
+        <div class="pubsub-body">
+          ${jsonBlock({
+            hitlId: '"HITL-2026-0314-0047"',
+            checkpoint: '"HITL-02"',
+            approver: '"Head of Procurement"',
+            approverEmail: '"procurement.director@claravis-medical.corp.internal"',
+            riskScore: '0.89',
+            supplierId: '"SUP-4471-MY"',
+            recommendedAction: '"EMERGENCY_RESOURCING"',
+            shap_summary: '"Sole-source + financial distress + geopolitical disruption"',
+            slo: '"2 hours"',
+            auditRef: '"AUDIT-2026-0314-0047"',
+            aiSystemDisclosure: '"This assessment was generated by SupplierSentinel AI. EU AI Act Art. 13."'
+          })}
+        </div>
+      </div>
+      <span class="section-label">Approval Interface — As Received by Head of Procurement</span>
+      <div class="hitl-card">
+        <div class="hitl-header">
+          <div>
+            <div class="hitl-title">⚠ HITL-02 · Emergency Resourcing Decision Required</div>
+          </div>
+          <div class="hitl-slo"><div class="slo-pulse"></div>SLO: 2 hours</div>
+        </div>
+        <div class="hitl-body">
+          <div class="hitl-field"><span class="hitl-field-label">⚠ AI System Notice</span><span class="hitl-field-value" style="color:var(--blue)">Assessment generated by AI (EU AI Act Art. 13). Human review required before any action.</span></div>
+          <div class="hitl-field"><span class="hitl-field-label">Supplier at Risk</span><span class="hitl-field-value">Penang PCB Components Sdn Bhd (SUP-4471-MY)</span></div>
+          <div class="hitl-field"><span class="hitl-field-label">Composite Risk Score</span><span class="hitl-field-value" style="color:var(--coral);font-weight:600">0.89 / 1.00 — HIGH</span></div>
+          <div class="hitl-field"><span class="hitl-field-label">Top SHAP Feature</span><span class="hitl-field-value">Sole-source concentration (+0.31)</span></div>
+          <div class="hitl-field"><span class="hitl-field-label">Business Impact</span><span class="hitl-field-value">Production halt risk: imaging system line within 18 days</span></div>
+          <div class="hitl-field"><span class="hitl-field-label">Recommended Action</span><span class="hitl-field-value" style="color:var(--amber);font-weight:500">EMERGENCY RESOURCING</span></div>
+          <div class="hitl-field"><span class="hitl-field-label">Audit Reference</span><span class="hitl-field-value" style="font-family:var(--font-mono)">AUDIT-2026-0314-0047</span></div>
+        </div>
+        <div class="hitl-actions">
+          <div class="btn-approve">✓ Approve Resourcing</div>
+          <div class="btn-reject">✗ Reject</div>
+          <div class="btn-escalate">↑ Escalate to CPO</div>
+        </div>
+      </div>
+      <div class="audit-entry">
+        <span class="audit-icon">⏸</span>
+        <div>
+          <div>Agent paused at HITL-02 checkpoint. Awaiting human decision. All downstream actions blocked pending authorisation.</div>
+          <span class="audit-ref">EU AI Act Art. 14 — Human oversight mechanism active · Art. 13 — AI identity disclosed · Queue position: 1</span>
+        </div>
+      </div>
+      ${errorPathPanel("hitl-timeout", "What if the approver doesn't respond within the 2-hour SLO?", [
+        { title: "SLO breach — Automatic escalation", body: "At T+90 minutes (30-min warning), a reminder notification is sent. At T+120 minutes (SLO breach), the HITL queue manager auto-escalates to the CPO and logs HITL_SLO_BREACH in the audit trail. The agent remains paused — it does NOT self-approve. HITL_SLO_BREACH is a compliance event recorded for EU AI Act Article 14 reporting." },
+        { title: "JWT expiry before approval", body: "HITL JWTs are not issued until approval is given. The SLO countdown is a workflow deadline, not a token expiry. No JWT pre-exists the approval action. If the SLO is missed, a fresh HITL event is raised with a new HITL ID and audit reference." }
+      ])}
+    `
+  },
+  {
+    num: "05",
+    title: "HITL Approval",
+    shortTitle: "HITL-02 Approved",
+    actorType: "human",
+    actorLabel: "Head of Procurement (Human)",
+    stateFrom: "HITL_PENDING",
+    stateTo: "APPROVED",
+    narration: "Approval logged. A signed HITL JWT is issued and stored in Secret Manager — it proves human authorisation within ClaraVis's trust boundary. External A2A messages carry only a reference hash, not the token itself. The audit trail is unbroken.",
+    render: () => `
+      <span class="section-label">Human Decision</span>
+      <div class="approval-card">
+        <div class="approval-check">✅</div>
+        <div class="approval-body">
+          <div class="approval-title">HITL-02 Approved — Emergency Resourcing Authorised</div>
+          <div class="approval-field">Approver: <span>Klara Müller, Head of Procurement</span></div>
+          <div class="approval-field">Email: <span>procurement.director@claravis-medical.corp.internal</span></div>
+          <div class="approval-field">Decision: <span style="color:var(--teal)">APPROVE EMERGENCY RESOURCING</span></div>
+          <div class="approval-field">Timestamp: <span style="font-family:var(--font-mono)">2026-03-14T08:11:03Z</span></div>
+          <div class="approval-field">Time to Decision: <span style="color:var(--teal)">47 minutes (within 2h SLO ✓)</span></div>
+          <div class="jwt-chip">
+            <span class="jwt-label">HITL JWT (Internal)</span>
+            <span class="jwt-value">HITL-JWT-0047 · eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...</span>
+          </div>
+        </div>
+      </div>
+      <div class="auth-boundary-note">
+        <span style="font-size:16px;flex-shrink:0">🔐</span>
+        <span>
+          <strong>Authorisation boundary:</strong> HITL-JWT-0047 is stored in <strong>GCP Secret Manager</strong> and never transmitted to external parties. Outbound A2A messages to supplier agents carry only an <code>authRef: "HITL-REF-0047"</code> (a non-secret reference hash). The supplier agents use this ref to confirm the request originated from an authorised workflow — no internal credential is exposed. mTLS mutual authentication secures the A2A transport layer.
+        </span>
+      </div>
+      <span class="section-label">Audit Log Entry</span>
+      <div class="audit-entry">
+        <span class="audit-icon">🔒</span>
+        <div>
+          <div>HITL-02 approved by Klara Müller (procurement.director@claravis-medical.corp.internal) at 08:11:03Z. SHAP explanation reviewed and acknowledged. Decision: APPROVE. JWT stored in Secret Manager: HITL-JWT-0047</div>
+          <span class="audit-ref">Ref: AUDIT-2026-0314-0047 · Signature: RS256 · Immutable record written · JWT not transmitted externally</span>
+        </div>
+      </div>
+    `
+  },
+  {
+    num: "06",
+    title: "A2A Sourcing Request Broadcast",
+    shortTitle: "A2A Broadcast",
+    actorType: "agent",
+    actorLabel: "ProcureGuard Agent",
+    stateFrom: "APPROVED",
+    stateTo: "A2A_INITIATED",
+    narration: "ProcureGuard broadcasts a schema-validated sourcing request over A2A to three pre-qualified supplier agents from the Agent Registry. Every message carries an authRef (not the internal JWT), an AI system disclosure header, and is routed via the EU-resident A2A gateway to satisfy GDPR cross-border requirements.",
+    render: () => `
+      <div class="registry-note">
+        <span style="font-size:16px;flex-shrink:0">📋</span>
+        <span>
+          <strong>Supplier Agent Registry:</strong> Pre-qualified supplier agents are maintained in the <strong>ASC Agent Registry</strong> (Cloud Spanner, europe-west3). Qualification requires: ISO 13485 certification upload, MDR Article 53 evidence, A2A agent card validation, and a procurement team sign-off. Registry is reviewed quarterly; new suppliers follow a 6-week onboarding workflow. Registry ref: <code>AREG-2026-PCB</code>.
+        </span>
+      </div>
+      <div class="xborder-note">
+        <span style="font-size:16px;flex-shrink:0">🌍</span>
+        <span>
+          <strong>GDPR cross-border routing:</strong> A2A messages to Taipei Precision (TW) and Selangor Advanced (MY) are classified as international transfers under GDPR Art. 44–49. They are routed via Standard Contractual Clauses (SCCs, EU Commission 2021/914). Data sent is limited to item specification, quantity, and delivery requirements — no personal data. All messages originate and are logged from the EU-resident A2A gateway (europe-west3). Transfer Impact Assessment ref: <code>TIA-2026-A2A-001</code>.
+        </span>
+      </div>
+      <span class="section-label">A2A SourcingRequest Schema — Broadcast Payload</span>
+      <div class="pubsub-card">
+        <div class="pubsub-header">
+          <div class="pubsub-dot"></div>A2A Protocol · requestType: EMERGENCY_RESOURCING · authRef: HITL-REF-0047
+          <span class="ai-disclosure-tag">🤖 AI System Disclosed</span>
+        </div>
+        <div class="pubsub-body">
+          ${jsonBlock({
+            requestId: '"A2A-SR-2026-0314-0047"',
+            requestType: '"EMERGENCY_RESOURCING"',
+            item: '"PCB Sub-Assembly MDA-4471"',
+            itemSpec: '"ISO 13485 certified, RoHS compliant"',
+            quantity: '12000',
+            requiredBy: '"2026-04-11"',
+            qualificationRequirements: '["ISO13485", "MDR_Article_53"]',
+            authRef: '"HITL-REF-0047"',
+            aiSystemHeader: '"X-AI-System: SupplierSentinel/1.0 (EU AI Act Art. 13)"',
+            auditRef: '"AUDIT-2026-0314-0047"',
+            respondBy: '"2026-03-14T12:00:00Z"'
+          })}
+        </div>
+      </div>
+      <span class="section-label">Recipients — Pre-Qualified Supplier Agents</span>
+      <div class="a2a-cards">
+        ${a2aCard("Supplier Agent A", "Taipei Precision Electronics Co.", "TW", "A2A-SR-2026-0314-0047-A")}
+        ${a2aCard("Supplier Agent B", "Dresden Microtech GmbH", "DE", "A2A-SR-2026-0314-0047-B")}
+        ${a2aCard("Supplier Agent C", "Selangor Advanced Components Bhd", "MY", "A2A-SR-2026-0314-0047-C")}
+      </div>
+      ${errorPathPanel("supplier-no-respond", "What if a supplier agent doesn't respond by the respondBy deadline?", [
+        { title: "Partial non-response (1–2 agents timeout)", body: "ProcureGuard waits until respondBy (12:00:00Z). Any responding agents' bids are forwarded to ContractIntelligence for evaluation. The non-responding supplier(s) are logged as TIMEOUT in the audit trail and their agent availability score is decremented in the Agent Registry." },
+        { title: "All agents timeout (zero bids)", body: "ProcureGuard escalates to a SOURCING_FAILURE HITL event, notifying the CPO directly. The simulation workflow halts at step 07 with state NO_BIDS_RECEIVED. A manual sourcing fallback is triggered per the Business Continuity Plan (BCP-2026-SCM-01)." }
+      ])}
+    `
+  },
+  {
+    num: "07",
+    title: "Supplier Agent Responses",
+    shortTitle: "Bids Received",
+    actorType: "supplier",
+    actorLabel: "Supplier Agents A, B, C",
+    stateFrom: "A2A_INITIATED",
+    stateTo: "BIDS_RECEIVED",
+    narration: "Three responses received within 90 minutes. All messages schema-validated. Supplier C is flagged — partial capacity and unconfirmed ISO 13485. Selangor is disqualified on quality grounds (MDR Article 23 — supplier qualification mandatory). ContractIntelligence Agent now evaluates Suppliers A and B.",
+    render: () => `
+      <span class="section-label">A2A BidResponse Messages — Received</span>
+      <div class="bid-grid">
+        <div class="bid-card">
+          <div class="bid-card-header">🇹🇼 Taipei Precision Electronics</div>
+          <div class="bid-field"><span class="bid-field-label">Bid ID</span><span class="bid-field-value">BID-TW-0047-A</span></div>
+          <div class="bid-field"><span class="bid-field-label">Unit Price</span><span class="bid-field-value">€18.40</span></div>
+          <div class="bid-field"><span class="bid-field-label">Lead Time</span><span class="bid-field-value">21 days</span></div>
+          <div class="bid-field"><span class="bid-field-label">Capacity</span><span class="bid-field-value green">✓ Confirmed</span></div>
+          <div class="bid-field"><span class="bid-field-label">ISO 13485</span><span class="bid-field-value green">ISO13485-TW-2024-881</span></div>
+          <div class="bid-field"><span class="bid-field-label">Valid Until</span><span class="bid-field-value">2026-03-21</span></div>
+        </div>
+        <div class="bid-card recommended">
+          <div class="bid-card-header">🇩🇪 Dresden Microtech GmbH</div>
+          <div class="bid-field"><span class="bid-field-label">Bid ID</span><span class="bid-field-value">BID-DE-0047-B</span></div>
+          <div class="bid-field"><span class="bid-field-label">Unit Price</span><span class="bid-field-value">€21.75</span></div>
+          <div class="bid-field"><span class="bid-field-label">Lead Time</span><span class="bid-field-value green">14 days</span></div>
+          <div class="bid-field"><span class="bid-field-label">Capacity</span><span class="bid-field-value green">✓ Confirmed</span></div>
+          <div class="bid-field"><span class="bid-field-label">ISO 13485</span><span class="bid-field-value green">ISO13485-DE-2025-114</span></div>
+          <div class="bid-field"><span class="bid-field-label">Valid Until</span><span class="bid-field-value">2026-03-21</span></div>
+        </div>
+        <div class="bid-card warning">
+          <div class="bid-card-header">🇲🇾 Selangor Advanced Components</div>
+          <div class="bid-field"><span class="bid-field-label">Bid ID</span><span class="bid-field-value">BID-MY-0047-C</span></div>
+          <div class="bid-field"><span class="bid-field-label">Unit Price</span><span class="bid-field-value">€16.90</span></div>
+          <div class="bid-field"><span class="bid-field-label">Lead Time</span><span class="bid-field-value">28 days</span></div>
+          <div class="bid-field"><span class="bid-field-label">Capacity</span><span class="bid-field-value amber">⚠ Partial: 8,000 units</span></div>
+          <div class="bid-field"><span class="bid-field-label">ISO 13485</span><span class="bid-field-value red">Not confirmed</span></div>
+          <div class="bid-field"><span class="bid-field-label">MDR Art. 23</span><span class="bid-field-value red">Disqualified</span></div>
+        </div>
+      </div>
+      <span class="section-label">Audit Log Context</span>
+      <div class="audit-entry">
+        <span class="audit-icon">📥</span>
+        <div>
+          <div>3 of 3 BidResponse messages received and schema-validated. Supplier C disqualified: ISO 13485 not confirmed (MDR Art. 23 — supplier qualification mandatory for medical device components). Forwarding Suppliers A and B to ContractIntelligence Agent for TCO evaluation.</div>
+          <span class="audit-ref">Response time: 87 minutes · All message signatures verified · Ref: A2A-SR-2026-0314-0047</span>
+        </div>
+      </div>
+    `
+  },
+  {
+    num: "08",
+    title: "TCO Evaluation & Recommendation",
+    shortTitle: "TCO Evaluation",
+    actorType: "agent",
+    actorLabel: "ContractIntelligence Agent",
+    stateFrom: "BIDS_RECEIVED",
+    stateTo: "EVALUATED",
+    narration: "ContractIntelligence recommends Supplier B — Dresden Microtech GmbH. Higher unit price, shortest lead time, zero geopolitical risk delta, MDR-current. Risk-adjusted TCO favours speed and compliance over unit cost. SHAP attribution on the recommendation is written to audit before the CPO sees it.",
+    render: () => `
+      <div class="model-explainability-note">
+        <span style="font-size:16px;flex-shrink:0">🧮</span>
+        <span>
+          <strong>TCO Model transparency:</strong> The risk-adjusted TCO score is produced by a Gemini-grounded scoring function with the following weights: Lead Time (35%), Geopolitical Risk Delta (25%), MDR Compliance Status (20%), Unit Cost (15%), ESG Score (5%). Weights are defined in the procurement policy (PROC-POL-2026-003) and approved by the CPO. SHAP attribution below shows the marginal contribution of each factor to Dresden Microtech's score of 0.91. Full model card: <code>MODEL-CARD-CONTRACTINTEL-v2</code>.
+        </span>
+      </div>
+      <span class="section-label">Risk-Adjusted TCO Model — Evaluation Output</span>
+      <table class="tco-table">
+        <thead>
+          <tr>
+            <th>Supplier</th>
+            <th>Unit Price</th>
+            <th>Lead Time</th>
+            <th>Geo Risk Δ</th>
+            <th>TCO Total</th>
+            <th>Score</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>🇹🇼 Taipei Precision</td>
+            <td>€18.40</td>
+            <td>21 days</td>
+            <td style="color:var(--amber)">+0.12</td>
+            <td>€220,800</td>
+            <td><span class="score-pill mid">0.74</span></td>
+          </tr>
+          <tr class="recommended">
+            <td>🇩🇪 Dresden Microtech</td>
+            <td>€21.75</td>
+            <td style="color:var(--teal)">14 days</td>
+            <td style="color:var(--teal)">0.00</td>
+            <td>€261,000</td>
+            <td><span class="score-pill high">0.91 ★</span></td>
+          </tr>
+          <tr>
+            <td>🇲🇾 Selangor Adv.</td>
+            <td>€16.90</td>
+            <td>28 days</td>
+            <td style="color:var(--amber)">+0.09</td>
+            <td style="color:var(--coral)">Disqualified</td>
+            <td><span class="score-pill low">—</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <span class="section-label">SHAP Attribution — Recommendation Factors</span>
+      <div class="shap-rows" id="shapRows2">
+        <div class="shap-row">
+          <div class="shap-row-header">
+            <span class="shap-feature">1. Lead time</span>
+            <span class="shap-impact" style="color:var(--teal)">+0.18 impact (35% weight)</span>
+          </div>
+          <div class="shap-bar-track"><div class="shap-bar-fill" style="width:0%; background:var(--teal);" data-width="46%"></div></div>
+          <div class="shap-explain">14 days vs 21 days (Supplier A). Meets imaging system production schedule with 13 days contingency buffer.</div>
+        </div>
+        <div class="shap-row">
+          <div class="shap-row-header">
+            <span class="shap-feature">2. Geopolitical risk delta</span>
+            <span class="shap-impact" style="color:var(--teal)">+0.15 impact (25% weight)</span>
+          </div>
+          <div class="shap-bar-track"><div class="shap-bar-fill" style="width:0%; background:var(--teal);" data-width="38%"></div></div>
+          <div class="shap-explain">EU-based supplier. Zero additional concentration risk. Does not replicate Malaysia/Taiwan geopolitical exposure.</div>
+        </div>
+      </div>
+    `
+  },
+  {
+    num: "09",
+    title: "HITL-05 Triggered (CPO Review)",
+    shortTitle: "HITL-05 Triggered",
+    actorType: "agent",
+    actorLabel: "ContractIntelligence → HITL Queue",
+    stateFrom: "EVALUATED",
+    stateTo: "HITL_QUEUED",
+    narration: "The CPO receives the full briefing: recommendation, SHAP-attributed reasoning, model weights, order value. Agent is paused. No purchase order has been issued. EU AI Act Article 13 disclosure included in the notification.",
+    render: () => `
+      <span class="section-label">HITL-05 Event Payload</span>
+      <div class="pubsub-card">
+        <div class="pubsub-header"><div class="pubsub-dot"></div>Pub/Sub · topic: asc.hitl.queue · checkpoint: HITL-05</div>
+        <div class="pubsub-body">
+          ${jsonBlock({
+            hitlId: '"HITL-2026-0314-0089"',
+            checkpoint: '"HITL-05"',
+            approver: '"Chief Procurement Officer"',
+            approverEmail: '"cpo@claravis-medical.corp.internal"',
+            recommendation: '"Supplier B — Dresden Microtech GmbH"',
+            tco_score: '0.91',
+            model_card: '"MODEL-CARD-CONTRACTINTEL-v2"',
+            order_value: '"€261,000"',
+            slo: '"2 hours (emergency)"',
+            aiSystemDisclosure: '"ContractIntelligence AI System (EU AI Act Art. 13)"'
+          })}
+        </div>
+      </div>
+      <span class="section-label">CPO Approval Interface</span>
+      <div class="hitl-card">
+        <div class="hitl-header">
+          <div><div class="hitl-title">⚠ HITL-05 · Purchase Order Authorisation — CPO Required</div></div>
+          <div class="hitl-slo"><div class="slo-pulse"></div>SLO: 2h emergency</div>
+        </div>
+        <div class="hitl-body">
+          <div class="hitl-field"><span class="hitl-field-label">⚠ AI System Notice</span><span class="hitl-field-value" style="color:var(--blue)">Recommendation generated by AI (EU AI Act Art. 13).</span></div>
+          <div class="hitl-field"><span class="hitl-field-label">Recommendation</span><span class="hitl-field-value" style="color:var(--teal)">Dresden Microtech GmbH (DE)</span></div>
+          <div class="hitl-field"><span class="hitl-field-label">TCO Score</span><span class="hitl-field-value" style="color:var(--teal)">0.91 / 1.00</span></div>
+          <div class="hitl-field"><span class="hitl-field-label">Order Value</span><span class="hitl-field-value" style="font-weight:500">€261,000</span></div>
+          <div class="hitl-field"><span class="hitl-field-label">Lead Time</span><span class="hitl-field-value">14 days · Delivery: ${DELIVERY_DATE}</span></div>
+          <div class="hitl-field"><span class="hitl-field-label">Audit Reference</span><span class="hitl-field-value" style="font-family:var(--font-mono)">AUDIT-2026-0314-0089</span></div>
+        </div>
+        <div class="hitl-actions">
+          <div class="btn-approve">✓ Approve Order</div>
+          <div class="btn-reject">✗ Counter / Reject</div>
+        </div>
+      </div>
+    `
+  },
+  {
+    num: "10",
+    title: "CPO Approval",
+    shortTitle: "CPO Approval",
+    actorType: "human",
+    actorLabel: "CPO (Human)",
+    stateFrom: "HITL_PENDING",
+    stateTo: "APPROVED",
+    narration: "CPO approved. Two HITL checkpoints cleared. Two JWT tokens stored in Secret Manager. Auth references (not tokens) are chained in the audit trail. Total elapsed time from risk event to CPO approval: 2 hours 21 minutes.",
+    render: () => `
+      <span class="section-label">Human Decision — Chief Procurement Officer</span>
+      <div class="approval-card">
+        <div class="approval-check">✅</div>
+        <div class="approval-body">
+          <div class="approval-title">HITL-05 Approved — Purchase Order Authorised</div>
+          <div class="approval-field">Approver: <span>Dr. Thomas Hartmann, Chief Procurement Officer</span></div>
+          <div class="approval-field">Decision: <span style="color:var(--teal)">APPROVE ORDER — Supplier B (Dresden Microtech)</span></div>
+          <div class="approval-field">Timestamp: <span style="font-family:var(--font-mono)">2026-03-14T09:44:17Z</span></div>
+          <div class="jwt-chip">
+            <span class="jwt-label">HITL JWT Token Reference</span>
+            <span class="jwt-value">sm://claravis-prod/hitl-tokens/0089</span>
+          </div>
+        </div>
+      </div>
+      <span class="section-label">Audit Lineage</span>
+      <div class="audit-entry" style="border-color:var(--teal-border)">
+        <span class="audit-icon">🔗</span>
+        <div>
+          <div style="color:var(--teal)">HITL authorisation chain complete. Auth references linked: HITL-REF-0047 (Procurement Director) → HITL-REF-0089 (CPO). Internal JWTs secured safely.</div>
+          <span class="audit-ref">Elapsed: risk event to CPO approval · 2h 21m 06s · Chain: 2/2 complete</span>
+        </div>
+      </div>
+    `
+  },
+  {
+    num: "11",
+    title: "A2A Purchase Order Issued",
+    shortTitle: "PO Issued via A2A",
+    actorType: "agent",
+    actorLabel: "ProcureGuard Agent",
+    stateFrom: "APPROVED",
+    stateTo: "PO_ISSUED",
+    narration: "A purchase order — fully authorised, schema-validated, carrying a two-checkpoint auth reference chain — issued to Dresden Microtech's agent over mTLS-secured A2A. SAP Ariba is updated via an async event-driven write with idempotency guarantee.",
+    render: () => `
+      <span class="section-label">A2A PurchaseOrderMessage — Serving Payload</span>
+      <div class="po-card">
+        <div class="po-header">
+          <div class="po-id">PO-2026-0314-4471</div>
+          <div class="po-status">ISSUED VIA A2A · mTLS</div>
+        </div>
+        <div class="po-fields">
+          <div class="po-field"><span class="po-field-label">Supplier</span><span class="po-field-value">Dresden Microtech GmbH · SUP-DE-DRESDEN-001</span></div>
+          <div class="po-field"><span class="po-field-label">Item</span><span class="po-field-value">PCB Sub-Assembly MDA-4471</span></div>
+          <div class="po-field"><span class="po-field-label">Quantity</span><span class="po-field-value">12,000 units</span></div>
+          <div class="po-field"><span class="po-field-label">Total Value</span><span class="po-field-value" style="color:var(--teal); font-weight:600">€261,000.00 EUR</span></div>
+          <div class="po-field"><span class="po-field-label">Required Delivery</span><span class="po-field-value">${DELIVERY_DATE}</span></div>
+          <div class="po-field"><span class="po-field-label">AI System Disclosure</span><span class="po-field-value" style="color:var(--blue)">Order generated by ProcureGuard AI System (EU AI Act Art. 13)</span></div>
+        </div>
+        <div class="jwt-chain">
+          <span class="jwt-chain-label">Auth Ref Chain</span>
+          <span class="jwt-link">HITL-REF-0047</span>
+          <span class="chain-separator">→</span>
+          <span class="jwt-link">HITL-REF-0089</span>
+        </div>
+        <div class="erp-async-note">
+          <span style="font-size:16px;flex-shrink:0">🔄</span>
+          <span>
+            <strong>SAP Ariba integration (async):</strong> PO event published to <code>asc.erp.po.queue</code> (Pub/Sub, at-least-once delivery). Ariba Adapter Service consumes the event and writes to ARIB-EU-03 using an idempotency key (<code>PO-2026-0314-4471</code>). Confirmation written back to <code>asc.erp.po.confirm</code>. Eventual consistency guaranteed.
+          </span>
+        </div>
+      </div>
+      ${errorPathPanel("po-failure", "What if the SAP Ariba write fails?", [
+        { title: "Ariba write timeout / failure", body: "The Pub/Sub message is retained with exponential back-off retry (3 attempts, max 5 min). If all retries fail, the PO status remains PO_ISSUED in the ASC ledger and a CRITICAL alert is raised to the ERP ops team. Manual reconciliation is performed per PROC-OPS-001." },
+        { title: "Duplicate PO prevention", body: "Idempotency key PO-2026-0314-4471 is written to Cloud Spanner before the Pub/Sub publish. Any retry of the Ariba write checks this key first." }
+      ])}
+    `
+  },
+  {
+    num: "12",
+    title: "Confirmation & Audit Complete",
+    shortTitle: "Complete",
+    actorType: "supplier",
+    actorLabel: "Dresden Microtech GmbH Agent",
+    stateFrom: "PO_ISSUED",
+    stateTo: "AUDIT_COMPLETE",
+    narration: "From risk signal to confirmed purchase order. Two human decisions. Zero forms. Complete audit trail. This is A2A Commerce.",
+    render: () => `
+      <span class="section-label">A2A PurchaseOrderAcknowledgement — Supplier Confirmation</span>
+      <div class="approval-card" style="background:var(--teal-bg); border-color:var(--teal-border)">
+        <div class="approval-check">✅</div>
+        <div class="approval-body">
+          <div class="approval-title" style="color:var(--teal)">PO Confirmed — Dresden Microtech GmbH Order Management System</div>
+          <div class="approval-field">PO ID: <span>PO-2026-0314-4471</span></div>
+          <div class="approval-field">Status: <span style="color:var(--teal); font-weight:500">CONFIRMED</span></div>
+          <div class="approval-field">Confirmed Delivery: <span>${CONFIRM_DATE} (2 days ahead of schedule ✓)</span></div>
+          <div class="approval-field">Timestamp: <span>2026-03-14T10:02:44Z</span></div>
+        </div>
+      </div>
+      <span class="section-label">Complete Audit Chain</span>
+      <div class="audit-timeline">
+        ${auditChain("📡", "AUDIT-2026-0314-0047", "Risk event received + SHAP explanation generated (EU AI Act Art. 13 disclosed)", "2026-03-14T07:23:11Z")}
+        ${auditChain("👤", "HITL-REF-0047", "Procurement Director approval — Klara Müller · JWT in Secret Manager", "2026-03-14T08:11:03Z")}
+        ${auditChain("📊", "AUDIT-2026-0314-0089", "TCO evaluation + SHAP attribution + model weights written", "2026-03-14T09:31:44Z")}
+        ${auditChain("👤", "HITL-REF-0089", "CPO approval — Dr. Thomas Hartmann · JWT in Secret Manager", "2026-03-14T09:44:17Z")}
+        ${auditChain("📄", "PO-2026-0314-4471", "PO issued via A2A to Dresden Microtech · Ariba async write initiated", "2026-03-14T09:47:22Z")}
+        ${auditChain("✅", "CONFIRMATION", "Supplier PO confirmation received via A2A · Ariba sync confirmed", "2026-03-14T10:02:44Z")}
+      </div>
+      <span class="section-label">Transaction Summary</span>
+      <div class="summary-stats">
+        <div class="stat-card"><div class="stat-icon">⏱</div><div class="stat-value">2h 39m</div><div class="stat-label">Total Elapsed Time</div></div>
+        <div class="stat-card"><div class="stat-icon">👤</div><div class="stat-value">2</div><div class="stat-label">Human Decisions</div></div>
+        <div class="stat-card"><div class="stat-icon">🤖</div><div class="stat-value">11+</div><div class="stat-label">Agent Actions</div></div>
+        <div class="stat-card"><div class="stat-icon">📋</div><div class="stat-value">6</div><div class="stat-label">Audit Entries</div></div>
+      </div>
+      <div class="compliance-checks">
+        <div class="compliance-item">✅ &nbsp;EU AI Act Article 13 — AI system identity disclosed in all HITL notifications and A2A messages</div>
+        <div class="compliance-item">✅ &nbsp;EU AI Act Article 14 — Human oversight satisfied (2 HITL checkpoints)</div>
+        <div class="compliance-item">✅ &nbsp;GDPR Art. 44–49 — Cross-border A2A transfers via SCCs (TIA-2026-A2A-001)</div>
+        <div class="compliance-item">✅ &nbsp;HITL JWTs stored in Secret Manager — never transmitted to external parties</div>
+        <div class="compliance-item">✅ &nbsp;SAP Ariba — Async event-driven write with idempotency guarantee (ARIB-EU-03)</div>
+      </div>
+      <div class="final-message">
+        <h3>From risk signal to confirmed purchase order.<br>Two human decisions. <strong>Zero forms.</strong></h3>
+        <p style="margin-top:8px;color:var(--blue);font-weight:500;">This is A2A Commerce.</p>
+      </div>
+    `
+  }
+];
+
+// DATA RENDER PIPELINES
+function jsonBlock(obj) {
+  let lines = ['<span class="json-punct">{</span>'];
+  const entries = Object.entries(obj);
+  entries.forEach(([k, v], i) => {
+    const comma = i < entries.length - 1 ? '<span class="json-punct">,</span>' : '';
+    let val = v.startsWith('"') ? `<span class="json-str">${v}</span>` : (v === 'true' || v === 'false' ? `<span class="json-bool">${v}</span>` : `<span class="json-num">${v}</span>`);
+    lines.push(`  <span class="json-key">"${k}"</span><span class="json-punct">: </span>${val}${comma}`);
+  });
+  lines.push('<span class="json-punct">}</span>');
+  return `<pre class="json-block">${lines.join('\n')}</pre>`;
+}
+
+function riskBar(label, score, level) {
+  const pct = (score * 100).toFixed(0);
+  return `<div class="risk-row">
+    <div class="risk-label">${label}</div>
+    <div class="risk-track"><div class="risk-fill ${level}" data-width="${pct}%" style="width:0%"></div></div>
+    <div class="risk-score-val">${score.toFixed(2)}</div>
+  </div>`;
+}
+
+function a2aCard(agentLabel, company, country, msgId) {
+  const flags = {TW:'🇹🇼',DE:'🇩🇪',MY:'🇲🇾'};
+  return `<div class="a2a-card">
+    <div class="a2a-card-header">
+      <div class="a2a-to">${flags[country] || ''} ${agentLabel} — <strong>${company}</strong></div>
+      <div class="a2a-tag">${msgId}</div>
+    </div>
+    <div class="a2a-body">→ SourcingRequest dispatched · Schema: A2A-SR-v2.1 · authRef: HITL-REF-0047 · Status: <span style="color:var(--teal)">SENT ✓</span></div>
+  </div>`;
+}
+
+function auditChain(icon, ref, desc, ts) {
+  return `<div class="audit-chain-item">
+    <div class="audit-chain-icon">${icon}</div>
+    <div class="audit-chain-ref">${ref}</div>
+    <div class="audit-chain-desc">${desc}</div>
+    <div class="audit-chain-ts">${ts}</div>
+  </div>`;
+}
+
+let epCounter = 0;
+function errorPathPanel(id, question, scenarios) {
+  const uid = `ep-${id}-${epCounter++}`;
+  const scenarioHTML = scenarios.map(s => `
+    <div class="error-scenario">
+      <strong>⚡ ${s.title}</strong>
+      ${s.body}
+    </div>
+  `).join('');
+  return `
+    <div class="error-path-section">
+      <div class="error-path-header" onclick="toggleError('${uid}')">
+        <span>Exception Path: ${question}</span>
+        <span style="margin-left:auto;" id="${uid}-chevron">▼</span>
+      </div>
+      <div class="error-path-body" id="${uid}">
+        ${scenarioHTML}
+      </div>
+    </div>
+  `;
+}
+
+function toggleError(uid) {
+  const body = document.getElementById(uid);
+  const chevron = document.getElementById(uid + '-chevron');
+  const isOpen = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  chevron.textContent = isOpen ? '▼' : '▲';
+}
+
+let currentStep = 0;
+let simStarted = false;
+
+function startSimulation() {
+  document.getElementById('intro').style.display = 'none';
+  document.getElementById('simulation').classList.add('active');
+  simStarted = true;
+  buildTimeline();
+  renderStep(0);
+}
+
+function restartSimulation() {
+  currentStep = 0;
+  epCounter = 0;
+  renderStep(0);
+  document.getElementById('btnRestart').style.display = 'none';
+}
+
+function buildTimeline() {
+  const tl = document.getElementById('stepTimeline');
+  tl.innerHTML = STEPS.map((s, i) => `
+    <div class="timeline-item" id="tl-${i}" onclick="goToStep(${i})">
+      <span class="tl-dot">STEP ${s.num}</span>
+      <span class="tl-label">${s.shortTitle}</span>
+    </div>
+  `).join('');
+}
+
+function renderStep(idx) {
+  const s = STEPS[idx];
+  currentStep = idx;
+  epCounter = 0;
+
+  document.querySelectorAll('.timeline-item').forEach((el, i) => {
+    el.className = 'timeline-item';
+    if (i < idx) el.classList.add('done');
+    else if (i === idx) el.classList.add('active');
+  });
+
+  const pct = ((idx + 1) / STEPS.length * 100).toFixed(1);
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressCounter').textContent = `Step ${idx+1} / ${STEPS.length}`;
+  document.getElementById('navCounter').textContent = `Step ${idx+1} of ${STEPS.length}`;
+
+  document.getElementById('btnPrev').disabled = idx === 0;
+  const isLast = idx === STEPS.length - 1;
+  const btnNext = document.getElementById('btnNext');
+  const btnRestart = document.getElementById('btnRestart');
+  btnNext.disabled = isLast;
+  btnNext.textContent = isLast ? 'Complete ✓' : 'Next Step →';
+  btnRestart.style.display = isLast ? 'inline-flex' : 'none';
+
+  document.getElementById('stepCard').innerHTML = `
+    <div class="step-card">
+      <div class="step-header">
+        <div class="step-number-badge">STEP ${s.num}</div>
+        <div class="step-title-group">
+          <h2 class="step-title">${s.title}</h2>
+          <div class="state-transition">
+            <span>${s.stateFrom}</span>
+            <span>→</span>
+            <span class="state-to ${s.stateTo.includes('ERROR') ? 'error' : ''}">${s.stateTo}</span>
+          </div>
+        </div>
+        <span class="actor-badge ${s.actorType}">${s.actorLabel}</span>
+      </div>
+      <div class="step-body">
+        <div class="narration">${s.narration}</div>
+        ${s.render()}
+      </div>
+    </div>
+  `;
+
+  setTimeout(() => {
+    document.querySelectorAll('.risk-fill[data-width]').forEach(el => { el.style.width = el.dataset.width; });
+    document.querySelectorAll('.shap-bar-fill[data-width]').forEach(el => { el.style.width = el.dataset.width; });
+  }, 50);
+}
+
+function nextStep() { if (currentStep < STEPS.length - 1) renderStep(currentStep + 1); }
+function prevStep() { if (currentStep > 0) renderStep(currentStep - 1); }
+function goToStep(idx) { renderStep(idx); }
+
+document.addEventListener('keydown', (e) => {
+  if (!simStarted) return;
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') nextStep();
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') prevStep();
+});
+</script>
+</body>
+</html>

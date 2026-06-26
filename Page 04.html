@@ -1,0 +1,1420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TOGAF ADM — Phases A–H · The Autonomous Supply Chain</title>
+<meta name="description" content="An explainability-first, EU AI Act-compliant enterprise AI architecture for regulated manufacturers — The Autonomous Supply Chain by Siddharth Rao.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #fafaf8; --bg2: #f2f0eb; --bg3: #e8e5de;
+  --text: #1a1917; --text2: #5a5852; --text3: #8a8880;
+  --border: #d8d5ce; --border2: #c8c5be;
+  --blue: #1850a0; --blue-bg: #eaf2fe; --blue-border: #90b8e8;
+  --purple: #4a40b0; --purple-bg: #f0effe; --purple-border: #b0a8e8;
+  --teal: #0a6b52; --teal-bg: #e8f5f0; --teal-border: #80c8b0;
+  --amber: #b07010; --amber-bg: #fdf4e3; --amber-border: #e8c870;
+  --coral: #b03820; --coral-bg: #fdf0ec; --coral-border: #e8a090;
+  --cyan: #0b6685; --cyan-bg: #e6f4f8; --cyan-border: #85c5d5;
+  --green: #0a6b52; --green-dim: #e8f5f0;
+  --red: #b03820; --red-dim: #fdf0ec;
+  --serif: 'DM Serif Display', Georgia, serif;
+  --mono: 'IBM Plex Mono', monospace;
+  --sans: 'Inter', system-ui, sans-serif;
+  --r: 6px; --r-lg: 10px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--sans); background: var(--bg); color: var(--text); font-size: 15px; line-height: 1.7; -webkit-font-smoothing: antialiased; }
+
+.skip-link {
+  position: absolute; top: -40px; left: 16px;
+  background: var(--blue); color: #fff;
+  padding: 8px 16px; border-radius: 4px; z-index: 9999;
+  font-family: var(--mono); font-size: 13px; text-decoration: none;
+  transition: top 0.2s;
+}
+.skip-link:focus { top: 8px; }
+
+.page-wrap { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
+
+/* SIDEBAR */
+.sidebar {
+  position: sticky; top: 0; height: 100vh; overflow-y: auto;
+  background: var(--bg2); border-right: 1px solid var(--border);
+  padding: 2rem 1.25rem; display: flex; flex-direction: column; gap: 0;
+}
+.sidebar-logo { font-family: var(--mono); font-size: 11px; font-weight: 500; color: var(--text3); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.25rem; }
+.sidebar-project { font-family: var(--serif); font-size: 20px; color: var(--text); margin-bottom: 2rem; line-height: 1.2; }
+.sidebar-project span { color: var(--blue); }
+.sidebar-nav { list-style: none; display: flex; flex-direction: column; gap: 2px; }
+.sidebar-nav a { display: block; font-size: 12.5px; color: var(--text2); text-decoration: none; padding: 6px 10px; border-radius: var(--r); transition: background 0.15s, color 0.15s; }
+.sidebar-nav a:hover { background: var(--bg3); color: var(--text); }
+.sidebar-nav a.active { background: var(--text); color: var(--bg); }
+.sidebar-divider { height: 1px; background: var(--border); margin: 1.25rem 0; }
+.sidebar-section { font-family: var(--mono); font-size: 10px; font-weight: 600; color: var(--text3); letter-spacing: 0.08em; text-transform: uppercase; padding: 12px 10px 4px; }
+
+.stack-block { margin-top: auto; padding-top: 1.5rem; border-top: 1px solid var(--border); }
+.stack-title { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text3); margin-bottom: 0.75rem; }
+.stack-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+.stack-tag { font-family: var(--mono); font-size: 9.5px; padding: 2px 6px; background: var(--bg3); border-radius: 4px; color: var(--text2); border: 1px solid transparent; }
+.stack-tag.accent { color: var(--blue); background: var(--blue-bg); border-color: var(--blue-border); }
+.stack-tag.green { color: var(--teal); background: var(--teal-bg); border-color: var(--teal-border); }
+.stack-tag.amber { color: var(--amber); background: var(--amber-bg); border-color: var(--amber-border); }
+.stack-tag.red { color: var(--coral); background: var(--coral-bg); border-color: var(--coral-border); }
+
+/* MAIN */
+.main { padding: 0; overflow-x: hidden; }
+.topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0.75rem 2.5rem; border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; background: rgba(250,250,248,0.95); backdrop-filter: blur(8px); z-index: 100;
+}
+.topbar-breadcrumb { font-family: var(--mono); font-size: 11px; color: var(--text3); }
+.topbar-breadcrumb a { color: var(--text3); text-decoration: none; }
+.topbar-right { display: flex; align-items: center; gap: 12px; }
+.topbar-tag { font-family: var(--mono); font-size: 10px; padding: 3px 10px; background: var(--bg3); border-radius: 99px; color: var(--text2); }
+.nav-cta { font-family: var(--mono); font-size: 11px; font-weight: 500; color: var(--blue); text-decoration: none; border: 1px solid var(--blue-border); padding: 3px 10px; border-radius: 4px; background: white; transition: all 0.2s; }
+.nav-cta:hover { background: var(--blue-bg); }
+
+/* CONTENT */
+.content { padding: 3rem 2.5rem 5rem; max-width: 900px; }
+
+/* HEADER */
+.doc-header { margin-bottom: 3.5rem; padding-bottom: 3rem; border-bottom: 1px solid var(--border); }
+.doc-eyebrow { display: flex; align-items: center; gap: 12px; font-family: var(--mono); font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1.5rem; }
+.doc-eyebrow::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.doc-title { font-family: var(--serif); font-size: clamp(32px, 5vw, 46px); font-weight: 400; line-height: 1.12; letter-spacing: -0.02em; color: var(--text); margin-bottom: 1rem; }
+.doc-title strong { font-weight: 400; color: var(--blue); }
+.doc-subtitle { font-size: 16px; line-height: 1.7; color: var(--text2); font-weight: 300; border-left: 2px solid var(--blue-border); padding-left: 20px; margin-bottom: 2.5rem; }
+
+.stat-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 2rem; }
+.stat-chip { font-family: var(--mono); font-size: 10.5px; padding: 3px 10px; background: var(--bg3); border-radius: 4px; color: var(--text2); border: 1px solid var(--border); }
+.stat-chip.green { color: var(--teal); background: var(--teal-bg); border-color: var(--teal-border); }
+.stat-chip.amber { color: var(--amber); background: var(--amber-bg); border-color: var(--amber-border); }
+
+/* SECTIONS */
+.section { margin-bottom: 4.5rem; scroll-margin-top: 80px; }
+.section-header { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 1.5rem; }
+.phase-badge { flex-shrink: 0; font-family: var(--mono); font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text3); background: var(--bg2); border: 1px solid var(--border); border-radius: 4px; padding: 4px 10px; margin-top: 4px; }
+.section-title { font-family: var(--serif); font-size: 26px; font-weight: 400; line-height: 1.2; color: var(--text); }
+.section-title em { font-style: italic; color: var(--blue); }
+.section-output { font-family: var(--mono); font-size: 11px; color: var(--text3); margin-top: 4px; }
+.section-lead { font-size: 15px; line-height: 1.75; color: var(--text2); margin-bottom: 2rem; font-weight: 300; }
+.sub-label { font-family: var(--mono); font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text3); margin: 2rem 0 0.75rem; display: block; }
+
+/* ADM GRID */
+.adm-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: var(--r-lg); overflow: hidden; margin-bottom: 1rem; }
+.adm-cell { background: white; padding: 20px; transition: background 0.15s; }
+.adm-cell:hover { background: var(--bg2); }
+.adm-cell-phase { font-family: var(--mono); font-size: 10px; font-weight: 600; color: var(--text3); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 6px; }
+.adm-cell-name { font-family: var(--serif); font-size: 15px; color: var(--text); margin-bottom: 6px; }
+.adm-cell-output { font-size: 12px; color: var(--text2); line-height: 1.5; font-weight: 300; }
+.adm-cell.highlight { background: var(--blue-bg); }
+.adm-cell.highlight .adm-cell-phase { color: var(--blue); }
+.adm-cell.highlight-g { background: var(--teal-bg); }
+.adm-cell.highlight-g .adm-cell-phase { color: var(--teal); }
+
+/* BANNERS & NOTICES */
+.req-banner, .dpia-notice, .vision-block { background: white; border: 1px solid var(--border); border-radius: var(--r-lg); padding: 1.5rem; margin-bottom: 2rem; }
+.req-banner { border-left: 3px solid var(--purple); background: var(--purple-bg); }
+.req-banner-label { font-family: var(--mono); font-size: 11px; text-transform: uppercase; color: var(--purple); letter-spacing: 0.08em; margin-bottom: 6px; }
+.req-banner-text { font-size: 13.5px; color: var(--text2); line-height: 1.6; font-weight: 300; }
+
+.dpia-notice { border-left: 3px solid var(--purple); background: var(--purple-bg); }
+.dpia-notice-label { font-family: var(--mono); font-size: 11px; text-transform: uppercase; color: var(--purple); letter-spacing: 0.08em; margin-bottom: 6px; }
+.dpia-notice-text { font-size: 13.5px; color: var(--text2); line-height: 1.6; font-weight: 300; }
+
+.vision-block { border-left: 3px solid var(--blue); background: var(--blue-bg); }
+.vision-label { font-family: var(--mono); font-size: 11px; text-transform: uppercase; color: var(--blue); letter-spacing: 0.08em; margin-bottom: 6px; }
+.vision-statement { font-size: 15px; color: var(--text); line-height: 1.7; font-weight: 300; }
+
+/* TABLES */
+.trace-table, .stakeholder-table, .modules-table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 1.5rem 0; border: 1px solid var(--border); border-radius: var(--r-lg); overflow: hidden; background: white; }
+.trace-table thead tr, .stakeholder-table thead tr, .modules-table thead tr { background: var(--bg2); border-bottom: 1px solid var(--border); font-family: var(--mono); font-size: 10px; color: var(--text3); text-transform: uppercase; }
+.trace-table th, .stakeholder-table th, .modules-table th { padding: 10px 14px; text-align: left; font-weight: 500; }
+.trace-table td, .stakeholder-table td, .modules-table td { padding: 12px 14px; border-bottom: 1px solid var(--border); color: var(--text2); vertical-align: top; line-height: 1.5; }
+.trace-table tbody tr:hover, .stakeholder-table tbody tr:hover, .modules-table tbody tr:hover { background: #fafaf9; }
+.trace-table tr:last-child td, .stakeholder-table tr:last-child td, .modules-table tr:last-child td { border-bottom: none; }
+
+.trace-table .pain-ref { font-family: var(--mono); color: var(--amber); font-weight: 500; }
+.trace-table .req-ref { font-family: var(--mono); color: var(--cyan); }
+.trace-table .principle-ref { font-family: var(--mono); color: var(--purple); }
+.trace-table .module-ref { font-family: var(--mono); color: var(--blue); }
+.trace-table .reg-ref { font-size: 12px; color: var(--text2); }
+
+/* OUTCOMES STRIP */
+.outcomes-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 2rem; }
+.outcome-card { border: 1px solid var(--border); border-radius: var(--r-lg); padding: 16px; text-align: center; background: white; }
+.outcome-before { font-family: var(--mono); font-size: 16px; font-weight: 500; color: var(--coral); margin-bottom: 2px; }
+.outcome-arrow { font-size: 12px; color: var(--text3); margin-bottom: 2px; }
+.outcome-after { font-family: var(--mono); font-size: 16px; font-weight: 600; color: var(--teal); margin-bottom: 6px; }
+.outcome-label { font-size: 11.5px; color: var(--text3); line-height: 1.4; }
+
+/* STAKEHOLDER ARCHITECTURE */
+.stakeholder-map { border: 1px solid var(--border); border-radius: var(--r-lg); padding: 1.5rem; background: white; margin-bottom: 2rem; }
+.stakeholder-map-title { font-family: var(--mono); font-size: 11px; text-transform: uppercase; color: var(--text3); margin-bottom: 1rem; }
+.sh-role { font-family: var(--sans); font-weight: 500; color: var(--text); }
+.sh-role.sh-primary { color: var(--blue); }
+.sh-concern-tag { display: inline-block; font-family: var(--mono); font-size: 9.5px; color: var(--amber); background: var(--amber-bg); border: 1px solid var(--amber-border); border-radius: 4px; padding: 2px 6px; margin: 2px 4px 2px 0; }
+.sh-influence { display: inline-block; width: 7px; height: 7px; border-radius: 50%; vertical-align: middle; margin-right: 4px; }
+.sh-high { background: var(--coral); }
+.sh-medium { background: var(--amber); }
+
+/* CAPABILITIES MODEL */
+.capability-map { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 2rem; }
+.cap-column { border: 1px solid var(--border); border-radius: var(--r-lg); overflow: hidden; background: white; }
+.cap-header { padding: 10px; background: var(--bg2); border-bottom: 1px solid var(--border); font-family: var(--mono); font-size: 10px; font-weight: 600; color: var(--blue); text-transform: uppercase; text-align: center; }
+.cap-item { padding: 8px 12px; font-size: 12px; border-bottom: 1px solid var(--border); line-height: 1.4; display: flex; align-items: center; justify-content: space-between; gap: 4px; }
+.cap-item:last-child { border-bottom: none; }
+.cap-item-text { color: var(--text2); }
+.cap-maturity { font-family: var(--mono); font-size: 9px; font-weight: 600; padding: 2px 5px; border-radius: 4px; }
+.mat-1 { color: var(--coral); background: var(--coral-bg); border: 1px solid var(--coral-border); }
+.mat-2 { color: var(--amber); background: var(--amber-bg); border: 1px solid var(--amber-border); }
+.mat-3 { color: var(--teal); background: var(--teal-bg); border: 1px solid var(--teal-border); }
+.cap-maturity-legend { display: flex; gap: 16px; margin-top: 10px; margin-bottom: 2rem; flex-wrap: wrap; }
+.mat-legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text3); }
+
+/* PRINCIPLE CARDS */
+.principles-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.principle-card { background: white; border: 1px solid var(--border); border-radius: var(--r-lg); padding: 1.25rem; transition: border-color 0.15s; }
+.principle-card:hover { border-color: var(--border2); }
+.principle-id { font-family: var(--mono); font-size: 10px; text-transform: uppercase; color: var(--blue); letter-spacing: 0.05em; margin-bottom: 6px; }
+.principle-name { font-family: var(--serif); font-size: 18px; color: var(--text); margin-bottom: 8px; line-height: 1.3; }
+.principle-body { font-size: 13.5px; color: var(--text2); line-height: 1.6; font-weight: 300; }
+.principle-constraint { margin-top: 12px; font-family: var(--mono); font-size: 10.5px; color: var(--text3); border-top: 1px solid var(--border); padding-top: 8px; }
+.principle-constraint strong { color: var(--amber); font-weight: 500; }
+
+/* BUSINESS CHANGES PROCESS */
+.process-changes { display: flex; flex-direction: column; gap: 8px; margin-bottom: 2rem; }
+.process-row { display: grid; grid-template-columns: 80px 1fr 30px 1fr; gap: 16px; align-items: center; background: white; border: 1px solid var(--border); border-radius: var(--r-lg); padding: 1.25rem; }
+.pain-id { font-family: var(--mono); font-size: 11px; font-weight: 600; color: var(--amber); text-transform: uppercase; }
+.process-before { font-size: 13px; color: var(--text3); font-weight: 300; line-height: 1.5; }
+.process-arrow { font-size: 14px; color: var(--text3); text-align: center; }
+.process-after { font-size: 13.5px; color: var(--text2); line-height: 1.5; font-weight: 300; }
+.process-after strong { color: var(--blue); font-family: var(--mono); font-size: 12.5px; font-weight: 500; }
+
+/* DATA ARTIFACTS ARCHITECTURE */
+.data-arch-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 2rem; }
+.data-card { border: 1px solid var(--border); border-radius: var(--r-lg); padding: 1.25rem; background: white; }
+.data-card-label { font-family: var(--mono); font-size: 10px; text-transform: uppercase; color: var(--cyan); letter-spacing: 0.08em; margin-bottom: 6px; }
+.data-card-title { font-family: var(--serif); font-size: 17px; color: var(--text); margin-bottom: 6px; }
+.data-card-body { font-size: 13px; color: var(--text2); line-height: 1.6; font-weight: 300; }
+.data-card-body code { font-family: var(--mono); font-size: 11.5px; background: var(--bg2); padding: 1px 4px; border-radius: 3px; color: var(--cyan); }
+
+.modules-table .module-name { font-family: var(--serif); font-weight: 400; color: var(--blue); font-size: 15px; }
+.modules-table code { font-family: var(--mono); font-size: 11px; color: var(--cyan); background: var(--cyan-bg); border: 1px solid var(--cyan-border); padding: 1px 5px; border-radius: 3px; }
+.a2a-note { font-family: var(--mono); font-size: 11px; color: var(--purple); margin-top: 6px; }
+
+/* TECHNICAL CORES LAYERS */
+.tech-layers { display: flex; flex-direction: column; gap: 8px; margin: 2rem 0; }
+.tech-layer { display: grid; grid-template-columns: 180px 1fr; border: 1px solid var(--border); border-radius: var(--r-lg); overflow: hidden; background: white; }
+.tech-layer-label { padding: 1.25rem; background: var(--bg2); border-right: 1px solid var(--border); font-family: var(--mono); font-size: 10px; text-transform: uppercase; color: var(--text3); display: flex; align-items: center; letter-spacing: 0.05em; }
+.tech-layer-items { padding: 1.25rem; display: flex; flex-wrap: wrap; gap: 6px; }
+.tech-tag { font-family: var(--mono); font-size: 11px; color: var(--text2); background: var(--bg2); border: 1px solid var(--border); padding: 2px 8px; border-radius: 4px; }
+.tech-tag.blue { color: var(--blue); background: var(--blue-bg); border-color: var(--blue-border); }
+.tech-tag.green { color: var(--teal); background: var(--teal-bg); border-color: var(--teal-border); }
+.tech-tag.amber { color: var(--amber); background: var(--amber-bg); border-color: var(--amber-border); }
+.tech-tag.purple { color: var(--purple); background: var(--purple-bg); border-color: var(--purple-border); }
+.tech-tag.red { color: var(--coral); background: var(--coral-bg); border-color: var(--coral-border); }
+.tech-tag.cyan { color: var(--cyan); background: var(--cyan-bg); border-color: var(--cyan-border); }
+
+/* ZONES BOUNDARY LOGISTICS */
+.network-zones { border: 1px solid var(--border); border-radius: var(--r-lg); overflow: hidden; background: white; margin-bottom: 2rem; }
+.nz-header { padding: 10px 14px; background: var(--bg2); border-bottom: 1px solid var(--border); font-family: var(--mono); font-size: 10px; text-transform: uppercase; color: var(--text3); }
+.nz-zone { border-bottom: 1px solid var(--border); }
+.nz-zone:last-child { border-bottom: none; }
+.nz-zone-header { display: grid; grid-template-columns: 200px 1fr; }
+.nz-zone-label { padding: 14px 20px; font-family: var(--mono); font-size: 11px; font-weight: 500; border-right: 1px solid var(--border); display: flex; align-items: center; background: #fafaf9; }
+.nz-zone-label.z-red { color: var(--coral); border-left: 3px solid var(--coral); }
+.nz-zone-label.z-amber { color: var(--amber); border-left: 3px solid var(--amber); }
+.nz-zone-label.z-blue { color: var(--blue); border-left: 3px solid var(--blue); }
+.nz-zone-label.z-green { color: var(--teal); border-left: 3px solid var(--teal); }
+.nz-zone-content { padding: 14px 20px; font-size: 13px; color: var(--text2); line-height: 1.6; font-weight: 300; }
+.nz-zone-content code { font-family: var(--mono); font-size: 11px; color: var(--cyan); background: var(--cyan-bg); padding: 1px 4px; border-radius: 3px; }
+.nz-flow { background: var(--bg2); border-top: 1px solid var(--border); padding: 10px 14px; font-family: var(--mono); font-size: 11px; color: var(--text3); display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.nz-flow-label { text-transform: uppercase; font-size: 9.5px; color: var(--text3); }
+.nz-flow-arrow { color: var(--blue); }
+.nz-flow-item { color: var(--text); }
+
+/* ADR ARCHITECTURE */
+.adr-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 2rem; }
+.adr-item { background: white; border: 1px solid var(--border); border-radius: var(--r-lg); padding: 20px; display: grid; grid-template-columns: 120px 1fr; gap: 16px; align-items: start; transition: border-color 0.15s; }
+.adr-item:hover { border-color: var(--border2); }
+.adr-id { font-family: var(--mono); font-size: 11px; color: var(--amber); font-weight: 500; }
+.adr-decision { font-family: var(--serif); font-size: 16px; color: var(--text); margin-bottom: 4px; }
+.adr-rationale { font-size: 13px; color: var(--text2); line-height: 1.6; font-weight: 300; margin-bottom: 6px; }
+.adr-alternatives { font-size: 12px; color: var(--text3); line-height: 1.5; border-top: 1px solid var(--border); padding-top: 8px; margin-top: 4px; font-style: italic; }
+.adr-alternatives strong { color: var(--coral); font-style: normal; font-family: var(--mono); font-size: 10px; text-transform: uppercase; }
+
+/* THREE HORIZONS ROADMAP */
+.horizon-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 1.5rem; }
+.horizon-card { border: 1px solid var(--border); border-radius: var(--r-lg); overflow: hidden; background: white; }
+.horizon-header { padding: 16px 20px; background: var(--bg2); border-bottom: 1px solid var(--border); }
+.horizon-label { font-family: var(--mono); font-size: 10px; text-transform: uppercase; color: var(--text3); letter-spacing: 0.05em; margin-bottom: 2px; }
+.horizon-name { font-family: var(--serif); font-size: 16px; color: var(--text); }
+.horizon-period { font-family: var(--mono); font-size: 10.5px; color: var(--text3); margin-top: 2px; }
+.horizon-body { padding: 16px 20px; }
+.horizon-item { font-size: 12.5px; color: var(--text2); padding: 6px 0; border-bottom: 1px solid var(--border); line-height: 1.5; display: flex; gap: 8px; align-items: flex-start; font-weight: 300; }
+.horizon-item:last-child { border-bottom: none; }
+.horizon-item::before { content: '·'; color: var(--blue); font-weight: bold; }
+.horizon-card.h1 .horizon-name { color: var(--teal); }
+.horizon-card.h1 { border-top: 3px solid var(--teal); }
+.horizon-card.h2 .horizon-name { color: var(--blue); }
+.horizon-card.h2 { border-top: 3px solid var(--blue); }
+.horizon-card.h3 .horizon-name { color: var(--purple); }
+.horizon-card.h3 { border-top: 3px solid var(--purple); }
+
+/* DEPENDENCIES TARGET */
+.dep-map { border: 1px solid var(--border); border-radius: var(--r-lg); padding: 20px; background: white; margin-bottom: 2rem; }
+.dep-map-title { font-family: var(--mono); font-size: 10px; text-transform: uppercase; color: var(--text3); margin-bottom: 14px; }
+.dep-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; flex-wrap: wrap; }
+.dep-box { font-family: var(--mono); font-size: 11px; padding: 4px 10px; border-radius: 4px; border: 1px solid; }
+.dep-box.h1 { color: var(--teal); border-color: var(--teal-border); background: var(--teal-bg); }
+.dep-box.h2 { color: var(--blue); border-color: var(--blue-border); background: var(--blue-bg); }
+.dep-box.h3 { color: var(--purple); border-color: var(--purple-border); background: var(--purple-bg); }
+.dep-arrow { color: var(--text3); font-family: var(--mono); font-size: 12px; }
+
+/* RISK MANAGEMENT CORES */
+.risk-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 2rem; }
+.risk-card { background: white; border: 1px solid var(--border); border-radius: var(--r-lg); padding: 1.25rem; border-left: 3px solid var(--amber); }
+.risk-card.high { border-left-color: var(--coral); }
+.risk-id { font-family: var(--serif); font-size: 17px; color: var(--text); margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px; }
+.risk-id.high { color: var(--text); }
+.risk-badge { display: flex; gap: 4px; }
+.risk-pill { font-family: var(--mono); font-size: 9px; padding: 1px 5px; border-radius: 4px; border: 1px solid; text-transform: uppercase; }
+.risk-pill.like-h, .risk-pill.imp-h { color: var(--coral); border-color: var(--coral-border); background: var(--coral-bg); }
+.risk-pill.like-m, .risk-pill.imp-m { color: var(--amber); border-color: var(--amber-border); background: var(--amber-bg); }
+.risk-desc { font-size: 13.5px; color: var(--text2); margin-bottom: 10px; line-height: 1.55; font-weight: 300; }
+.risk-meta { display: flex; gap: 12px; margin-bottom: 8px; flex-wrap: wrap; font-size: 12px; }
+.risk-meta-item { color: var(--text3); }
+.risk-meta-item strong { color: var(--text2); font-weight: 500; }
+.risk-mitigation { font-size: 13px; color: var(--text2); line-height: 1.5; font-weight: 300; }
+.risk-mitigation strong { color: var(--teal); font-weight: 500; }
+.risk-residual { font-size: 11.5px; color: var(--text3); margin-top: 10px; border-top: 1px solid var(--border); padding-top: 8px; font-family: var(--mono); }
+.risk-residual strong { color: var(--blue); }
+
+.strangler-block { background: var(--blue-bg); border: 1px solid var(--blue-border); padding: 1.25rem; border-radius: var(--r-lg); margin-bottom: 1.5rem; }
+.strangler-label { font-family: var(--mono); font-size: 10px; text-transform: uppercase; color: var(--blue); letter-spacing: 0.05em; margin-bottom: 4px; }
+.strangler-desc { font-size: 14px; color: var(--text2); line-height: 1.6; font-weight: 300; }
+
+/* GOVERNANCE CORES */
+.gov-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 2rem; }
+.gov-card { border: 1px solid var(--border); border-radius: var(--r-lg); padding: 1.25rem; background: white; border-top: 3px solid var(--teal); }
+.gov-card-label { font-family: var(--mono); font-size: 10px; text-transform: uppercase; color: var(--teal); margin-bottom: 6px; }
+.gov-card-title { font-family: var(--serif); font-size: 17px; color: var(--text); margin-bottom: 6px; }
+.gov-card-body { font-size: 13px; color: var(--text2); line-height: 1.6; font-weight: 300; }
+.gov-checklist { margin-top: 10px; display: flex; flex-direction: column; gap: 4px; }
+.gov-check { font-size: 12.5px; color: var(--text2); display: flex; align-items: center; gap: 6px; font-weight: 300; }
+.gov-check::before { content: '✓'; color: var(--teal); font-family: var(--mono); font-weight: bold; }
+
+.conf-gate { background: var(--teal-bg); border: 1px solid var(--teal-border); border-radius: var(--r-lg); padding: 1.5rem; margin-bottom: 2rem; }
+.conf-gate-label { font-family: var(--mono); font-size: 10px; text-transform: uppercase; color: var(--teal); letter-spacing: 0.08em; margin-bottom: 12px; }
+.conf-gate-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+.conf-gate-item { font-size: 12px; color: var(--text2); line-height: 1.5; font-weight: 300; }
+.conf-gate-item-title { font-family: var(--serif); font-size: 14px; color: var(--text); margin-bottom: 4px; }
+
+/* UTILITY CLASSIFICATION */
+.divider { width: 100%; height: 1px; background: var(--border); margin: 2.5rem 0; }
+
+@media (max-width: 1024px) {
+  .page-wrap { grid-template-columns: 1fr; }
+  .sidebar { display: none; }
+  .adm-grid, .outcomes-grid, .capability-map, .horizon-grid, .data-arch-grid, .principles-grid, .process-row, .risk-grid, .gov-grid, .conf-gate-grid, .tech-layer { grid-template-columns: 1fr; }
+  .tech-layer-label { border-right: none; border-bottom: 1px solid var(--border); }
+  .nz-zone-header { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<div class="page-wrap">
+
+  <!-- SIDEBAR NAVIGATION -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">portfolio / framework</div>
+    <div class="sidebar-project">ASC <span>·</span> Autonomous Supply Chain</div>
+    <nav aria-label="Main navigation">
+      <ul class="sidebar-nav">
+        <li><a href="#adm-overview">ADM Overview</a></li>
+        <li><a href="#req-mgmt">Requirements Management</a></li>
+        <div class="sidebar-section">Architecture Phases</div>
+        <li><a href="#phase-a">Phase A — Vision</a></li>
+        <li><a href="#phase-b">Phase B — Business</a></li>
+        <li><a href="#phase-c">Phase C — IS Arch</a></li>
+        <li><a href="#phase-d">Phase D — Technology</a></li>
+        <li><a href="#phase-e">Phase E — Solutions</a></li>
+        <li><a href="#phase-f">Phase F — Migration</a></li>
+        <li><a href="#phase-g">Phase G — Governance</a></li>
+        <li><a href="#phase-h">Phase H — Change Mgmt</a></li>
+        <div class="sidebar-section">Artifacts</div>
+        <li><a href="#adrs">ADRs</a></li>
+      </ul>
+    </nav>
+
+    <div class="stack-block">
+      <div class="stack-title">Technology Stack</div>
+      <div class="stack-tags">
+        <span class="stack-tag accent">EU AI Act Compliant</span>
+        <span class="stack-tag">TOGAF 10</span>
+        <span class="stack-tag">GDPR</span>
+        <span class="stack-tag">MDR 2017/745</span>
+        <span class="stack-tag accent">Vertex AI</span>
+        <span class="stack-tag">Google Cloud</span>
+        <span class="stack-tag green">XAI / SHAP</span>
+        <span class="stack-tag amber">ISO 13485</span>
+        <span class="stack-tag red">CSRD Scope 3</span>
+        <span class="stack-tag">Gemini 2.5 Pro</span>
+        <span class="stack-tag">BigQuery</span>
+        <span class="stack-tag red">FDA 21 CFR Part 820</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN WORKSPACE BLOCK -->
+  <main class="main" id="main-content">
+    <div class="topbar">
+      <div class="topbar-breadcrumb">
+        <a href="index__1_.html">asc</a> / <a href="#adm-overview">togaf-adm</a> · v2026
+      </div>
+      <div class="topbar-right">
+        <span class="topbar-tag">TOGAF 10 Certified</span>
+        <span class="topbar-tag">Enterprise Architecture</span>
+        <a href="https://github.com" class="nav-cta" target="_blank" rel="noopener">GitHub →</a>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- PAGE HEADER -->
+      <header class="doc-header">
+        <div class="doc-eyebrow">The Autonomous Supply Chain / Page 04</div>
+        <h1 class="doc-title">TOGAF ADM <strong>Architecture Development Method</strong> Phases A through H</h1>
+        <p class="doc-subtitle">
+          The TOGAF 10 Architecture Development Method applied to the ClaraVis Medical Systems GmbH Autonomous Supply Chain engagement[cite: 6]. Every phase produces a living artifact traceable to a requirement[cite: 6]. This is not a textbook summary — it is a working architecture engagement record[cite: 6].
+        </p>
+        <div class="stat-row">
+          <span class="stat-chip">TOGAF 10 · ADM</span>
+          <span class="stat-chip">6 Architecture Principles</span>
+          <span class="stat-chip">8 Application Modules</span>
+          <span class="stat-chip green">7 ADRs</span>
+          <span class="stat-chip amber">3 Migration Horizons</span>
+          <span class="stat-chip">EU AI Act Annex III</span>
+          <span class="stat-chip">GDPR DPIA Scoped</span>
+          <span class="stat-chip">Arch Conformance Governed</span>
+        </div>
+      </header>
+
+      <!-- ══ ADM OVERVIEW ══ -->
+      <section class="section" id="adm-overview">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">The ADM applied to <em>ClaraVis Medical Systems.</em></h2>
+            <div class="section-output">Output: Phase-by-phase artifact register · Requirements traceability</div>
+          </div>
+        </div>
+        <p class="section-lead">
+          TOGAF's Architecture Development Method provides the process framework[cite: 6]. Each phase below produces a specific artifact for the ClaraVis Medical Systems GmbH engagement[cite: 6]. Requirements Management is not a phase — it is a continuous discipline running through all phases A through H, with a live traceability matrix binding every pain point to a principle, module, and regulatory obligation[cite: 6].
+        </p>
+
+        <div class="adm-grid">
+          <div class="adm-cell">
+            <div class="adm-cell-phase">Prelim + RM</div>
+            <h3 class="adm-cell-name">Principles &amp; Req. Mgmt</h3>
+            <div class="adm-cell-output">Architecture principles · Continuous requirements traceability</div>
+          </div>
+          <div class="adm-cell">
+            <div class="adm-cell-phase">Phase A</div>
+            <h3 class="adm-cell-name">Architecture Vision</h3>
+            <div class="adm-cell-output">Vision statement · Stakeholder influence analysis · Key outcomes</div>
+          </div>
+          <div class="adm-cell">
+            <div class="adm-cell-phase">Phase B</div>
+            <h3 class="adm-cell-name">Business Architecture</h3>
+            <div class="adm-cell-output">Capability model with maturity · Business process changes · Pain-to-module mapping</div>
+          </div>
+          <div class="adm-cell">
+            <div class="adm-cell-phase">Phase C</div>
+            <h3 class="adm-cell-name">IS Architecture</h3>
+            <div class="adm-cell-output">Data architecture · Application portfolio · DPIA trigger assessment</div>
+          </div>
+          <div class="adm-cell highlight">
+            <div class="adm-cell-phase">Phase D</div>
+            <h3 class="adm-cell-name">Technology Architecture</h3>
+            <div class="adm-cell-output">GCP reference stack · Security zones · Network topology · MLOps observability</div>
+          </div>
+          <div class="adm-cell">
+            <div class="adm-cell-phase">Phase E</div>
+            <h3 class="adm-cell-name">Opportunities &amp; Solutions</h3>
+            <div class="adm-cell-output">Three-horizon sequencing · Dependency map · Work package rationale</div>
+          </div>
+          <div class="adm-cell">
+            <div class="adm-cell-phase">Phase F</div>
+            <h3 class="adm-cell-name">Migration Planning</h3>
+            <div class="adm-cell-output">Strangler Fig pattern · Governed risk register · Dependency map</div>
+          </div>
+          <div class="adm-cell highlight-g">
+            <div class="adm-cell-phase">Phase G</div>
+            <h3 class="adm-cell-name">Implementation Governance</h3>
+            <div class="adm-cell-output">Architecture conformance gates · Compliance review board · Dispensation process</div>
+          </div>
+        </div>
+        <div class="adm-grid" style="margin-top:1px; border-radius:0 0 10px 10px; margin-bottom:32px;">
+          <div class="adm-cell highlight-g" style="grid-column: span 4;">
+            <div class="adm-cell-phase">Phase H &nbsp;·&nbsp; Architecture Change Management</div>
+            <h3 class="adm-cell-name">Continuous Architecture Fitness</h3>
+            <div class="adm-cell-output">Change request process · Architecture update triggers (EU AI Act amendments, new GCP services, SAP version changes) · Living architecture repository</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ REQUIREMENTS MANAGEMENT ══ -->
+      <section class="section" id="req-mgmt">
+        <div class="section-header">
+          <div class="phase-badge" style="color: var(--purple); border-color: var(--purple-border); background: var(--purple-bg);">RM</div>
+          <div>
+            <h2 class="section-title">Requirements Management — <em>Continuous Traceability.</em></h2>
+            <div class="section-output">Output: Requirements Traceability Matrix · Pain-to-Principle-to-Module Mapping</div>
+          </div>
+        </div>
+        <p class="section-lead">
+          Requirements Management in TOGAF is not a phase — it is the connective tissue that runs through every phase from A to H[cite: 6]. Every discovery pain point is formally linked to an architecture principle, a functional module, and a regulatory obligation[cite: 6]. Any architecture decision that cannot be traced to a requirement is a candidate for removal[cite: 6].
+        </p>
+
+        <div class="req-banner">
+          <div class="req-banner-label">Traceability Contract</div>
+          <div class="req-banner-text">Every row in the matrix below constitutes a binding traceability link. A work package may not enter Horizon 2 deployment until every pain point it addresses has a corresponding requirement ID, a named architecture principle it satisfies, and a documented regulatory obligation it discharges[cite: 6]. Untraceable requirements are escalated to the Architecture Review Board[cite: 6].</div>
+        </div>
+
+        <span class="sub-label">Requirements Traceability Matrix — Pain → Requirement → Principle → Module → Regulation</span>
+        <table class="trace-table" role="table" aria-label="Requirements Traceability Matrix">
+          <thead>
+            <tr role="row">
+              <th role="columnheader">Pain ID</th>
+              <th role="columnheader">Business Pain</th>
+              <th role="columnheader">Req. ID</th>
+              <th role="columnheader">Principle</th>
+              <th role="columnheader">Module</th>
+              <th role="columnheader">Regulatory Obligation</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr role="row">
+              <td role="cell"><span class="pain-ref">PAIN-01</span></td>
+              <td role="cell">Monthly Excel forecast cycle. No ML. Procurement trigger fully manual.</td>
+              <td role="cell"><span class="req-ref">FR-01, NFR-03</span></td>
+              <td role="cell"><span class="principle-ref">P-01, P-03</span></td>
+              <td role="cell"><span class="module-ref">DemandIQ</span></td>
+              <td role="cell"><span class="reg-ref">EU AI Act Art. 13 (transparency), Art. 14 (HITL)</span></td>
+            </tr>
+            <tr role="row">
+              <td role="cell"><span class="pain-ref">PAIN-02</span></td>
+              <td role="cell">Annual supplier questionnaire. No continuous monitoring. Reactive disruption response.</td>
+              <td role="cell"><span class="req-ref">FR-02, FR-07</span></td>
+              <td role="cell"><span class="principle-ref">P-02, P-05</span></td>
+              <td role="cell"><span class="module-ref">SupplierSentinel</span></td>
+              <td role="cell"><span class="reg-ref">GDPR Art. 35 (DPIA), ISO 13485 §7.4</span></td>
+            </tr>
+            <tr role="row">
+              <td role="cell"><span class="pain-ref">PAIN-03</span></td>
+              <td role="cell">Manual SAP Ariba PO creation. No inter-enterprise commerce automation.</td>
+              <td role="cell"><span class="req-ref">FR-03, FR-08</span></td>
+              <td role="cell"><span class="principle-ref">P-03, P-06</span></td>
+              <td role="cell"><span class="module-ref">ProcureGuard, ContractIntelligence</span></td>
+              <td role="cell"><span class="reg-ref">EU AI Act Art. 14 (HITL), CFO threshold policy</span></td>
+            </tr>
+            <tr role="row">
+              <td role="cell"><span class="pain-ref">PAIN-04</span></td>
+              <td role="cell">23-day NCR resolution cycle across three disconnected systems. No MDR lineage.</td>
+              <td role="cell"><span class="req-ref">FR-04, NFR-01</span></td>
+              <td role="cell"><span class="principle-ref">P-02, P-05</span></td>
+              <td role="cell"><span class="module-ref">QualityTrace</span></td>
+              <td role="cell"><span class="reg-ref">MDR Art. 87 (vigilance), ISO 13485 §8.3</span></td>
+            </tr>
+            <tr role="row">
+              <td role="cell"><span class="pain-ref">PAIN-05</span></td>
+              <td role="cell">Manual quarterly Scope 3 gathering. CSRD reporting retrospective and error-prone.</td>
+              <td role="cell"><span class="req-ref">FR-05, FR-06</span></td>
+              <td role="cell"><span class="principle-ref">P-02, P-04</span></td>
+              <td role="cell"><span class="module-ref">ScopeTracer</span></td>
+              <td role="cell"><span class="reg-ref">CSRD Art. 19a, ESRS E1, GHG Protocol Scope 3</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- ══ PHASE A ══ -->
+      <section class="section" id="phase-a">
+        <div class="section-header">
+          <div class="phase-badge">Phase A</div>
+          <div>
+            <h2 class="section-title">Architecture Vision</h2>
+            <div class="section-output">Output: Statement of Architecture Work · Stakeholder Influence Analysis · Key Outcomes</div>
+          </div>
+        </div>
+
+        <div class="vision-block">
+          <div class="vision-label">Architecture Vision Statement</div>
+          <div class="vision-statement">
+            Transform ClaraVis Medical Systems GmbH's supply chain from a reactive, spreadsheet-driven operation into an explainability-first, EU AI Act-compliant intelligent supply chain — capable of sensing disruption, deciding autonomously within defined boundaries, and satisfying MDR / CSRD / ISO 13485 / GDPR compliance by design[cite: 6].
+          </div>
+        </div>
+
+        <div class="outcomes-grid" role="list">
+          <div class="outcome-card" role="listitem">
+            <div class="outcome-before">34%</div>
+            <div class="outcome-arrow">↓</div>
+            <div class="outcome-after">≤12%</div>
+            <div class="outcome-label">Forecast error rate</div>
+          </div>
+          <div class="outcome-card" role="listitem">
+            <div class="outcome-before">23 days</div>
+            <div class="outcome-arrow">↓</div>
+            <div class="outcome-after">≤5 days</div>
+            <div class="outcome-label">NCR resolution cycle</div>
+          </div>
+          <div class="outcome-card" role="listitem">
+            <div class="outcome-before">Reactive</div>
+            <div class="outcome-arrow">→</div>
+            <div class="outcome-after">+30 days</div>
+            <div class="outcome-label">Supplier risk advance signal</div>
+          </div>
+          <div class="outcome-card" role="listitem">
+            <div class="outcome-before">Manual quarterly</div>
+            <div class="outcome-arrow">→</div>
+            <div class="outcome-after">Real-time</div>
+            <div class="outcome-label">CSRD Scope 3 reporting</div>
+          </div>
+          <div class="outcome-card" role="listitem">
+            <div class="outcome-before">0 of 5</div>
+            <div class="outcome-arrow">→</div>
+            <div class="outcome-after">5 of 5</div>
+            <div class="outcome-label">EU AI Act high-risk models compliant</div>
+          </div>
+        </div>
+
+        <div class="stakeholder-map">
+          <div class="stakeholder-map-title">Architecture Vision — Stakeholder Influence &amp; Concern Analysis</div>
+          <table class="stakeholder-table" role="table" aria-label="Stakeholder Map">
+            <thead>
+              <tr role="row">
+                <th role="columnheader">Stakeholder</th>
+                <th role="columnheader">Role</th>
+                <th role="columnheader">Influence</th>
+                <th role="columnheader">Architecture Concerns</th>
+                <th role="columnheader">Documented Objections / Risks</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr role="row">
+                <td role="cell"><span class="sh-role sh-primary">VP Supply Chain</span></td>
+                <td role="cell">Primary Sponsor</td>
+                <td role="cell"><span class="sh-influence sh-high"></span> High</td>
+                <td role="cell"><span class="sh-concern-tag">Forecast accuracy</span><span class="sh-concern-tag">On-time delivery</span><span class="sh-concern-tag">Inventory cost</span></td>
+                <td role="cell">Risk: agent autonomy boundary set too conservatively, requiring excessive HITL approvals that delay procurement cycles.</td>
+              </tr>
+              <tr role="row">
+                <td role="cell"><span class="sh-role sh-primary">CCO</span></td>
+                <td role="cell">Compliance Sponsor</td>
+                <td role="cell"><span class="sh-influence sh-high"></span> High</td>
+                <td role="cell"><span class="sh-concern-tag">MDR Art. 87</span><span class="sh-concern-tag">EU AI Act</span><span class="sh-concern-tag">Audit trail completeness</span></td>
+                <td role="cell">Objection: no AI model may enter production without a complete Model Card and conformity documentation. Veto power over Phase D delivery gates.</td>
+              </tr>
+              <tr role="row">
+                <td role="cell"><span class="sh-role">CPO</span></td>
+                <td role="cell">Procurement Outcomes</td>
+                <td role="cell"><span class="sh-influence sh-high"></span> High</td>
+                <td role="cell"><span class="sh-concern-tag">PO automation scope</span><span class="sh-concern-tag">A2A supplier trust</span><span class="sh-concern-tag">Contract risk</span></td>
+                <td role="cell">Risk: autonomous PO issuance must not exceed financial thresholds without HITL. Requires formal autonomy boundary document co-signed by CFO.</td>
+              </tr>
+              <tr role="row">
+                <td role="cell"><span class="sh-role">Quality Director</span></td>
+                <td role="cell">MDR / NCR / CAPA Owner</td>
+                <td role="cell"><span class="sh-influence sh-high"></span> High</td>
+                <td role="cell"><span class="sh-concern-tag">NCR lineage</span><span class="sh-concern-tag">CAPA automation</span><span class="sh-concern-tag">Veeva Vault integrity</span></td>
+                <td role="cell">Objection: Veeva Vault must remain the system of record for MDR. Architecture must demonstrate that event-sourced pipeline does not create two conflicting sources of truth.</td>
+              </tr>
+              <tr role="row">
+                <td role="cell"><span class="sh-role">CFO</span></td>
+                <td role="cell">Financial Threshold Owner</td>
+                <td role="cell"><span class="sh-influence sh-high"></span> High</td>
+                <td role="cell"><span class="sh-concern-tag">Autonomy thresholds</span><span class="sh-concern-tag">ROI measurement</span><span class="sh-concern-tag">Cost of non-compliance</span></td>
+                <td role="cell">Risk: financial autonomy thresholds must be codified in the HITL framework before H2 deployment. CFO sign-off required on threshold policy document.</td>
+              </tr>
+              <tr role="row">
+                <td role="cell"><span class="sh-role">CISO</span></td>
+                <td role="cell">Data Sovereignty</td>
+                <td role="cell"><span class="sh-influence sh-medium"></span> Medium</td>
+                <td role="cell"><span class="sh-concern-tag">GDPR data residency</span><span class="sh-concern-tag">VPC-SC perimeter</span><span class="sh-concern-tag">CMEK custody</span></td>
+                <td role="cell">Concern: A2A inter-enterprise data exchange must not expose supplier PII or contract terms outside the VPC-SC perimeter. Requires formal network boundary sign-off.</td>
+              </tr>
+              <tr role="row">
+                <td role="cell"><span class="sh-role">DPO</span></td>
+                <td role="cell">GDPR Controller</td>
+                <td role="cell"><span class="sh-influence sh-medium"></span> Medium</td>
+                <td role="cell"><span class="sh-concern-tag">DPIA obligation</span><span class="sh-concern-tag">Legal basis for processing</span><span class="sh-concern-tag">Data subject rights</span></td>
+                <td role="cell">Objection: SupplierSentinel processing of named individual financial data (sole traders, directors) triggers GDPR Art. 35 DPIA. DPO must approve DPIA before SupplierSentinel goes to production.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div>
+          <h3 class="section-title" style="font-size:18px; margin-bottom:8px;">Architecture Principles — the rules the design <em>cannot break.</em></h3>
+          <p class="section-lead" style="margin-bottom:20px;">Six principles established before any architecture work begins[cite: 6]. Binding constraints on every design decision that follows[cite: 6]. Any component that violates a principle requires a formal ADR documenting the exception and its consequences[cite: 6].</p>
+        </div>
+
+        <div class="principles-grid">
+          <div class="principle-card">
+            <div class="principle-id">P-01 · Explainability Before Deployment</div>
+            <h4 class="principle-name">XAI contract defined before model training begins</h4>
+            <p class="principle-body">Every ML model is designed with its explanation contract before training begins[cite: 6]. SHAP values are generated at inference time and written to the audit log before any downstream action executes[cite: 6]. Post-hoc explanation is not acceptable[cite: 6].</p>
+            <div class="principle-constraint"><strong>Constraint:</strong> EU AI Act Annex III · MDR Article 87</div>
+          </div>
+          <div class="principle-card">
+            <div class="principle-id">P-02 · Compliance by Construction</div>
+            <h4 class="principle-name">Regulatory obligations encoded as write-path constraints</h4>
+            <p class="principle-body">MDR, CSRD, ISO 13485, and GDPR obligations are encoded as constraints in the data model and enforced by the write path[cite: 6]. Compliance is a structural property of every transaction, not a reporting posture applied retrospectively[cite: 6].</p>
+            <div class="principle-constraint"><strong>Constraint:</strong> MDR · CSRD · ISO 13485 · GDPR</div>
+          </div>
+          <div class="principle-card">
+            <div class="principle-id">P-03 · Human Oversight as Architecture</div>
+            <h4 class="principle-name">HITL is a state machine node, not a policy document</h4>
+            <p class="principle-body">HITL checkpoints are formal states in every agent's state machine — with a defined entry condition, presentation contract, decision interface, timeout behaviour, and immutable audit record[cite: 6]. Human oversight is designed, not assumed[cite: 6].</p>
+            <div class="principle-constraint"><strong>Constraint:</strong> EU AI Act Art. 14 · MDR</div>
+          </div>
+          <div class="principle-card">
+            <div class="principle-id">P-04 · GCP-Native by Design</div>
+            <h4 class="principle-name">No vendor-agnostic abstractions that sacrifice observability</h4>
+            <p class="principle-body">No generic middleware or vendor-agnostic abstraction layers that sacrifice GCP-native observability or governance[cite: 6]. Vertex AI, Pub/Sub, BigQuery, and Cloud Run are used with their full native feature sets, not wrapped in abstractions[cite: 6].</p>
+            <div class="principle-constraint"><strong>Constraint:</strong> Google Cloud Partner standards</div>
+          </div>
+          <div class="principle-card">
+            <div class="principle-id">P-05 · Event-Sourced Truth</div>
+            <h4 class="principle-name">Pub/Sub event fabric is the system of record</h4>
+            <p class="principle-body">The Pub/Sub event fabric is the integration backbone and system of record[cite: 6]. All modules are consumers[cite: 6]. Every state change is an immutable event[cite: 6]. This decouples producers from consumers and enables audit replay for MDR compliance[cite: 6].</p>
+            <div class="principle-constraint"><strong>Constraint:</strong> MDR Article 87 · ISO 13485</div>
+          </div>
+          <div class="principle-card">
+            <div class="principle-id">P-06 · Autonomy Bounded by Risk</div>
+            <h4 class="principle-name">Every agent has a defined autonomy boundary</h4>
+            <p class="principle-body">Each agent has a formally specified set of actions it executes autonomously and a set that require human approval[cite: 6]. The boundary is tied to financial and regulatory thresholds, defined before implementation, and enforced by the HITL checkpoint architecture[cite: 6].</p>
+            <div class="principle-constraint"><strong>Constraint:</strong> EU AI Act Art. 14 · CFO threshold policy</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ PHASE B ══ -->
+      <section class="section" id="phase-b">
+        <div class="section-header">
+          <div class="phase-badge">Phase B</div>
+          <div>
+            <h2 class="section-title">Business Architecture</h2>
+            <div class="section-output">Output: Business Capability Map (with maturity) · Process Changes · Pain-to-Module Mapping</div>
+          </div>
+        </div>
+        <p class="section-lead">
+          The Business Architecture translates the Architecture Vision into a concrete model of how ClaraVis Medical Systems GmbH's supply chain operates after the Autonomous Supply Chain is deployed[cite: 6]. Every manual handoff is replaced by an agent-mediated state transition with a defined SLA and an immutable audit record[cite: 6]. Capability maturity ratings reflect the as-is state — the gap drives sequencing[cite: 6].
+        </p>
+
+        <span class="sub-label">Business Capability Map — Five Domains with As-Is Maturity</span>
+        <div class="capability-map">
+          <div class="cap-column">
+            <div class="cap-header">Demand Intelligence</div>
+            <div class="cap-item"><span class="cap-item-text">Demand forecasting</span><span class="cap-maturity mat-1">L1</span></div>
+            <div class="cap-item"><span class="cap-item-text">Pipeline sensing</span><span class="cap-maturity mat-1">L1</span></div>
+            <div class="cap-item"><span class="cap-item-text">Macro signal ingestion</span><span class="cap-maturity mat-1">L1</span></div>
+          </div>
+          <div class="cap-column">
+            <div class="cap-header">Supplier Intelligence</div>
+            <div class="cap-item"><span class="cap-item-text">Risk monitoring</span><span class="cap-maturity mat-1">L1</span></div>
+            <div class="cap-item"><span class="cap-item-text">Financial health scoring</span><span class="cap-maturity mat-1">L1</span></div>
+            <div class="cap-item"><span class="cap-item-text">ESG assessment</span><span class="cap-maturity mat-2">L2</span></div>
+            <div class="cap-item"><span class="cap-item-text">Sub-tier mapping</span><span class="cap-maturity mat-1">L1</span></div>
+          </div>
+          <div class="cap-column">
+            <div class="cap-header">Procurement &amp; Sourcing</div>
+            <div class="cap-item"><span class="cap-item-text">PO management</span><span class="cap-maturity mat-2">L2</span></div>
+            <div class="cap-item"><span class="cap-item-text">Contract analysis</span><span class="cap-maturity mat-1">L1</span></div>
+            <div class="cap-item"><span class="cap-item-text">A2A commerce</span><span class="cap-maturity mat-1">L1</span></div>
+            <div class="cap-item"><span class="cap-item-text">Strategic sourcing</span><span class="cap-maturity mat-2">L2</span></div>
+          </div>
+          <div class="cap-column">
+            <div class="cap-header">Quality &amp; Compliance</div>
+            <div class="cap-item"><span class="cap-item-text">NCR management</span><span class="cap-maturity mat-2">L2</span></div>
+            <div class="cap-item"><span class="cap-item-text">MDR traceability</span><span class="cap-maturity mat-2">L2</span></div>
+            <div class="cap-item"><span class="cap-item-text">CAPA management</span><span class="cap-maturity mat-2">L2</span></div>
+            <div class="cap-item"><span class="cap-item-text">Vigilance reporting</span><span class="cap-maturity mat-3">L3</span></div>
+          </div>
+          <div class="cap-column">
+            <div class="cap-header">Sustainability</div>
+            <div class="cap-item"><span class="cap-item-text">Scope 3 monitoring</span><span class="cap-maturity mat-1">L1</span></div>
+            <div class="cap-item"><span class="cap-item-text">CSRD reporting</span><span class="cap-maturity mat-1">L1</span></div>
+            <div class="cap-item"><span class="cap-item-text">Freight analytics</span><span class="cap-maturity mat-2">L2</span></div>
+          </div>
+        </div>
+        <div class="cap-maturity-legend">
+          <div class="mat-legend-item"><span class="cap-maturity mat-1">L1</span>&nbsp;Initial — ad-hoc, manual, no defined process</div>
+          <div class="mat-legend-item"><span class="cap-maturity mat-2">L2</span>&nbsp;Defined — process exists, partially systematic, limited automation</div>
+          <div class="mat-legend-item"><span class="cap-maturity mat-3">L3</span>&nbsp;Managed — process measured, repeatable, partial tooling</div>
+        </div>
+
+        <span class="sub-label">Business Process Changes — As-Is → To-Be</span>
+        <div class="process-changes">
+          <div class="process-row">
+            <div class="pain-id">PAIN 01</div>
+            <div class="process-before">Monthly Excel forecast cycle. No ML. No upstream demand signal. Procurement trigger fully manual.</div>
+            <div class="process-arrow">→</div>
+            <div class="process-after"><strong>DemandIQ</strong> ML ensemble with HITL checkpoint before procurement trigger. Multi-signal including Salesforce pipeline and macroeconomic features.</div>
+          </div>
+          <div class="process-row">
+            <div class="pain-id">PAIN 02</div>
+            <div class="process-before">Annual supplier questionnaire. Risk assessed once per year. No continuous monitoring. Reactive to disruption.</div>
+            <div class="process-arrow">→</div>
+            <div class="process-after"><strong>SupplierSentinel</strong> continuous real-time risk scoring. 30-day advance disruption signal. Financial filings + news stream ingestion.</div>
+          </div>
+          <div class="process-row">
+            <div class="pain-id">PAIN 03</div>
+            <div class="process-before">Manual SAP Ariba PO creation and sourcing. Contract review is ad hoc. No inter-enterprise commerce automation.</div>
+            <div class="process-arrow">→</div>
+            <div class="process-after"><strong>ProcureGuard</strong> + <strong>ContractIntelligence</strong> + A2A Commerce loop. Clause-level risk scoring. Automated PO issuance within autonomy boundary.</div>
+          </div>
+          <div class="process-row">
+            <div class="pain-id">PAIN 04</div>
+            <div class="process-before">Manual NCR trace across three disconnected systems. 23-day resolution cycle. No automated MDR lineage.</div>
+            <div class="process-arrow">→</div>
+            <div class="process-after"><strong>QualityTrace</strong> automated root cause analysis and MDR lineage. Event-sourced NCR pipeline with immutable audit trail. Target ≤5 days.</div>
+          </div>
+          <div class="process-row">
+            <div class="pain-id">PAIN 05</div>
+            <div class="process-before">Manual quarterly Scope 3 data gathering across freight and 3PL portals. CSRD reporting retrospective and error-prone.</div>
+            <div class="process-arrow">→</div>
+            <div class="process-after"><strong>ScopeTracer</strong> automated real-time CSRD reporting. BigQuery Omni in-place logistics calculation. Automated regulatory output.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ PHASE C ══ -->
+      <section class="section" id="phase-c">
+        <div class="section-header">
+          <div class="phase-badge">Phase C</div>
+          <div>
+            <h2 class="section-title">Data Architecture &amp; Application Architecture</h2>
+            <div class="section-output">Output: Data Fabric Design · GDPR DPIA Assessment · Eight-Module Application Portfolio with A2A Protocol</div>
+          </div>
+        </div>
+        <p class="section-lead">
+          Phase C defines what data the enterprise needs to manage and what applications manage it[cite: 6]. The data architecture establishes GCP-native storage patterns with europe-west3 residency[cite: 6]. A GDPR Art. 35 DPIA trigger assessment is mandatory before any module that processes personal data goes to production[cite: 6]. The application portfolio maps all eight modules to specific GCP services, with the A2A agent protocol explicitly specified for ProcureGuard[cite: 6].
+        </p>
+
+        <span class="sub-label">Data Architecture — GCP-Native Storage Fabric</span>
+        <div class="data-arch-grid">
+          <div class="data-card">
+            <div class="data-card-label">Integration Backbone</div>
+            <h3 class="data-card-title">Pub/Sub Event Fabric</h3>
+            <div class="data-card-body">Single Pub/Sub event fabric as the system of record for all cross-system state changes[cite: 6]. Producers and consumers fully decoupled[cite: 6]. Topics: <code>demand-events</code> <code>supplier-events</code> <code>quality-events</code> <code>scope3-events</code> <code>hitl-events</code></div>
+          </div>
+          <div class="data-card">
+            <div class="data-card-label">Analytical Warehouse</div>
+            <h3 class="data-card-title">BigQuery</h3>
+            <div class="data-card-body">Analytical data warehouse for demand signals, supplier data, quality records, and Scope 3 data[cite: 6]. <code>europe-west3</code> data residency[cite: 6]. CMEK enforced[cite: 6]. Datasets: <code>demand</code> <code>supplier</code> <code>quality</code> <code>csrd</code> <code>audit</code></div>
+          </div>
+          <div class="data-card">
+            <div class="data-card-label">Feature Management</div>
+            <h3 class="data-card-title">Vertex AI Feature Store</h3>
+            <div class="data-card-body">Features shared across all five ML models[cite: 6]. Online and offline serving[cite: 6]. Feature lineage tracked[cite: 6]. Eliminates training–serving skew across DemandIQ, SupplierSentinel, InventoryOrchestrator, QualityTrace, and ScopeTracer[cite: 6].</div>
+          </div>
+          <div class="data-card">
+            <div class="data-card-label">Agent State &amp; Audit</div>
+            <h3 class="data-card-title">Firestore</h3>
+            <div class="data-card-body">Agent state, HITL queue, and immutable audit log[cite: 6]. CMEK encrypted[cite: 6]. <code>europe-west3</code> residency[cite: 6]. Every HITL event and agent action written as an immutable record[cite: 6]. MDR Article 87 compliance requires append-only mode enforced via Firestore security rules[cite: 6].</div>
+          </div>
+          <div class="data-card">
+            <div class="data-card-label">Security Perimeter</div>
+            <h3 class="data-card-title">VPC-SC + Data Residency</h3>
+            <div class="data-card-body">VPC Service Controls perimeter confines all supplier PII, financial data, and contract data[cite: 6]. <code>europe-west3</code> (Frankfurt) data residency for MDR + GDPR compliance[cite: 6]. CMEK — ClaraVis holds keys with 90-day rotation[cite: 6].</div>
+          </div>
+          <div class="data-card">
+            <div class="data-card-label">Document Intelligence</div>
+            <h3 class="data-card-title">GCS + Document AI</h3>
+            <div class="data-card-body">Veeva Vault batch records, supplier contracts, and quality documents ingested via GCS upload pipeline[cite: 6]. Document AI + Gemini processing within VPC-SC perimeter[cite: 6]. No document leaves <code>europe-west3</code>[cite: 6].</div>
+          </div>
+        </div>
+
+        <div class="dpia-notice">
+          <div class="dpia-notice-label">GDPR Art. 35 — DPIA Trigger Assessment</div>
+          <div class="dpia-notice-text">
+            <strong>SupplierSentinel</strong> processes financial health data, credit signals, and public registry data that may reference named individuals (sole traders, named company directors)[cite: 6]. This constitutes systematic processing of personal data in an automated decision-support context, triggering a GDPR Article 35 Data Protection Impact Assessment[cite: 6].<br><br>
+            <strong>DPIA requirement:</strong> DPO must approve a completed DPIA before SupplierSentinel enters production in Horizon 2[cite: 6]. Legal basis for processing is legitimate interest (GDPR Art. 6(1)(f)) — documented in the processing register[cite: 6]. Data minimisation enforced: only financially relevant signals are retained; named individual data is anonymised at feature extraction unless required for supplier entity resolution[cite: 6].
+          </div>
+        </div>
+
+        <span class="sub-label">Application Architecture — Eight Modules Mapped to GCP Services</span>
+        <table class="modules-table" role="table" aria-label="Application Architecture Portfolio">
+          <thead>
+            <tr role="row">
+              <th role="columnheader">Module</th>
+              <th role="columnheader">GCP Services</th>
+              <th role="columnheader">Integration Points</th>
+              <th role="columnheader">A2A / Agent Protocol</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr role="row">
+              <td role="cell"><h3 class="module-name">DemandIQ</h3></td>
+              <td role="cell"><code>Vertex AI Pipelines</code> <code>Vertex AI Forecast</code> <code>XGBoost</code> <code>ARIMA Ensemble</code> <code>Vertex AI Feature Store</code> SHAP at inference</td>
+              <td role="cell">Salesforce pipeline events · Hospital procurement signals · Macroeconomic feature streams</td>
+              <td role="cell">Internal agent. No A2A. Pub/Sub consumer/producer. HITL state machine governs procurement trigger.</td>
+            </tr>
+            <tr role="row">
+              <td role="cell"><h3 class="module-name">SupplierSentinel</h3></td>
+              <td role="cell"><code>Cloud Run</code> Multi-factor risk classifier · <code>Pub/Sub</code> ingestion · <code>Vertex AI Search</code> Gemini for unstructured news intelligence</td>
+              <td role="cell">Financial filings APIs · News stream ingestion · ESG data providers</td>
+              <td role="cell">Internal agent. No A2A. Emits <code>supplier-risk-event</code> to Pub/Sub. ProcureGuard subscribes.</td>
+            </tr>
+            <tr role="row">
+              <td role="cell"><h3 class="module-name">ProcureGuard</h3></td>
+              <td role="cell"><code>ADK</code> procurement agent · <code>Cloud Run</code> <code>Apigee</code> SAP Ariba REST · A2A Commerce layer for inter-enterprise PO issuance</td>
+              <td role="cell">SAP Ariba REST API · Supplier A2A endpoints · HITL approval UI</td>
+              <td role="cell">
+                <strong>A2A Agent.</strong> Protocol: Google A2A over HTTPS. Capability advertisement via Agent Card (JSON-LD). Task types: <code>RequestForQuote</code>, <code>PurchaseOrderIssuance</code>, <code>OrderAcknowledgement</code>. Supplier-side agent must implement A2A server. Fallback: email-based PO if supplier not A2A capable.
+                <div class="a2a-note">▸ A2A inter-enterprise boundary: data does not cross VPC-SC perimeter. Only PO payload (non-PII) transmitted.</div>
+              </td>
+            </tr>
+            <tr role="row">
+              <td role="cell"><h3 class="module-name">ContractIntelligence</h3></td>
+              <td role="cell"><code>Gemini long-context</code> full-corpus analysis · 1M+ token context eliminates chunking · <code>Apigee</code> SAP Ariba contract corpus REST · clause-level risk scoring</td>
+              <td role="cell">SAP Ariba contract repository · Legal HITL queue · Firestore clause risk store</td>
+              <td role="cell">Internal agent. No A2A. Outputs clause risk scores to Firestore. HITL queue surfaced in SC Command.</td>
+            </tr>
+            <tr role="row">
+              <td role="cell"><h3 class="module-name">InventoryOrchestrator</h3></td>
+              <td role="cell"><code>Vertex AI</code> reorder/safety stock model · <code>Pub/Sub</code> SAP S/4HANA MRP integration · multi-site optimisation</td>
+              <td role="cell">SAP S/4HANA MRP via Pub/Sub · Warehouse management systems · Demand signals from DemandIQ</td>
+              <td role="cell">Internal agent. No A2A. Consumes <code>demand-events</code>. Emits <code>reorder-trigger</code> to ProcureGuard.</td>
+            </tr>
+            <tr role="row">
+              <td role="cell"><h3 class="module-name">QualityTrace</h3></td>
+              <td role="cell"><code>Pub/Sub</code> event-sourced NCR pipeline · <code>Apigee</code> Veeva Vault REST · <code>Gemini</code> document intelligence · Firestore audit trail</td>
+              <td role="cell">Veeva Vault REST API · SAP S/4HANA quality module · MDR reporting output</td>
+              <td role="cell">Internal agent. No A2A. Firestore audit trail is append-only. Veeva Vault is downstream write target, not source of truth.</td>
+            </tr>
+            <tr role="row">
+              <td role="cell"><h3 class="module-name">ScopeTracer</h3></td>
+              <td role="cell"><code>BigQuery Omni</code> logistics data in-place calculation · <code>Pub/Sub</code> freight/3PL ingestion · CSRD-compliant reporting output</td>
+              <td role="cell">Freight portal APIs · 3PL data streams · CSRD regulatory reporting endpoints</td>
+              <td role="cell">Internal agent. No A2A. BigQuery Omni queries execute at 3PL data origin. No cross-border data movement.</td>
+            </tr>
+            <tr role="row">
+              <td role="cell"><h3 class="module-name">SC Command</h3></td>
+              <td role="cell"><code>Cloud Run</code> React dashboard · <code>Pub/Sub</code> real-time updates · <code>BigQuery</code> cross-module KPI aggregation · HITL queue display</td>
+              <td role="cell">All seven modules via Pub/Sub · BigQuery analytics datasets · Firestore HITL queue</td>
+              <td role="cell">No agent. Orchestration UI only. HITL decisions recorded to Firestore audit log on submission.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- ══ PHASE D ══ -->
+      <section class="section" id="phase-d">
+        <div class="section-header">
+          <div class="phase-badge">Phase D</div>
+          <div>
+            <h2 class="section-title">Technology Architecture — <em>GCP Reference Stack.</em></h2>
+            <div class="section-output">Output: GCP Reference Architecture · Security Zone Topology · Network Boundary Diagram · IaC Baseline · MLOps Observability</div>
+          </div>
+        </div>
+        <p class="section-lead">
+          Phase D defines the full GCP technology stack[cite: 6]. Every named service, the VPC-SC perimeter boundaries, IAM trust zones, data flow paths, and the cross-perimeter A2A traffic model[cite: 6]. The observability layer explicitly includes Vertex AI Model Monitoring for the five high-risk AI Act models[cite: 6].
+        </p>
+
+        <span class="sub-label">GCP Reference Stack — Service Layer by Layer</span>
+        <div class="tech-layers">
+          <div class="tech-layer">
+            <div class="tech-layer-label">Compute</div>
+            <div class="tech-layer-items">
+              <span class="tech-tag blue">Cloud Run (stateless modules)</span>
+              <span class="tech-tag blue">GKE (stateful ADK agents)</span>
+            </div>
+          </div>
+          <div class="tech-layer">
+            <div class="tech-layer-label">Messaging</div>
+            <div class="tech-layer-items">
+              <span class="tech-tag blue">Pub/Sub (event fabric)</span>
+            </div>
+          </div>
+          <div class="tech-layer">
+            <div class="tech-layer-label">Storage</div>
+            <div class="tech-layer-items">
+              <span class="tech-tag">BigQuery (analytics + CSRD)</span>
+              <span class="tech-tag">BigQuery Omni (3PL in-place)</span>
+              <span class="tech-tag">Firestore (agent state + audit)</span>
+              <span class="tech-tag">GCS (document store)</span>
+            </div>
+          </div>
+          <div class="tech-layer">
+            <div class="tech-layer-label">AI / ML</div>
+            <div class="tech-layer-items">
+              <span class="tech-tag blue">Vertex AI Pipelines</span>
+              <span class="tech-tag blue">Vertex AI Feature Store</span>
+              <span class="tech-tag blue">Vertex AI Model Registry</span>
+              <span class="tech-tag blue">Vertex AI Search (Gemini)</span>
+              <span class="tech-tag blue">Gemini (long-context, pinned at implementation)</span>
+              <span class="tech-tag blue">ADK (agent orchestration)</span>
+            </div>
+          </div>
+          <div class="tech-layer">
+            <div class="tech-layer-label">Integration</div>
+            <div class="tech-layer-items">
+              <span class="tech-tag amber">Apigee (SAP Ariba + Veeva REST)</span>
+              <span class="tech-tag amber">A2A Protocol Layer (ProcureGuard)</span>
+            </div>
+          </div>
+          <div class="tech-layer">
+            <div class="tech-layer-label">Security</div>
+            <div class="tech-layer-items">
+              <span class="tech-tag red">VPC-SC</span>
+              <span class="tech-tag red">BeyondCorp</span>
+              <span class="tech-tag red">Secret Manager</span>
+              <span class="tech-tag red">IAM + Workload Identity</span>
+              <span class="tech-tag red">CMEK (ClaraVis key custody)</span>
+            </div>
+          </div>
+          <div class="tech-layer">
+            <div class="tech-layer-label">IaC</div>
+            <div class="tech-layer-items">
+              <span class="tech-tag green">Terraform (all infrastructure versioned)</span>
+            </div>
+          </div>
+          <div class="tech-layer">
+            <div class="tech-layer-label">Observability</div>
+            <div class="tech-layer-items">
+              <span class="tech-tag">Cloud Monitoring</span>
+              <span class="tech-tag">Cloud Logging</span>
+              <span class="tech-tag">Cloud Trace</span>
+              <span class="tech-tag">Security Command Center</span>
+              <span class="tech-tag cyan">Vertex AI Model Monitoring (drift detection)</span>
+              <span class="tech-tag cyan">SHAP audit log (BigQuery audit dataset)</span>
+              <span class="tech-tag cyan">Prediction distribution alerts</span>
+            </div>
+          </div>
+        </div>
+
+        <span class="sub-label">Network Security Zone Topology — VPC-SC Boundary Model</span>
+        <div class="network-zones">
+          <div class="nz-header">Security Zone Architecture · europe-west3 (Frankfurt) · ClaraVis Medical Systems GmbH GCP Project</div>
+          <div class="nz-zone">
+            <div class="nz-zone-header">
+              <div class="nz-zone-label z-red">Zone 0 · Restricted</div>
+              <div class="nz-zone-content">
+                <strong>VPC-SC Perimeter boundary.</strong> Contains: <code>BigQuery</code> (all datasets), <code>Firestore</code> (audit + agent state), <code>Vertex AI</code> (all services), <code>GCS</code> (document store)[cite: 6]. No egress permitted without explicit perimeter policy[cite: 6]. All services accessed via Private Google Access[cite: 6]. CMEK enforced on all data at rest[cite: 6]. Supplier PII, financial data, and contract corpus remain within this boundary at all times[cite: 6].
+              </div>
+            </div>
+          </div>
+          <div class="nz-zone">
+            <div class="nz-zone-header">
+              <div class="nz-zone-label z-amber">Zone 1 · Internal Service Mesh</div>
+              <div class="nz-zone-content">
+                <strong>GKE cluster (ADK agents) + Cloud Run (stateless modules).</strong> Internal service-to-service communication via Workload Identity[cite: 6]. No public IPs[cite: 6]. Pub/Sub consumers authenticated via service account with least-privilege IAM[cite: 6]. BeyondCorp enforces zero-trust for human operator access to HITL interfaces[cite: 6].
+              </div>
+            </div>
+          </div>
+          <div class="nz-zone">
+            <div class="nz-zone-header">
+              <div class="nz-zone-label z-blue">Zone 2 · Integration Gateway</div>
+              <div class="nz-zone-content">
+                <strong>Apigee (SAP Ariba + Veeva Vault REST).</strong> Apigee sits at the perimeter edge[cite: 6]. All SAP and Veeva API calls are authenticated, rate-limited, and logged[cite: 6]. Apigee transforms and validates payloads before passing into Zone 1[cite: 6]. Supplier PII is stripped or pseudonymised at this boundary before entering Zone 0[cite: 6].
+              </div>
+            </div>
+          </div>
+          <div class="nz-zone">
+            <div class="nz-zone-header">
+              <div class="nz-zone-label z-green">Zone 3 · A2A Inter-Enterprise DMZ</div>
+              <div class="nz-zone-content">
+                <strong>ProcureGuard A2A traffic only.</strong> A2A task payloads (PO issuance, RFQ, acknowledgement) are transmitted over mTLS-authenticated HTTPS to supplier A2A server endpoints[cite: 6]. Only non-PII commercial payload is transmitted (PO number, SKU, quantity, price, delivery terms)[cite: 6]. No supplier PII, contract terms, or financial model outputs cross this boundary[cite: 6]. A2A Agent Card discovery uses public HTTPS endpoint hosted outside VPC-SC perimeter[cite: 6].
+              </div>
+            </div>
+          </div>
+          <div class="nz-flow">
+            <span class="nz-flow-label">Data Flow:</span>
+            <span class="nz-flow-item">External data sources</span>
+            <span class="nz-flow-arrow">→</span>
+            <span class="nz-flow-item">Zone 2 (Apigee)</span>
+            <span class="nz-flow-arrow">→</span>
+            <span class="nz-flow-item">Zone 1 (modules)</span>
+            <span class="nz-flow-arrow">→</span>
+            <span class="nz-flow-item">Zone 0 (Vertex AI / BigQuery)</span>
+            <span class="nz-flow-arrow">·</span>
+            <span class="nz-flow-item">A2A: Zone 1 (ProcureGuard)</span>
+            <span class="nz-flow-arrow">→</span>
+            <span class="nz-flow-item">Zone 3 (A2A DMZ)</span>
+            <span class="nz-flow-arrow">→</span>
+            <span class="nz-flow-item">Supplier A2A endpoint</span>
+          </div>
+        </div>
+
+        <span class="sub-label" id="adrs">Architecture Decision Records — Seven Key ADRs</span>
+        <div class="adr-list">
+          <div class="adr-item">
+            <div class="adr-id">ADRSC-001</div>
+            <div>
+              <h4 class="adr-decision">Vertex AI Forecast over SAP IBP native ML</h4>
+              <p class="adr-rationale">EU AI Act explainability requirements and HITL architecture require open model access[cite: 6]. SAP IBP native ML is a black-box[cite: 6]. SHAP values cannot be generated from IBP's proprietary forecast engine[cite: 6].</p>
+              <div class="adr-alternatives"><strong>REJECTED ALTERNATIVES:</strong> (1) SAP IBP native ML — black-box model; SHAP extraction not possible; EU AI Act conformity not achievable[cite: 6]. (2) Azure ML — rejected on data residency grounds; Frankfurt region parity unconfirmed at time of decision[cite: 6]. (3) Custom TensorFlow on GKE — rejected; Vertex AI Pipelines provides MLOps scaffolding (monitoring, registry, drift detection) that would require custom build on bare GKE[cite: 6].</div>
+            </div>
+          </div>
+          <div class="adr-item">
+            <div class="adr-id">ADRSC-002</div>
+            <div>
+              <h4 class="adr-decision">Multi-signal ensemble over single-model forecast</h4>
+              <p class="adr-rationale">Salesforce pipeline signals, hospital procurement patterns, and macroeconomic features each carry independent forecast information[cite: 6]. Ensemble reduces error from 34% to target ≤12%[cite: 6].</p>
+              <div class="adr-alternatives"><strong>REJECTED ALTERNATIVES:</strong> (1) Single ARIMA model — insufficient signal diversity; cannot incorporate Salesforce pipeline data without custom extension[cite: 6]. (2) Prophet (Meta) — univariate by design; would require separate models per signal with manual ensemble layer, defeating purpose[cite: 6]. (3) XGBoost only — strong on tabular features but no native time-series structure; ensemble is superior[cite: 6].</div>
+            </div>
+          </div>
+          <div class="adr-item">
+            <div class="adr-id">ADRSC-003</div>
+            <div>
+              <h4 class="adr-decision">Real-time Pub/Sub monitoring over batch quarterly scoring</h4>
+              <p class="adr-rationale">Supplier risk events — factory incidents, financial distress signals, geopolitical disruptions — do not wait for quarterly reviews[cite: 6]. A batch scoring cycle produces a 90-day blind spot[cite: 6]. Real-time ingestion enables the 30-day advance signal target[cite: 6].</p>
+              <div class="adr-alternatives"><strong>REJECTED ALTERNATIVES:</strong> (1) Quarterly batch in BigQuery — 90-day blind spot unacceptable; Horizon B disruption event (2023 supplier insolvency) would not have been detected[cite: 6]. (2) Daily batch via Cloud Composer — reduces blind spot to 24h but still misses intraday events (news, exchange filings)[cite: 6]. Real-time Pub/Sub is the only architecture that can guarantee the 30-day advance signal SLO[cite: 6].</div>
+            </div>
+          </div>
+          <div class="adr-item">
+            <div class="adr-id">ADRSC-004</div>
+            <div>
+              <h4 class="adr-decision">Gemini Vertex AI Search for supplier news over third-party risk vendors</h4>
+              <p class="adr-rationale">Third-party risk vendors process data outside the EU[cite: 6]. Data residency constraints (MDR + GDPR) and EU AI Act explainability requirements for high-risk models preclude sending supplier intelligence data to external vendors[cite: 6].</p>
+              <div class="adr-alternatives"><strong>REJECTED ALTERNATIVES:</strong> (1) Dun &amp; Bradstreet Risk Analytics — processes data in US data centres; GDPR Art. 46 transfer mechanism insufficient given MDR sensitivity[cite: 6]. (2) Supplier.io — no GDPR-compliant EU data residency offering at time of evaluation[cite: 6]. (3) Manual news monitoring — scales linearly with supplier count (1,400 suppliers); operationally infeasible for continuous monitoring[cite: 6].</div>
+            </div>
+          </div>
+          <div class="adr-item">
+            <div class="adr-id">ADRSC-005</div>
+            <div>
+              <h4 class="adr-decision">Gemini long-context model over fine-tuned BERT for contract analysis</h4>
+              <p class="adr-rationale">1M+ token context window eliminates document chunking[cite: 6]. Medical device supply contracts exceed 200 pages[cite: 6]. BERT-based approaches require chunking, which breaks cross-clause reasoning required for risk scoring[cite: 6].</p>
+              <div class="adr-alternatives"><strong>REJECTED ALTERNATIVES:</strong> (1) Fine-tuned BERT/LegalBERT — 512 token limit requires chunking; cross-clause reasoning (e.g., indemnity clause referencing force majeure clause on p.47) is architecturally impossible[cite: 6]. (2) GPT-4 via Azure OpenAI — data leaves EU; GDPR transfer issue; not available on GCP in europe-west3[cite: 6]. Note: specific Gemini model version is pinned at implementation time to the current production long-context model; architecture specifies capability (≥1M token context, EU-resident) not version string[cite: 6].</div>
+            </div>
+          </div>
+          <div class="adr-item">
+            <div class="adr-id">ADRSC-006</div>
+            <div>
+              <h4 class="adr-decision">Event-sourced NCR pipeline over direct Veeva Vault write</h4>
+              <p class="adr-rationale">MDR Article 87 requires an immutable audit trail for all NCR lifecycle events[cite: 6]. Direct Veeva Vault writes create a mutable record[cite: 6]. The event-sourced Pub/Sub pipeline writes immutable events to Firestore before any Vault update[cite: 6].</p>
+              <div class="adr-alternatives"><strong>REJECTED ALTERNATIVES:</strong> (1) Direct Veeva Vault write as system of record — Vault's audit log is mutable by system administrators; does not satisfy MDR Article 87 immutability requirement[cite: 6]. (2) Custom audit database (Cloud SQL) — relational model does not natively support append-only semantics; requires custom enforcement layer; Firestore with security rules is simpler and GCP-native[cite: 6].</div>
+            </div>
+          </div>
+          <div class="adr-item">
+            <div class="adr-id">ADRSC-007</div>
+            <div>
+              <h4 class="adr-decision">BigQuery Omni for logistics data over ETL into primary project</h4>
+              <p class="adr-rationale">Freight and 3PL providers store logistics data in their own environments[cite: 6]. ETL into the primary project introduces data quality loss and latency[cite: 6]. BigQuery Omni calculates Scope 3 emissions in-place at the data origin[cite: 6].</p>
+              <div class="adr-alternatives"><strong>REJECTED ALTERNATIVES:</strong> (1) ETL via Dataflow into BigQuery — data transformation loss during ETL; freight providers use inconsistent schema versions; in-place calculation avoids this entirely[cite: 6]. (2) Direct API calls to 3PL portals — rate-limited, inconsistent SLAs, no bulk query capability; CSRD reporting requires full dataset access, not API polling[cite: 6]. (3) Third-party carbon accounting SaaS — data leaves ClaraVis control; CSRD audit requirements demand traceable calculation methodology that proprietary SaaS cannot expose[cite: 6].</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ PHASE E ══ -->
+      <section class="section" id="phase-e">
+        <div class="section-header">
+          <div class="phase-badge">Phase E</div>
+          <div>
+            <h2 class="section-title">Opportunities &amp; Solutions</h2>
+            <div class="section-output">Output: Sequencing Rationale · Three-Horizon Roadmap · Explicit Dependency Map</div>
+          </div>
+        </div>
+        <p class="section-lead">
+          Phase E identifies the sequencing logic for the eighteen-month delivery roadmap[cite: 6]. The dependency map below makes the prerequisite chain explicit — no work package in H2 or H3 begins until its named H1 prerequisites are complete[cite: 6]. EU AI Act compliance infrastructure is a gate, not a parallel stream[cite: 6].
+        </p>
+
+        <div class="horizon-grid">
+          <div class="horizon-card h1">
+            <div class="horizon-header">
+              <div class="horizon-label">Horizon 1</div>
+              <h3 class="horizon-name">Foundation &amp; Compliance</h3>
+              <div class="horizon-period">Months 1–4</div>
+            </div>
+            <div class="horizon-body">
+              <div class="horizon-item">GCP foundation + VPC-SC + CMEK provisioning via Terraform</div>
+              <div class="horizon-item">Pub/Sub event fabric established as integration backbone</div>
+              <div class="horizon-item">SAP Ariba REST integration layer via Apigee</div>
+              <div class="horizon-item">EU AI Act compliance infrastructure — HITL framework + XAI layer</div>
+              <div class="horizon-item">SupplierSentinel v1 — monitoring only, no autonomous actions</div>
+              <div class="horizon-item">Supplier master data normalisation + DPIA completion for SupplierSentinel</div>
+            </div>
+          </div>
+          <div class="horizon-card h2">
+            <div class="horizon-header">
+              <div class="horizon-label">Horizon 2</div>
+              <h3 class="horizon-name">Core Module Deployment</h3>
+              <div class="horizon-period">Months 5–10</div>
+            </div>
+            <div class="horizon-body">
+              <div class="horizon-item">DemandIQ ML ensemble — Vertex AI Pipelines + SHAP</div>
+              <div class="horizon-item">QualityTrace — event-sourced NCR + Veeva Vault integration</div>
+              <div class="horizon-item">InventoryOrchestrator — reorder model + SAP MRP integration</div>
+              <div class="horizon-item">ProcureGuard — ADK agent + SAP Ariba PO automation</div>
+              <div class="horizon-item">MLOps pipeline — drift detection + Vertex AI Model Monitoring</div>
+            </div>
+          </div>
+          <div class="horizon-card h3">
+            <div class="horizon-header">
+              <div class="horizon-label">Horizon 3</div>
+              <h3 class="horizon-name">Full Suite &amp; Optimisation</h3>
+              <div class="horizon-period">Months 11–18</div>
+            </div>
+            <div class="horizon-body">
+              <div class="horizon-item">ContractIntelligence — Gemini long-context full-corpus analysis</div>
+              <div class="horizon-item">ScopeTracer — BigQuery Omni + CSRD reporting</div>
+              <div class="horizon-item">A2A Commerce full deployment — inter-enterprise PO issuance</div>
+              <div class="horizon-item">SupplyChain Command Dashboard — cross-module KPI aggregation</div>
+              <div class="horizon-item">EU AI Act certification readiness — all five models</div>
+            </div>
+          </div>
+        </div>
+
+        <span class="sub-label">Explicit Prerequisite Dependency Map — H1 Gates H2 · H2 Gates H3</span>
+        <div class="dep-map">
+          <div class="dep-row">
+            <div class="dep-box h1">VPC-SC + CMEK provisioned</div>
+            <div class="dep-arrow">→ prerequisite for →</div>
+            <div class="dep-box h2">All H2 modules (data residency required before any ML data processing)</div>
+          </div>
+          <div class="dep-row">
+            <div class="dep-box h1">HITL framework deployed</div>
+            <div class="dep-arrow">→ prerequisite for →</div>
+            <div class="dep-box h2">DemandIQ, ProcureGuard, QualityTrace (EU AI Act Art. 14 gate)</div>
+          </div>
+          <div class="dep-row">
+            <div class="dep-box h1">Supplier master data normalised</div>
+            <div class="dep-arrow">→ prerequisite for →</div>
+            <div class="dep-box h2">SupplierSentinel production + DemandIQ feature training (ML data quality gate)</div>
+          </div>
+          <div class="dep-row">
+            <div class="dep-box h1">DPIA approved by DPO</div>
+            <div class="dep-arrow">→ prerequisite for →</div>
+            <div class="dep-box h2">SupplierSentinel production (GDPR Art. 35 gate)</div>
+          </div>
+          <div class="dep-row">
+            <div class="dep-box h2">ProcureGuard v1 (SAP Ariba)</div>
+            <div class="dep-arrow">→ prerequisite for →</div>
+            <div class="dep-box h3">A2A Commerce deployment (A2A requires proven internal PO agent before inter-enterprise extension)</div>
+          </div>
+          <div class="dep-row">
+            <div class="dep-box h2">Vertex AI Model Monitoring live</div>
+            <div class="dep-arrow">→ prerequisite for →</div>
+            <div class="dep-box h3">EU AI Act certification readiness (post-market monitoring evidence required)</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ PHASE F ══ -->
+      <section class="section" id="phase-f">
+        <div class="section-header">
+          <div class="phase-badge">Phase F</div>
+          <div>
+            <h2 class="section-title">Migration Planning</h2>
+            <div class="section-output">Output: Migration Approach · Governed Risk Register · Dependency Map</div>
+          </div>
+        </div>
+        <p class="section-lead">
+          Phase F sequences the work packages into a migration plan[cite: 6]. SAP S/4HANA and SAP Ariba remain systems of record[cite: 6]. The Autonomous Supply Chain is the intelligence and orchestration layer, not a replacement[cite: 6]. The Strangler Fig pattern governs all SAP integrations[cite: 6].
+        </p>
+
+        <div class="strangler-block">
+          <div class="strangler-label">Migration Approach: Strangler Fig Pattern</div>
+          <div class="strangler-desc">
+            Strangler Fig pattern for all SAP integrations[cite: 6]. Event streams tap existing SAP data flows without replacing the core ERP[cite: 6]. SAP S/4HANA and SAP Ariba remain fully operational throughout the migration[cite: 6]. The Autonomous Supply Chain modules attach to the event fabric as consumers of SAP data, then progressively assume decision-making and orchestration responsibilities that were previously manual[cite: 6]. No big-bang cutover[cite: 6]. No SAP decommissioning required[cite: 6].
+          </div>
+        </div>
+
+        <span class="sub-label">Risk Register — Four Key Risks (with Likelihood · Impact · Owner · Residual)</span>
+        <div class="risk-grid">
+          <div class="risk-card high">
+            <div class="risk-id high">
+              R-01 · SAP Ariba Data Harmonisation
+              <div class="risk-badge">
+                <span class="risk-pill like-h">Likelihood: High</span>
+                <span class="risk-pill imp-h">Impact: High</span>
+              </div>
+            </div>
+            <div class="risk-meta">
+              <div class="risk-meta-item">Owner: <strong>Data Engineering Lead</strong></div>
+              <div class="risk-meta-item">Review: <strong>Monthly, H1</strong></div>
+            </div>
+            <div class="risk-desc">Multi-instance SAP Ariba data harmonisation complexity[cite: 6]. Supplier master data inconsistencies across instances create downstream ML feature quality issues and training–serving skew[cite: 6].</div>
+            <div class="risk-mitigation">Mitigation: <strong>Supplier master data normalisation in H1.</strong> Canonical supplier entity defined before any ML model training begins[cite: 6]. Data quality gates in Pub/Sub ingestion pipeline[cite: 6]. Schema validation SLOs enforced before H2 gates open[cite: 6].</div>
+            <div class="risk-residual">Residual risk after mitigation: <strong>Medium</strong> — data quality issues in 3rd-tier suppliers may persist[cite: 6].</div>
+          </div>
+          <div class="risk-card high">
+            <div class="risk-id high">
+              R-02 · EU AI Act Conformity Assessment
+              <div class="risk-badge">
+                <span class="risk-pill like-m">Likelihood: Medium</span>
+                <span class="risk-pill imp-h">Impact: High</span>
+              </div>
+            </div>
+            <div class="risk-meta">
+              <div class="risk-meta-item">Owner: <strong>CCO + Architecture Lead</strong></div>
+              <div class="risk-meta-item">Review: <strong>Bi-weekly, all horizons</strong></div>
+            </div>
+            <div class="risk-desc">EU AI Act Annex III classification of five supply chain models requires conformity assessment[cite: 6]. Incomplete documentation at go-live creates regulatory exposure and potential prohibition on deployment[cite: 6].</div>
+            <div class="risk-mitigation">Mitigation: <strong>HITL framework + Model Cards from day one.</strong> Conformity assessment documentation built incrementally from H1[cite: 6]. No model promoted to production without a complete Model Card[cite: 6]. CCO has veto on any H2 deployment gate[cite: 6].</div>
+            <div class="risk-residual">Residual risk after mitigation: <strong>Low</strong> — continuous documentation from H1 eliminates late-stage documentation risk[cite: 6].</div>
+          </div>
+          <div class="risk-card">
+            <div class="risk-id">
+              R-03 · HITL Adoption Risk
+              <div class="risk-badge">
+                <span class="risk-pill like-h">Likelihood: High</span>
+                <span class="risk-pill imp-m">Impact: Medium</span>
+              </div>
+            </div>
+            <div class="risk-meta">
+              <div class="risk-meta-item">Owner: <strong>Change Management Lead</strong></div>
+              <div class="risk-meta-item">Review: <strong>Monthly, H2 onwards</strong></div>
+            </div>
+            <div class="risk-desc">Procurement and quality staff bypassing HITL approval interfaces, routing decisions through informal channels[cite: 6]. Undermines audit trail integrity and EU AI Act Art. 14 compliance[cite: 6].</div>
+            <div class="risk-mitigation">Mitigation: <strong>SAFe change management programme.</strong> HITL bypass is architecturally visible and flagged in Security Command Center[cite: 6]. Training, incentives, and enforcement mechanisms defined in Adoption Architecture (Page 08)[cite: 6].</div>
+            <div class="risk-residual">Residual risk after mitigation: <strong>Low-Medium</strong> — enforcement visible; culture change takes time[cite: 6].</div>
+          </div>
+          <div class="risk-card">
+            <div class="risk-id">
+              R-04 · Scope 3 Data Quality
+              <div class="risk-badge">
+                <span class="risk-pill like-m">Likelihood: Medium</span>
+                <span class="risk-pill imp-m">Impact: Medium</span>
+              </div>
+            </div>
+            <div class="risk-meta">
+              <div class="risk-meta-item">Owner: <strong>Sustainability Lead</strong></div>
+              <div class="risk-meta-item">Review: <strong>Monthly, H3</strong></div>
+            </div>
+            <div class="risk-desc">Freight and 3PL portal data quality is inconsistent[cite: 6]. ETL-based approaches amplify data quality loss[cite: 6]. CSRD reporting accuracy is at risk without in-place calculation[cite: 6].</div>
+            <div class="risk-mitigation">Mitigation: <strong>BigQuery Omni in-place calculation</strong> (ADRSC-007) avoids ETL data loss[cite: 6]. Schema validation layer at Pub/Sub ingestion[cite: 6]. Data quality SLOs defined before CSRD reporting goes live[cite: 6].</div>
+            <div class="risk-residual">Residual risk after mitigation: <strong>Low</strong> — in-place calculation eliminates primary data loss vector[cite: 6].</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ PHASE G ══ -->
+      <section class="section" id="phase-g">
+        <div class="section-header">
+          <div class="phase-badge" style="color: var(--green); border-color: rgba(34,197,94,0.3); background: rgba(34,197,94,0.06);">Phase G</div>
+          <div>
+            <h2 class="section-title">Implementation Governance</h2>
+            <div class="section-output">Output: Architecture Conformance Gates · Compliance Review Board · Dispensation Process</div>
+          </div>
+        </div>
+        <p class="section-lead">
+          Phase G governs the actual build against the architecture[cite: 6]. For a medical device company under MDR and EU AI Act, Implementation Governance is not optional — it is the mechanism that ensures the architecture as built matches the architecture as designed[cite: 6]. An Architecture Review Board (ARB) convenes at each horizon gate[cite: 6]. Conformance is demonstrated, not assumed[cite: 6].
+        </p>
+
+        <div class="conf-gate">
+          <div class="conf-gate-label">Architecture Conformance Gates — H1 → H2 → H3</div>
+          <div class="conf-gate-grid">
+            <div class="conf-gate-item">
+              <h3 class="conf-gate-item-title">H1 → H2 Gate</h3>
+              VPC-SC perimeter tested · CMEK key rotation verified · HITL framework signed off by CCO · Supplier master data quality SLO met · DPIA approved by DPO[cite: 6]
+            </div>
+            <div class="conf-gate-item">
+              <h3 class="conf-gate-item-title">H2 → H3 Gate</h3>
+              All H2 module Model Cards complete · Vertex AI Model Monitoring live · HITL bypass rate &lt;2% · ProcureGuard autonomy boundary co-signed by CFO · NCR pipeline MDR Article 87 audit passed[cite: 6]
+            </div>
+            <div class="conf-gate-item">
+              <h3 class="conf-gate-item-title">Programme Closure Gate</h3>
+              EU AI Act conformity assessment submitted for all five models · A2A commerce adoption KPI &gt;40% of POs · CSRD Scope 3 report auditor-signed · All Model Cards published to architecture repository[cite: 6]
+            </div>
+            <div class="conf-gate-item">
+              <h3 class="conf-gate-item-title">Dispensation Process</h3>
+              Any component that cannot satisfy a conformance gate raises a formal Architecture Dispensation Request (ADR-D)[cite: 6]. ARB reviews within 5 business days[cite: 6]. Dispensations are time-bounded and carry a remediation commitment[cite: 6]. Undispensed non-conformances block deployment[cite: 6].
+            </div>
+          </div>
+        </div>
+
+        <div class="gov-grid">
+          <div class="gov-card">
+            <div class="gov-card-label">Architecture Review Board</div>
+            <h3 class="gov-card-title">Governance Structure</h3>
+            <div class="gov-card-body">The ARB convenes at each horizon gate and on-demand for significant change requests[cite: 6]. Membership: Architecture Lead (chair), CCO, CISO, DPO, VP Supply Chain[cite: 6]. Quorum: 4 of 5[cite: 6]. All decisions recorded in the Architecture Repository[cite: 6].</div>
+            <div class="gov-checklist">
+              <div class="gov-check">Horizon gate sign-off authority</div>
+              <div class="gov-check">Dispensation request review (5-day SLA)</div>
+              <div class="gov-check">Technology change approval (&gt;Tier 2)</div>
+              <div class="gov-check">Regulatory impact assessment trigger</div>
+            </div>
+          </div>
+          <div class="gov-card">
+            <div class="gov-card-label">Conformance Evidence</div>
+            <h3 class="gov-card-title">What Must Be Demonstrated</h3>
+            <div class="gov-card-body">Conformance is demonstrated via evidence artifacts, not assertions[cite: 6]. Each module must produce a Conformance Evidence Pack before promotion through a gate[cite: 6].</div>
+            <div class="gov-checklist">
+              <div class="gov-check">Model Card (EU AI Act Annex IV)</div>
+              <div class="gov-check">VPC-SC penetration test result</div>
+              <div class="gov-check">HITL state machine test coverage report</div>
+              <div class="gov-check">SHAP audit log sample (BigQuery query)</div>
+              <div class="gov-check">Terraform plan output (infrastructure as designed)</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ PHASE H ══ -->
+      <section class="section" id="phase-h">
+        <div class="section-header">
+          <div class="phase-badge" style="color: var(--green); border-color: rgba(34,197,94,0.3); background: rgba(34,197,94,0.06);">Phase H</div>
+          <div>
+            <h2 class="section-title">Architecture Change Management</h2>
+            <div class="section-output">Output: Change Request Process · Architecture Update Triggers · Living Architecture Repository</div>
+          </div>
+        </div>
+        <p class="section-lead">
+          Phase H ensures the architecture remains fit for purpose after programme delivery[cite: 6]. In a regulated, AI-intensive supply chain, the architecture will need to evolve — EU AI Act amendments, new GCP services, SAP version changes, new Gemini model releases[cite: 6]. The change management process governs how those changes are incorporated without breaking compliance or stability[cite: 6].
+        </p>
+
+        <div class="gov-grid">
+          <div class="gov-card">
+            <div class="gov-card-label">Change Request Process</div>
+            <h3 class="gov-card-title">Architecture Change Tiers</h3>
+            <div class="gov-card-body">Change requests are tiered by impact[cite: 6]. Tier 1 changes (documentation, minor config) are approved by Architecture Lead[cite: 6]. Tier 2 changes (new service, integration change) require ARB review[cite: 6]. Tier 3 changes (security zone boundary, autonomy threshold, AI model replacement) require ARB + CCO + DPO sign-off[cite: 6].</div>
+            <div class="gov-checklist">
+              <div class="gov-check">Tier 1 — Architecture Lead, 2-day SLA</div>
+              <div class="gov-check">Tier 2 — ARB, 5-day SLA, conformance re-check</div>
+              <div class="gov-check">Tier 3 — ARB + CCO + DPO, 10-day SLA, full conformance cycle</div>
+            </div>
+          </div>
+          <div class="gov-card">
+            <div class="gov-card-label">Planned Architecture Triggers</div>
+            <h3 class="gov-card-title">Known Future Change Drivers</h3>
+            <div class="gov-card-body">The following events are anticipated to trigger architecture change requests during and after the programme[cite: 6]. Each is pre-registered in the Architecture Repository[cite: 6].</div>
+            <div class="gov-checklist">
+              <div class="gov-check">EU AI Act implementing acts (delegated regulations, expected 2025–2026)</div>
+              <div class="gov-check">New Gemini long-context model version — Tier 2 change, requires Model Card update</div>
+              <div class="gov-check">SAP S/4HANA release upgrade — Tier 2 change, Apigee contract re-validation</div>
+              <div class="gov-check">CSRD delegated acts (sector-specific ESRS) — Tier 2 change, ScopeTracer schema update</div>
+              <div class="gov-check">A2A protocol version update (Google) — Tier 2, ProcureGuard agent contract re-test</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="doc-footer">
+      <span>The <em>Autonomous</em> Supply Chain · Siddharth Rao Portfolio · 2026[cite: 6]</span>
+      <div class="footer-links">
+        <a href="https://github.com" target="_blank" rel="noopener">GitHub</a>
+        <a href="index__1_.html">Overview Dashboard</a>
+      </div>
+    </footer>
+
+  </main>
+</div>
+
+</body>
+</html>

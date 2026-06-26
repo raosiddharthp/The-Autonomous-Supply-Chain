@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ClaraVis Medical Systems GmbH — Client Brief & Requirements · The Autonomous Supply Chain</title>
+<meta name="description" content="An explainability-first, EU AI Act-compliant enterprise AI architecture for regulated manufacturers — The Autonomous Supply Chain by Siddharth Rao.">
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg: #fafaf8; --bg2: #f2f0eb; --bg3: #e8e5de;
+  --text: #1a1917; --text2: #5a5852; --text3: #8a8880;
+  --border: #d8d5ce; --border2: #c8c5be;
+  --blue: #1850a0; --blue-bg: #eaf2fe; --blue-border: #90b8e8;
+  --purple: #4a40b0; --purple-bg: #f0effe; --purple-border: #b0a8e8;
+  --teal: #0a6b52; --teal-bg: #e8f5f0; --teal-border: #80c8b0;
+  --amber: #b07010; --amber-bg: #fdf4e3; --amber-border: #e8c870;
+  --coral: #b03820; --coral-bg: #fdf0ec; --coral-border: #e8a090;
+  --serif: 'DM Serif Display', Georgia, serif;
+  --mono: 'IBM Plex Mono', monospace;
+  --sans: 'Inter', system-ui, sans-serif;
+  --r: 6px; --r-lg: 10px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--sans); background: var(--bg); color: var(--text); font-size: 15px; line-height: 1.7; -webkit-font-smoothing: antialiased; }
+
+.skip-link {
+  position: absolute; top: -40px; left: 16px;
+  background: var(--blue); color: #fff;
+  padding: 8px 16px; border-radius: 4px; z-index: 9999;
+  font-family: var(--mono); font-size: 13px; text-decoration: none;
+  transition: top 0.2s;
+}
+.skip-link:focus { top: 8px; }
+
+.page-wrap { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
+
+/* SIDEBAR */
+.sidebar {
+  position: sticky; top: 0; height: 100vh; overflow-y: auto;
+  background: var(--bg2); border-right: 1px solid var(--border);
+  padding: 2rem 1.25rem; display: flex; flex-direction: column; gap: 0;
+}
+.sidebar-logo { font-family: var(--mono); font-size: 11px; font-weight: 500; color: var(--text3); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.25rem; }
+.sidebar-project { font-family: var(--serif); font-size: 20px; color: var(--text); margin-bottom: 2rem; line-height: 1.2; }
+.sidebar-project span { color: var(--blue); }
+.sidebar-nav { list-style: none; display: flex; flex-direction: column; gap: 2px; }
+.sidebar-nav a { display: block; font-size: 12.5px; color: var(--text2); text-decoration: none; padding: 6px 10px; border-radius: var(--r); transition: background 0.15s, color 0.15s; }
+.sidebar-nav a:hover { background: var(--bg3); color: var(--text); }
+.sidebar-nav a.active { background: var(--text); color: var(--bg); }
+.sidebar-divider { height: 1px; background: var(--border); margin: 1.25rem 0; }
+
+.stack-block { margin-top: auto; padding-top: 1.5rem; border-top: 1px solid var(--border); }
+.stack-title { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text3); margin-bottom: 0.75rem; }
+.stack-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+.stack-tag { font-family: var(--mono); font-size: 9.5px; padding: 2px 6px; background: var(--bg3); border-radius: 4px; color: var(--text2); border: 1px solid transparent; }
+.stack-tag.accent { color: var(--blue); background: var(--blue-bg); border-color: var(--blue-border); }
+.stack-tag.green { color: var(--teal); background: var(--teal-bg); border-color: var(--teal-border); }
+.stack-tag.amber { color: var(--amber); background: var(--amber-bg); border-color: var(--amber-border); }
+.stack-tag.red { color: var(--coral); background: var(--coral-bg); border-color: var(--coral-border); }
+
+/* MAIN */
+.main { padding: 0; overflow-x: hidden; }
+.topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0.75rem 2.5rem; border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; background: rgba(250,250,248,0.95); backdrop-filter: blur(8px); z-index: 100;
+}
+.topbar-breadcrumb { font-family: var(--mono); font-size: 11px; color: var(--text3); }
+.topbar-breadcrumb a { color: var(--text3); text-decoration: none; }
+.topbar-right { display: flex; align-items: center; gap: 12px; }
+.topbar-tag { font-family: var(--mono); font-size: 10px; padding: 3px 10px; background: var(--bg3); border-radius: 99px; color: var(--text2); }
+.nav-cta { font-family: var(--mono); font-size: 11px; font-weight: 500; color: var(--blue); text-decoration: none; border: 1px solid var(--blue-border); padding: 3px 10px; border-radius: 4px; background: white; transition: all 0.2s; }
+.nav-cta:hover { background: var(--blue-bg); }
+
+/* CONTENT */
+.content { padding: 3rem 2.5rem 5rem; max-width: 900px; }
+
+/* HEADER */
+.doc-header { margin-bottom: 3.5rem; padding-bottom: 3rem; border-bottom: 1px solid var(--border); }
+.doc-eyebrow { display: flex; align-items: center; gap: 12px; font-family: var(--mono); font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1.5rem; }
+.doc-eyebrow::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.doc-eyebrow span { font-weight: 500; color: var(--blue); }
+.doc-title { font-family: var(--serif); font-size: clamp(32px, 5vw, 46px); font-weight: 400; line-height: 1.12; letter-spacing: -0.02em; color: var(--text); margin-bottom: 1rem; }
+.doc-title em { font-style: italic; color: var(--blue); }
+.doc-subtitle { font-size: 16px; line-height: 1.7; color: var(--text2); font-weight: 300; border-left: 2px solid var(--blue-border); padding-left: 20px; margin-bottom: 2.5rem; }
+
+/* STAT GRID */
+.stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; border: 1px solid var(--border); border-radius: var(--r-lg); overflow: hidden; margin: 0 0 2.5rem; background: white; }
+.stat-cell { padding: 1.25rem 1.5rem; border-right: 1px solid var(--border); }
+.stat-cell:last-child { border-right: none; }
+.stat-value { font-family: var(--serif); font-size: 38px; font-weight: 400; line-height: 1; margin-bottom: 6px; color: var(--text); }
+.stat-value em { font-style: italic; color: var(--blue); }
+.stat-label { font-family: var(--mono); font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.08em; line-height: 1.4; }
+.stat-context { font-family: var(--mono); font-size: 9.5px; color: var(--text3); margin-top: 6px; letter-spacing: 0.04em; }
+
+/* SECTIONS */
+.section { margin-bottom: 4.5rem; scroll-margin-top: 80px; }
+.section-eyebrow { font-family: var(--mono); font-size: 11px; font-weight: 500; letter-spacing: 0.12em; color: var(--text3); text-transform: uppercase; margin-bottom: 12px; }
+.section-eyebrow span { color: var(--blue); margin-right: 8px; }
+.section-title { font-family: var(--serif); font-size: 28px; font-weight: 400; line-height: 1.2; color: var(--text); margin-bottom: 1.5rem; }
+.section-title em { font-style: italic; color: var(--blue); }
+.section-intro { font-size: 15px; line-height: 1.75; color: var(--text2); margin-bottom: 2rem; font-weight: 300; }
+
+/* GRID LAYOUTS */
+.facts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 32px; }
+.facts-block { border: 1px solid var(--border); border-radius: var(--r-lg); overflow: hidden; background: white; }
+.facts-block-title { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text3); padding: 14px 20px; border-bottom: 1px solid var(--border); background: var(--bg2); }
+.facts-row { display: flex; justify-content: space-between; align-items: baseline; padding: 10px 20px; border-bottom: 1px solid var(--border); gap: 16px; }
+.facts-row:last-child { border-bottom: none; }
+.facts-key { font-size: 12.5px; color: var(--text2); flex-shrink: 0; }
+.facts-val { font-size: 12.5px; color: var(--text); text-align: right; }
+.facts-val strong { color: var(--blue); }
+
+/* HIGHLIGHT LAYOUTS */
+.highlight-block { background: white; border: 1px solid var(--border); border-left: 3px solid var(--blue); border-radius: 0 var(--r-lg) var(--r-lg) 0; padding: 20px 24px; margin: 24px 0; font-size: 13.5px; color: var(--text2); line-height: 1.7; }
+.highlight-block strong { color: var(--text); }
+
+/* STAKEHOLDERS STACK */
+.stakeholder-list { display: flex; flex-direction: column; gap: 8px; margin: 1.5rem 0; }
+.stakeholder-item { display: grid; grid-template-columns: 50px 200px 1fr 1fr; border: 1px solid var(--border); border-radius: var(--r-lg); overflow: hidden; background: white; transition: background 0.2s; }
+.stakeholder-item:hover { background: #fafaf9; }
+.si-id { display: flex; align-items: center; justify-content: center; border-right: 1px solid var(--border); font-family: var(--mono); font-size: 11px; color: var(--text3); background: var(--bg2); }
+.si-role { padding: 18px 20px; border-right: 1px solid var(--border); display: flex; flex-direction: column; justify-content: center; }
+.si-title { font-family: var(--serif); font-size: 16px; color: var(--text); margin-bottom: 3px; font-weight: 400; }
+.si-dept { font-family: var(--mono); font-size: 10px; color: var(--text3); letter-spacing: 0.04em; }
+.si-pain, .si-need { padding: 18px 20px; display: flex; flex-direction: column; justify-content: center; }
+.si-pain { border-right: 1px solid var(--border); }
+.si-pain-label, .si-need-label { font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 5px; }
+.si-pain-label { color: var(--coral); }
+.si-need-label { color: var(--teal); }
+.si-pain-text, .si-need-text { font-size: 12.5px; color: var(--text2); line-height: 1.5; font-weight: 300; }
+
+/* READINESS GRID */
+.readiness-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 20px; }
+.readiness-card { border: 1px solid var(--border); border-radius: var(--r-lg); padding: 24px 20px; background: white; }
+.readiness-dim { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text3); margin-bottom: 16px; }
+.readiness-score { font-family: var(--serif); font-size: 40px; font-weight: 400; line-height: 1; margin-bottom: 4px; }
+.readiness-score .denom { font-size: 18px; color: var(--text3); }
+.readiness-desc { font-size: 12px; color: var(--text2); line-height: 1.55; margin-top: 12px; font-weight: 300; }
+.readiness-action { font-family: var(--mono); font-size: 11px; margin-top: 10px; line-height: 1.5; }
+.score-1 { color: var(--coral); }
+.score-2 { color: #f97316; }
+.score-3 { color: var(--amber); }
+.score-4 { color: var(--teal); }
+.score-5 { color: var(--teal); }
+
+/* SYSTEMS COMPARED TABLE */
+table { width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 1.5rem 0; border: 1px solid var(--border); border-radius: var(--r-lg); overflow: hidden; background: white; }
+thead tr { background: var(--bg2); border-bottom: 1px solid var(--border); font-family: var(--mono); font-size: 11px; color: var(--text3); text-transform: uppercase; }
+th { padding: 12px 16px; text-align: left; font-weight: 500; }
+td { padding: 13px 16px; border-bottom: 1px solid var(--border); color: var(--text2); vertical-align: top; line-height: 1.5; }
+tr:last-child td { border-bottom: none; }
+tbody tr:hover { background: #fafaf9; }
+.td-system { font-family: var(--sans); font-weight: 500; color: var(--text); }
+.td-vendor { font-family: var(--mono); font-size: 11px; color: var(--text3); }
+.td-pattern { font-family: var(--mono); font-size: 11px; color: var(--blue); }
+
+/* USE CASES GRID */
+.uc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.uc-card { border: 1px solid var(--border); border-radius: var(--r-lg); padding: 24px; background: white; transition: background 0.2s; }
+.uc-card:hover { background: #fafaf9; }
+.uc-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 14px; gap: 12px; }
+.uc-id { font-family: var(--mono); font-size: 10px; color: var(--text3); letter-spacing: 0.06em; margin-bottom: 4px; }
+.uc-module { font-family: var(--serif); font-size: 18px; color: var(--text); margin-bottom: 2px; font-weight: 400; }
+.uc-name { font-size: 12px; color: var(--text3); }
+.uc-risk { font-family: var(--mono); font-size: 9.5px; padding: 2px 8px; border-radius: 4px; flex-shrink: 0; text-transform: uppercase; }
+.uc-risk.high { background: var(--coral-bg); color: var(--coral); border: 1px solid var(--coral-border); }
+.uc-risk.info { background: var(--teal-bg); color: var(--teal); border: 1px solid var(--teal-border); }
+.uc-desc { font-size: 13px; color: var(--text2); line-height: 1.6; margin-bottom: 14px; font-weight: 300; }
+.uc-meta { display: flex; gap: 6px; flex-wrap: wrap; }
+.uc-tag { font-family: var(--mono); font-size: 9.5px; padding: 2px 6px; border-radius: 4px; border: 1px solid var(--border); color: var(--text3); background: var(--bg2); }
+.uc-tag.pain { border-color: var(--amber-border); color: var(--amber); background: var(--amber-bg); }
+
+/* BUSINESS REQUIREMENTS STACK */
+.br-list { display: flex; flex-direction: column; gap: 8px; }
+.br-item { display: grid; grid-template-columns: 80px 1fr 140px; border: 1px solid var(--border); border-radius: var(--r-lg); overflow: hidden; background: white; }
+.br-id { display: flex; align-items: center; justify-content: center; border-right: 1px solid var(--border); font-family: var(--mono); font-size: 11px; font-weight: 500; color: var(--blue); background: var(--bg2); }
+.br-body { padding: 20px 24px; border-right: 1px solid var(--border); }
+.br-title { font-family: var(--serif); font-size: 16px; color: var(--text); margin-bottom: 6px; font-weight: 400; }
+.br-desc { font-size: 13px; color: var(--text2); line-height: 1.6; font-weight: 300; }
+.br-meta { padding: 20px; display: flex; flex-direction: column; align-items: flex-end; justify-content: center; gap: 6px; background: var(--bg); }
+.br-must { font-family: var(--mono); font-size: 10px; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; }
+.br-must.must { background: var(--blue-bg); color: var(--blue); border: 1px solid var(--blue-border); }
+.br-module { font-family: var(--mono); font-size: 10px; color: var(--text3); text-align: right; line-height: 1.4; }
+
+/* HERO SELECTION LISTS */
+.hero-pills { display: flex; flex-wrap: wrap; gap: 6px; }
+.pill { font-family: var(--mono); font-size: 10px; padding: 2px 8px; border-radius: 4px; border: 1px solid var(--border); color: var(--text3); background: var(--bg2); }
+.pill.blue { border-color: var(--blue-border); color: var(--blue); background: var(--blue-bg); }
+.pill.green { border-color: var(--teal-border); color: var(--teal); background: var(--teal-bg); }
+.pill.yellow { border-color: var(--amber-border); color: var(--amber); background: var(--amber-bg); }
+
+/* PAGES DESIGN GRID */
+.next-nav { padding: 48px 0 0; border-top: 1px solid var(--border); margin-top: 64px; }
+.next-nav-label { font-family: var(--mono); font-size: 11px; text-transform: uppercase; color: var(--text3); margin-bottom: 20px; letter-spacing: 0.05em; }
+.next-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.next-card { border: 1px solid var(--border); border-radius: var(--r-lg); padding: 24px; background: white; text-decoration: none; color: inherit; display: flex; flex-direction: column; justify-content: space-between; transition: border-color 0.2s; }
+.next-card:hover { border-color: var(--blue-border); }
+.next-card-pg { font-family: var(--mono); font-size: 10px; color: var(--blue); text-transform: uppercase; margin-bottom: 6px; }
+.next-card-title { font-family: var(--serif); font-size: 16px; color: var(--text); margin-bottom: 6px; }
+.next-card-sub { font-size: 12px; line-height: 1.5; color: var(--text2); font-weight: 300; }
+.next-card-status { font-family: var(--mono); font-size: 10px; color: var(--amber); margin-top: 12px; text-transform: uppercase; align-self: flex-end; }
+
+/* FOOTER */
+.doc-footer { padding: 2rem 2.5rem; border-top: 1px solid var(--border); background: var(--bg2); font-family: var(--mono); font-size: 11px; color: var(--text3); display: flex; justify-content: space-between; align-items: center; }
+
+@media (max-width: 1024px) {
+  .page-wrap { grid-template-columns: 1fr; }
+  .sidebar { display: none; }
+  .facts-grid, .uc-grid, .next-cards, .stakeholder-item { grid-template-columns: 1fr; }
+  .si-pain, .si-need { border-right: none; }
+  .stat-grid, .readiness-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 600px) {
+  .stat-grid, .readiness-grid { grid-template-columns: 1fr; }
+  .client-banner { grid-template-columns: 1fr; }
+  .br-item { grid-template-columns: 1fr; }
+  .br-id { border-right: none; border-bottom: 1px solid var(--border); padding: 10px 0; }
+}
+</style>
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<div class="page-wrap">
+
+<!-- SIDEBAR NAVIGATION -->
+<aside class="sidebar">
+  <div class="sidebar-logo">portfolio / requirements</div>
+  <div class="sidebar-project">ASC <span>·</span> Autonomous Supply Chain</div>
+  <nav aria-label="Main navigation">
+    <ul class="sidebar-nav">
+      <li><a href="#overview">Client Overview</a></li>
+      <li><a href="#stakeholders">Stakeholder Map</a></li>
+      <li><a href="#readiness">AI Readiness Audit</a></li>
+      <li><a href="#landscape">Systems Landscape</a></li>
+      <li><a href="#usecases">Use Case Catalogue</a></li>
+      <li><a href="#requirements">Business Requirements</a></li>
+    </ul>
+  </nav>
+
+  <div class="stack-block">
+    <div class="stack-title">Technology Stack</div>
+    <div class="stack-tags">
+      <span class="stack-tag accent">EU AI Act Compliant</span>
+      <span class="stack-tag">TOGAF 10</span>
+      <span class="stack-tag">GDPR</span>
+      <span class="stack-tag">MDR 2017/745</span>
+      <span class="stack-tag accent">Vertex AI</span>
+      <span class="stack-tag">Google Cloud</span>
+      <span class="stack-tag green">XAI / SHAP</span>
+      <span class="stack-tag amber">ISO 13485</span>
+      <span class="stack-tag red">CSRD Scope 3</span>
+      <span class="stack-tag">Gemini 2.5 Pro</span>
+      <span class="stack-tag">BigQuery</span>
+      <span class="stack-tag red">FDA 21 CFR Part 820</span>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN WORKSPACE BLOCK -->
+<main class="main" id="main-content">
+  <div class="topbar">
+    <div class="topbar-breadcrumb">
+      <a href="index.html">asc</a> / <a href="#overview">claravis-brief</a> · v2026
+    </div>
+    <div class="topbar-right">
+      <span class="topbar-tag">MoSCoW Prioritisation</span>
+      <span class="topbar-tag">GCP · TOGAF ADM</span>
+      <a href="page-03.html" class="nav-cta">Page 03 →</a>
+      <a href="https://github.com" class="nav-cta" target="_blank" rel="noopener">GitHub →</a>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- DOCUMENT HEADER / HERO -->
+    <header class="doc-header" id="overview">
+      <div class="doc-eyebrow">The Autonomous Supply Chain &nbsp;·&nbsp; Page 02</div>
+      <h1 class="doc-title"><strong>ClaraVis</strong> Medical Systems GmbH</h1>
+      <p class="doc-subtitle">Client Brief &amp; Requirements</p>
+      <p class="section-body">
+        The requirements layer of the TOGAF ADM[cite: 4]. Every architectural decision in the seven design phases traces back to a documented requirement on this page[cite: 4]. This is the single source of truth for what the Autonomous Supply Chain is designed to achieve for ClaraVis Medical Systems GmbH[cite: 4].
+      </p>
+      <div class="hero-pills">
+        <span class="pill blue">TOGAF Phase A Input</span>
+        <span class="pill blue">MoSCoW Prioritisation</span>
+        <span class="pill yellow">EU AI Act · MDR 2017/745</span>
+        <span class="pill yellow">ISO 13485 · FDA 21 CFR Part 820</span>
+        <span class="pill yellow">GDPR Art. 6 · Art. 35 DPIA</span>
+        <span class="pill green">9 Stakeholders</span>
+        <span class="pill green">8 Use Cases · Requirements Traceability Matrix</span>
+        <span class="pill">ADR-001 · ADR-002 referenced</span>
+      </div>
+    </header>
+
+    <!-- SECTION 01 — CLIENT OVERVIEW -->
+    <section class="section" id="client-overview">
+      <p class="section-eyebrow">Section 01</p>
+      <h2 class="section-title">Organisation Profile</h2>
+      <p class="section-body">
+        A composite of real regulated-industry enterprise patterns from the German medtech sector[cite: 4]. Every requirement, constraint, and architectural decision on this page is grounded in the specific operational context of a medical device OEM operating under EU AI Act, MDR 2017/745, ISO 13485, and FDA 21 CFR Part 820 simultaneously[cite: 4].
+      </p>
+
+      <!-- STAT GRID -->
+      <div class="stat-grid" role="list">
+        <div class="stat-cell" role="listitem">
+          <div class="stat-value">34%</div>
+          <div class="stat-label">Forecast error rate — imaging system components</div>
+          <div class="stat-context">BR-01 target: ≤12% within 12 months</div>
+        </div>
+        <div class="stat-cell" role="listitem">
+          <div class="stat-value">€95M</div>
+          <div class="stat-label">Annual inventory carrying cost across 6 manufacturing sites</div>
+          <div class="stat-context">CFO primary concern · InventoryOrchestrator target domain</div>
+        </div>
+        <div class="stat-cell" role="listitem">
+          <div class="stat-value">23 days</div>
+          <div class="stat-label">Average NCR resolution time — quality non-conformance</div>
+          <div class="stat-context">BR-03 target: ≤5 days · QualityTrace module</div>
+        </div>
+        <div class="stat-cell" role="listitem">
+          <div class="stat-value">310</div>
+          <div class="stat-label">Active suppliers — risk assessed by annual questionnaire only</div>
+          <div class="stat-context">Tier 1–3 network across 22 countries</div>
+        </div>
+      </div>
+
+      <!-- FACTS GRID -->
+      <div class="facts-grid">
+        <div class="facts-block">
+          <div class="facts-block-title">Organisation Facts</div>
+          <div class="facts-row"><span class="facts-key">Legal name</span><span class="facts-val">ClaraVis Medical Systems GmbH</span></div>
+          <div class="facts-row"><span class="facts-key">Headquarters</span><span class="facts-val">Munich, Germany</span></div>
+          <div class="facts-row"><span class="facts-key">Revenue</span><span class="facts-val"><strong>€1.2B (FY2025)</strong></span></div>
+          <div class="facts-row"><span class="facts-key">Employees</span><span class="facts-val">4,200 across 12 countries</span></div>
+          <div class="facts-row"><span class="facts-key">Product portfolio</span><span class="facts-val">MRI and CT imaging systems, imaging sub-assemblies, service parts</span></div>
+          <div class="facts-row"><span class="facts-key">Active suppliers</span><span class="facts-val"><strong>310 · Tier 1–3 · 22 countries</strong></span></div>
+          <div class="facts-row"><span class="facts-key">Manufacturing sites</span><span class="facts-val">6 sites across Europe, APAC, Americas</span></div>
+        </div>
+        <div class="facts-block">
+          <div class="facts-block-title">Regulatory Environment</div>
+          <div class="facts-row"><span class="facts-key">EU AI Act</span><span class="facts-val">Annex III high-risk — 5 ML models · Art. 9, 10, 11, 13, 14</span></div>
+          <div class="facts-row"><span class="facts-key">MDR 2017/745</span><span class="facts-val">Medical Device Regulation — full vigilance reporting · Art. 87 72-hr SLA</span></div>
+          <div class="facts-row"><span class="facts-key">ISO 13485</span><span class="facts-val">Quality Management System — device lifecycle traceability</span></div>
+          <div class="facts-row"><span class="facts-key">FDA 21 CFR Part 820</span><span class="facts-val">QSR — DHR, DHF, CAPA documentation · BR-09 operationalised</span></div>
+          <div class="facts-row"><span class="facts-key">GDPR Art. 6(1)(b/c/f)</span><span class="facts-val">Lawful basis: contract performance, legal obligation, legitimate interest. DPIA required under Art. 35 — 5 high-risk AI systems processing operational data. Data controller: ClaraVis GmbH. Data processor: Google Cloud (DPA executed).</span></div>
+          <div class="facts-row"><span class="facts-key">EU CSRD</span><span class="facts-val">Scope 3 reporting mandatory from FY2025</span></div>
+          <div class="facts-row"><span class="facts-key">ISO 14001</span><span class="facts-val">Environmental management — Scope 3 integration required</span></div>
+        </div>
+      </div>
+
+      <div class="highlight-block">
+        <strong>Architectural positioning note.</strong> ClaraVis operates SAP S/4HANA as the system of record for ERP, procurement, and finance[cite: 4]. SAP IBP handles demand planning[cite: 4]. Ariba manages strategic sourcing across four regional instances[cite: 4]. The Autonomous Supply Chain does not replace any of these[cite: 4]. It delivers intelligence <strong>across the enterprise</strong> — spanning the supplier network, the manufacturing sites, the quality management system, and the CSRD obligations that no single SAP module boundary contains[cite: 4].
+      </div>
+
+      <div class="highlight-block" style="border-left-color: var(--teal);">
+        <strong>GDPR Data Processing Framework.</strong> The Autonomous Supply Chain processes operational data only — no patient personal data is ingested directly[cite: 4]. Supplier data (financial signals, performance records) is processed under <strong>Art. 6(1)(f) legitimate interest</strong> (supply chain risk management)[cite: 4]. Contract and procurement data is processed under <strong>Art. 6(1)(b) contractual necessity</strong>[cite: 4]. QualityTrace ingests device serial and batch records linked to MDR events — processed under <strong>Art. 6(1)(c) legal obligation</strong> (MDR Article 87)[cite: 4]. A Data Protection Impact Assessment (DPIA) is mandated under <strong>Art. 35</strong> for all five high-risk AI models prior to go-live[cite: 4]. Data controller: ClaraVis Medical Systems GmbH[cite: 4]. Data processor: Google Cloud Germany GmbH (DPA and SCCs executed)[cite: 4]. All personal and sensitive operational data remains within the <strong>europe-west3 VPC-SC perimeter</strong> — architecturally enforced, not policy-only[cite: 4].
+      </div>
+
+      <div class="highlight-block" style="border-left-color: var(--amber);">
+        <strong>FDA 21 CFR Part 820 — Operationalised.</strong> ClaraVis manufactures MRI and CT imaging systems sold in the US market through its North America entity[cite: 4]. Part 820 (QSR) requires: Design History File (DHF) per device, Device History Record (DHR) per unit, and documented CAPA workflows[cite: 4]. QualityTrace addresses this directly: automated device genealogy traces produce DHR-compliant records queryable from a single API call; CAPA workflows are structured within the NCR resolution pipeline; DHF linkage is maintained via immutable audit store cross-referencing Veeva Vault document IDs[cite: 4]. See <strong>BR-09</strong> for the dedicated FDA traceability requirement[cite: 4].
+      </div>
+    </section>
+
+    <!-- SECTION 02 — STAKEHOLDER MAP -->
+    <section class="section" id="stakeholders">
+      <p class="section-eyebrow">Section 02</p>
+      <h2 class="section-title">Stakeholder Map</h2>
+      <p class="section-body">
+        Nine stakeholders[cite: 4]. Nine different conversations[cite: 4]. An enterprise architecture that satisfies the CISO's data residency requirements but cannot answer the Quality Director's MDR audit question will not be adopted[cite: 4]. Each stakeholder below has a primary pain point, a specific capability the Autonomous Supply Chain must deliver for them, and a documented adoption risk or concern that must be addressed in the change management plan[cite: 4].
+      </p>
+
+      <div class="stakeholder-list">
+        <div class="stakeholder-item">
+          <div class="si-id">S-01</div>
+          <div class="si-role">
+            <div class="si-title">VP Supply Chain</div>
+            <div class="si-dept">Supply Chain Operations</div>
+          </div>
+          <div class="si-pain">
+            <div class="si-pain-label">Primary Pain</div>
+            <div class="si-pain-text">34% forecast error on imaging system components drives excess inventory and stockouts simultaneously[cite: 4]. No real-time visibility across 6 manufacturing sites[cite: 4].</div>
+          </div>
+          <div class="si-need">
+            <div class="si-need-label">What the AS Delivers</div>
+            <div class="si-need-text">DemandIQ reduces forecast MAPE to ≤12%[cite: 4]. InventoryOrchestrator provides multi-site stock visibility and automated replenishment recommendations[cite: 4].</div>
+          </div>
+        </div>
+        <div class="stakeholder-item">
+          <div class="si-id">S-02</div>
+          <div class="si-role">
+            <div class="si-title">Chief Procurement Officer</div>
+            <div class="si-dept">Strategic Procurement</div>
+          </div>
+          <div class="si-pain">
+            <div class="si-pain-label">Primary Pain</div>
+            <div class="si-pain-text">310 suppliers assessed by annual questionnaire only[cite: 4]. No early-warning capability for supplier financial distress, geopolitical exposure, or quality deterioration[cite: 4].</div>
+          </div>
+          <div class="si-need">
+            <div class="si-need-label">What the AS Delivers</div>
+            <div class="si-need-text">SupplierSentinel surfaces risk events ≥30 days before impact[cite: 4]. ProcureGuard provides ML risk-adjusted sourcing scores[cite: 4]. ContractIntelligence flags non-standard terms[cite: 4].</div>
+          </div>
+        </div>
+        <div class="stakeholder-item">
+          <div class="si-id">S-03</div>
+          <div class="si-role">
+            <div class="si-title">Chief Compliance Officer</div>
+            <div class="si-dept">Legal &amp; Regulatory Affairs</div>
+          </div>
+          <div class="si-pain">
+            <div class="si-pain-label">Primary Pain</div>
+            <div class="si-pain-text">EU AI Act Annex III obligations unassessed[cite: 4]. MDR Article 87 vigilance reporting is manual[cite: 4]. CSRD Scope 3 data is quarterly and unauditable[cite: 4]. Five production models have no SHAP or HITL[cite: 4].</div>
+          </div>
+          <div class="si-need">
+            <div class="si-need-label">What the AS Delivers</div>
+            <div class="si-need-text">All five high-risk models EU AI Act compliant at go-live[cite: 4]. MDR 72-hour SLA satisfied architecturally via QualityTrace[cite: 4]. CSRD Scope 3 automated and real-time via ScopeTracer[cite: 4].</div>
+          </div>
+        </div>
+        <div class="stakeholder-item">
+          <div class="si-id">S-04</div>
+          <div class="si-role">
+            <div class="si-title">Quality Director</div>
+            <div class="si-dept">Quality &amp; Regulatory</div>
+          </div>
+          <div class="si-pain">
+            <div class="si-pain-label">Primary Pain</div>
+            <div class="si-pain-text">23-day average NCR resolution time[cite: 4]. MDR Article 87 vigilance reporting is manual and paper-based[cite: 4]. ISO 13485 traceability requires cross-system data stitching by hand[cite: 4].</div>
+          </div>
+          <div class="si-need">
+            <div class="si-need-label">What the AS Delivers</div>
+            <div class="si-need-text">QualityTrace reduces NCR resolution to ≤5 days[cite: 4]. MDR vigilance report drafted automatically within 72 hours[cite: 4]. Full ISO 13485 device lifecycle trace from a single query[cite: 4].</div>
+          </div>
+        </div>
+        <div class="stakeholder-item">
+          <div class="si-id">S-05</div>
+          <div class="si-role">
+            <div class="si-title">Head of Sustainability</div>
+            <div class="si-dept">ESG &amp; Corporate Affairs</div>
+          </div>
+          <div class="si-pain">
+            <div class="si-pain-label">Primary Pain</div>
+            <div class="si-pain-text">CSRD Scope 3 reporting is a quarterly manual process across freight portals and supplier questionnaires[cite: 4]. FY2025 mandatory reporting date is at risk without automation[cite: 4].</div>
+          </div>
+          <div class="si-need">
+            <div class="si-need-label">What the AS Delivers</div>
+            <div class="si-need-text">ScopeTracer automates Scope 3 Category 1 and 4 data collection from 6 freight portals and 310 supplier nodes[cite: 4]. Real-time CSRD dashboard from FY2025[cite: 4].</div>
+          </div>
+        </div>
+        <div class="stakeholder-item">
+          <div class="si-id">S-06</div>
+          <div class="si-role">
+            <div class="si-title">CFO</div>
+            <div class="si-dept">Finance &amp; Treasury</div>
+          </div>
+          <div class="si-pain">
+            <div class="si-pain-label">Primary Pain</div>
+            <div class="si-pain-text">€95M annual inventory carrying cost[cite: 4]. €32M stockout exposure in imaging systems[cite: 4]. No ML-assisted working capital optimisation across 6 sites[cite: 4].</div>
+          </div>
+          <div class="si-need">
+            <div class="si-need-label">What the AS Delivers</div>
+            <div class="si-need-text">InventoryOrchestrator targets 20–25% reduction in carrying cost[cite: 4]. DemandIQ eliminates surplus buffer stock driven by forecast error[cite: 4]. SupplyChain Command provides CFO-level financial visibility[cite: 4].</div>
+          </div>
+        </div>
+        <div class="stakeholder-item">
+          <div class="si-id">S-07</div>
+          <div class="si-role">
+            <div class="si-title">CISO</div>
+            <div class="si-dept">Information Security &amp; Risk</div>
+          </div>
+          <div class="si-pain">
+            <div class="si-pain-label">Primary Pain</div>
+            <div class="si-pain-text">No VPC-SC perimeter enforcing EU data residency at infrastructure layer[cite: 4]. CMEK not yet deployed for supplier financial and quality data[cite: 4]. Zero-trust posture incomplete[cite: 4].</div>
+          </div>
+          <div class="si-need">
+            <div class="si-need-label">What the AS Delivers</div>
+            <div class="si-need-text">VPC-SC perimeter in Terraform enforces EU residency architecturally[cite: 4]. CMEK with 90-day rotation[cite: 4]. BeyondCorp zero-trust for all HITL operator access[cite: 4]. All agent actions logged to immutable audit store[cite: 4].</div>
+          </div>
+        </div>
+        <div class="stakeholder-item">
+          <div class="si-id">S-08</div>
+          <div class="si-role">
+            <div class="si-title">Head of Legal</div>
+            <div class="si-dept">Legal &amp; Contract Management</div>
+          </div>
+          <div class="si-pain">
+            <div class="si-pain-label">Primary Pain</div>
+            <div class="si-pain-text">310 supplier contracts reviewed manually[cite: 4]. Non-standard liability caps, force majeure, and IP ownership clauses pass through procurement without legal review at volume[cite: 4].</div>
+          </div>
+          <div class="si-need">
+            <div class="si-need-label">What the AS Delivers</div>
+            <div class="si-need-text">ContractIntelligence reads every contract at clause level[cite: 4]. Non-standard terms flagged to Legal HITL with risk score, precedent references, and draft counter-position[cite: 4]. 24-hour SLA enforced by state machine[cite: 4]. <strong>A2A commerce is bounded</strong>: agents may negotiate only pre-approved standard clause sets; any deviation triggers mandatory Legal HITL before any commitment is formed[cite: 4]. See BR-10 for A2A mandate boundary[cite: 4].</div>
+          </div>
+        </div>
+        <div class="stakeholder-item">
+          <div class="si-id">S-09</div>
+          <div class="si-role">
+            <div class="si-title">IT / ERP Director</div>
+            <div class="si-dept">IT &amp; Digital Transformation</div>
+          </div>
+          <div class="si-pain">
+            <div class="si-pain-label">Primary Pain</div>
+            <div class="si-pain-text">SAP S/4HANA, Ariba (4 regional instances), IBP, Salesforce, Veeva Vault, and 6 freight portals are all disconnected[cite: 4]. No unified event fabric[cite: 4]. No cross-system orchestration layer[cite: 4].</div>
+          </div>
+          <div class="si-need">
+            <div class="si-need-label">What the AS Delivers</div>
+            <div class="si-need-text">Pub/Sub event fabric as the integration bus[cite: 4]. AS is the orchestration layer — SAP, Ariba, IBP, Salesforce, Veeva all remain systems of record[cite: 4]. No replacement, no new system of record created[cite: 4]. <strong>Adoption risk:</strong> S-09 is a high change-resistance stakeholder[cite: 4]. Adding an orchestration layer above S/4HANA requires SAP BASIS team co-operation, API license review, and joint ownership of the integration runbook[cite: 4]. Change management plan must include S-09 as a co-delivery partner, not a downstream consumer[cite: 4].</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 03 — AI READINESS AUDIT -->
+    <section class="section" id="readiness">
+      <p class="section-eyebrow">Section 03</p>
+      <h2 class="section-title">AI Readiness Audit</h2>
+      <p class="section-body">
+        Where ClaraVis Medical Systems stands today — five dimensions[cite: 4]. The AI Readiness Assessment is the input to the TOGAF Architecture Vision[cite: 4]. It defines the starting position and frames the gap the Autonomous Supply Chain is designed to close[cite: 4]. Scored 1–5[cite: 4]. Findings are actionable, not evaluative[cite: 4].
+      </p>
+
+      <div class="readiness-grid">
+        <div class="readiness-card">
+          <div class="readiness-dim">Data Maturity</div>
+          <div class="readiness-score score-3">3<span class="denom">&thinsp;/&thinsp;5</span></div>
+          <div class="readiness-desc">SAP IBP BigQuery exports, Ariba REST, Veeva Vault REST, Salesforce REST, and 6 freight portals via Pub/Sub[cite: 4]. Data exists but fragmented across systems with no unified event fabric or feature store[cite: 4].</div>
+          <div class="readiness-action">Action: Unified Pub/Sub event fabric + BigQuery feature store as AS Day 1 infrastructure[cite: 4].</div>
+        </div>
+        <div class="readiness-card">
+          <div class="readiness-dim">ML Maturity</div>
+          <div class="readiness-score score-1">1<span class="denom">&thinsp;/&thinsp;5</span></div>
+          <div class="readiness-desc">No production ML models[cite: 4]. Excel-based demand planning[cite: 4]. Supplier risk via annual questionnaire[cite: 4]. No Vertex AI Pipelines, no Model Registry, no drift detection[cite: 4]. No XAI capability[cite: 4].</div>
+          <div class="readiness-action">Action: Vertex AI Pipelines + Model Registry + monitoring jobs — mandatory before first model promotion[cite: 4].</div>
+        </div>
+        <div class="readiness-card">
+          <div class="readiness-dim">Compliance Infrastructure</div>
+          <div class="readiness-score score-1">1<span class="denom">&thinsp;/&thinsp;5</span></div>
+          <div class="readiness-desc">MDR traceability is manual[cite: 4]. EU AI Act compliance not yet assessed[cite: 4]. CSRD Scope 3 is a manual quarterly process[cite: 4]. Five ML models intended for production have no SHAP or HITL design[cite: 4].</div>
+          <div class="readiness-action">Action: XAI layer + HITL spec + Model Cards + risk documentation — all required at go-live[cite: 4].</div>
+        </div>
+        <div class="readiness-card">
+          <div class="readiness-dim">Integration Readiness</div>
+          <div class="readiness-score score-3">3<span class="denom">&thinsp;/&thinsp;5</span></div>
+          <div class="readiness-desc">SAP S/4HANA, Ariba (4 regional instances), IBP, Salesforce, Veeva Vault, and Excel/SharePoint all present[cite: 4]. Integration patterns defined (Pub/Sub, REST, BigQuery export) but not yet unified[cite: 4].</div>
+          <div class="readiness-action">Action: Pub/Sub event bus as single integration layer[cite: 4]. AS decouples all producers from all consumers[cite: 4].</div>
+        </div>
+        <div class="readiness-card">
+          <div class="readiness-dim">Org Readiness</div>
+          <div class="readiness-score score-3">3<span class="denom">&thinsp;/&thinsp;5</span></div>
+          <div class="readiness-desc">Domain SMEs exist — planners, quality managers, procurement directors[cite: 4]. No ML/AI team in-house[cite: 4]. HITL-ready: named approvers identifiable for all five high-risk models across all domains[cite: 4].</div>
+          <div class="readiness-action">Action: HITL visibility is the organisational unlock[cite: 4]. Deploy HITL interface first, expand model coverage second[cite: 4].</div>
+        </div>
+      </div>
+
+      <p class="section-body" style="font-size:11.5px; color:var(--text3); line-height:1.65;">
+        <strong>Scoring methodology:</strong> Aligned to the Google Cloud AI Adoption Framework (five capability dimensions) and the Gartner AI Readiness Assessment model[cite: 4]. Scale 1–5, where 1 = no capability and 5 = fully mature[cite: 4]. Scores derived from structured discovery sessions against each dimension's capability indicators with ClaraVis stakeholders S-01 through S-09[cite: 4]. Sources: Google Cloud AI Adoption Framework (cloud.google.com/adoption-framework) · Gartner AI Readiness Model (2024)[cite: 4].
+      </p>
+    </section>
+
+    <!-- SECTION 04 — SYSTEMS LANDSCAPE -->
+    <section class="section" id="landscape">
+      <p class="section-eyebrow">Section 04</p>
+      <h2 class="section-title">Systems Landscape <em>— As-Is</em></h2>
+      <p class="section-body">
+        The TOGAF ADM Phase B input[cite: 4]. Eight core systems across four domains[cite: 4]. Integration patterns are defined and present in the landscape — the gap is the absence of a unified orchestration layer connecting them into a coherent, auditable event fabric[cite: 4].
+      </p>
+
+      <table role="table" aria-label="Systems Landscape Integration Map">
+        <thead>
+          <tr role="row">
+            <th role="columnheader">System</th>
+            <th role="columnheader">Vendor</th>
+            <th role="columnheader">Domain</th>
+            <th role="columnheader">AS Integration Pattern</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr role="row">
+            <td class="td-system" role="cell">SAP S/4HANA</td>
+            <td class="td-vendor" role="cell">SAP</td>
+            <td role="cell">ERP — procurement, inventory, finance</td>
+            <td class="td-pattern" role="cell">Event stream via Pub/Sub</td>
+          </tr>
+          <tr role="row">
+            <td class="td-system" role="cell">SAP Ariba</td>
+            <td class="td-vendor" role="cell">SAP</td>
+            <td role="cell">Strategic sourcing, supplier management (4 regional instances)</td>
+            <td class="td-pattern" role="cell">REST API + event webhook</td>
+          </tr>
+          <tr role="row">
+            <td class="td-system" role="cell">SAP IBP</td>
+            <td class="td-vendor" role="cell">SAP</td>
+            <td role="cell">Integrated Business Planning — demand</td>
+            <td class="td-pattern" role="cell">BigQuery data export</td>
+          </tr>
+          <tr role="row">
+            <td class="td-system" role="cell">Salesforce</td>
+            <td class="td-vendor" role="cell">Salesforce</td>
+            <td role="cell">Customer orders, opportunity pipeline</td>
+            <td class="td-pattern" role="cell">REST API (ADR-001 pattern)</td>
+          </tr>
+          <tr role="row">
+            <td class="td-system" role="cell">Veeva Vault</td>
+            <td class="td-vendor" role="cell">Veeva</td>
+            <td role="cell">Quality management, regulatory documents</td>
+            <td class="td-pattern" role="cell">REST API</td>
+          </tr>
+          <tr role="row">
+            <td class="td-system" role="cell">CODA / Thomson Reuters</td>
+            <td class="td-vendor" role="cell">Thomson Reuters</td>
+            <td role="cell">Supplier financial health data</td>
+            <td class="td-pattern" role="cell">Pub/Sub ingestion</td>
+          </tr>
+          <tr role="row">
+            <td class="td-system" role="cell">Six freight / 3PL portals</td>
+            <td class="td-vendor" role="cell">Multiple</td>
+            <td role="cell">Logistics execution, Scope 3 emissions data</td>
+            <td class="td-pattern" role="cell">Pub/Sub ingestion pipelines</td>
+          </tr>
+          <tr role="row">
+            <td class="td-system" role="cell">Excel / SharePoint</td>
+            <td class="td-vendor" role="cell">Microsoft</td>
+            <td role="cell">Demand planning, supplier scorecards</td>
+            <td class="td-pattern" role="cell">GCS upload + Document AI</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="highlight-block">
+        <strong>Architectural gap.</strong> No orchestration layer connects SAP S/4HANA · Ariba · IBP · Salesforce · Veeva Vault · freight portals into a coherent, auditable, human-supervised supply chain intelligence flow[cite: 4]. The Pub/Sub event fabric is the AS Day 1 infrastructure deliverable that closes this gap before any ML model is deployed[cite: 4].
+      </div>
+    </section>
+
+    <!-- SECTION 05 — USE CASE CATALOGUE -->
+    <section class="section" id="usecases">
+      <p class="section-eyebrow">Section 05</p>
+      <h2 class="section-title">Use Case Catalogue</h2>
+      <p class="section-body">
+        Eight use cases mapped to modules, pain points, and EU AI Act risk classification[cite: 4]. Five are classified High-Risk under Annex III — classification mapped to specific Annex III provisions (noted per card)[cite: 4]. All High-Risk models require SHAP explanations per inference, documented HITL checkpoints, versioned Model Cards, and a DPIA under GDPR Art. 35 before go-live[cite: 4]. Three are not high-risk and operate without mandatory HITL, but all are auditable[cite: 4]. Model references specify capability requirements — specific model versions are tracked in Vertex AI Model Registry and subject to change[cite: 4].
+      </p>
+
+      <div class="uc-grid">
+        <div class="uc-card">
+          <div class="uc-header">
+            <div>
+              <div class="uc-id">UC-01</div>
+              <div class="uc-module">DemandIQ</div>
+              <div class="uc-name">Demand forecasting — MRI/CT systems &amp; imaging sub-assemblies</div>
+            </div>
+            <span class="uc-risk high">High-Risk · Annex III §5(a)</span>
+          </div>
+          <div class="uc-desc">Manual demand planning across 12 country markets drives €95M inventory cost and €32M stockout exposure[cite: 4]. DemandIQ ingests SAP IBP exports, Salesforce order pipeline, and external signals to deliver a SHAP-explained forecast model with HITL approval at Planner checkpoint before replenishment orders commit[cite: 4].</div>
+          <div class="uc-meta">
+            <span class="uc-tag pain">PAIN 01</span>
+            <span class="uc-tag">S-01 · S-06</span>
+            <span class="uc-tag">BR-01</span>
+            <span class="uc-tag">Vertex AI Forecasting</span>
+          </div>
+        </div>
+        <div class="uc-card">
+          <div class="uc-header">
+            <div>
+              <div class="uc-id">UC-02</div>
+              <div class="uc-module">SupplierSentinel</div>
+              <div class="uc-name">Real-time supplier risk monitoring across 310 suppliers</div>
+            </div>
+            <span class="uc-risk high">High-Risk · Annex III §5(b)</span>
+          </div>
+          <div class="uc-desc">Annual questionnaire-based supplier risk assessment provides zero early-warning[cite: 4]. SupplierSentinel ingests financial health signals from Thomson Reuters, news feeds via Pub/Sub, and Ariba performance data to surface risk events ≥30 days before operational impact, replacing annual assessments with continuous monitoring[cite: 4].</div>
+          <div class="uc-meta">
+            <span class="uc-tag pain">PAIN 02</span>
+            <span class="uc-tag">S-02 · S-06</span>
+            <span class="uc-tag">BR-02</span>
+            <span class="uc-tag">Gemini Ultra (long-context) · BigQuery</span>
+          </div>
+        </div>
+        <div class="uc-card">
+          <div class="uc-header">
+            <div>
+              <div class="uc-id">UC-03</div>
+              <div class="uc-module">ProcureGuard</div>
+              <div class="uc-name">Intelligent procurement — ML risk-adjusted sourcing</div>
+            </div>
+            <span class="uc-risk high">High-Risk · Annex III §5(b)</span>
+          </div>
+          <div class="uc-desc">Strategic sourcing decisions across Ariba's four regional instances are made without ML risk-adjustment[cite: 4]. ProcureGuard scores every shortlisted supplier against quality, financial, geopolitical, and sustainability dimensions and presents a SHAP-explained recommendation to the Procurement Director HITL checkpoint before contract award[cite: 4].</div>
+          <div class="uc-meta">
+            <span class="uc-tag pain">PAIN 03</span>
+            <span class="uc-tag">S-02 · S-07</span>
+            <span class="uc-tag">BR-07</span>
+            <span class="uc-tag">Vertex AI · Ariba REST</span>
+          </div>
+        </div>
+        <div class="uc-card">
+          <div class="uc-header">
+            <div>
+              <div class="uc-id">UC-04</div>
+              <div class="uc-module">ContractIntelligence</div>
+              <div class="uc-name">Contract analysis + A2A sourcing capability</div>
+            </div>
+            <span class="uc-risk high">High-Risk · Annex III §5(b)</span>
+          </div>
+          <div class="uc-desc">310 supplier contracts are stored but not analysed[cite: 4]. Non-standard liability caps, force majeure, IP ownership, and indemnification clauses pass through procurement without Legal review at volume[cite: 4]. ContractIntelligence reads every contract at clause level via a long-context Gemini model (≥1M token window), flags risk to Legal HITL, and enables A2A agent-to-agent sourcing negotiation bounded to pre-approved clause sets only[cite: 4]. A2A mandate boundary: agents may negotiate standard delivery, payment, and warranty terms autonomously; jurisdiction, liability cap, IP, or indemnification deviations require Legal HITL approval before any commitment[cite: 4]. Counterparty agent authentication via mTLS + Agent Card identity verification per A2A protocol specification[cite: 4].</div>
+          <div class="uc-meta">
+            <span class="uc-tag pain">PAIN 03</span>
+            <span class="uc-tag">S-02 · S-08</span>
+            <span class="uc-tag">BR-07 · BR-10</span>
+            <span class="uc-tag">Gemini Ultra (1M+ context) · A2A Protocol</span>
+          </div>
+        </div>
+        <div class="uc-card">
+          <div class="uc-header">
+            <div>
+              <div class="uc-id">UC-05</div>
+              <div class="uc-module">InventoryOrchestrator</div>
+              <div class="uc-name">Multi-site inventory optimisation across 6 manufacturing sites</div>
+            </div>
+            <span class="uc-risk high">High-Risk · Annex III §5(a)</span>
+          </div>
+          <div class="uc-desc">€95M annual inventory carrying cost reflects the absence of ML-assisted cross-site optimisation[cite: 4]. Safety stock is calculated per-site in IBP without awareness of supplier risk signals or demand forecast uncertainty[cite: 4]. InventoryOrchestrator operates across all 6 sites simultaneously, incorporating DemandIQ forecasts and SupplierSentinel risk scores into replenishment decisions[cite: 4]. <strong>Autonomy boundary (BR-11):</strong> replenishment recommendations ≤€50K execute autonomously after SHAP review; €50K–€500K require Supply Chain Planner HITL approval within 4 hours; &gt;€500K require VP Supply Chain approval with CFO notification[cite: 4]. Cross-site inventory transfers always require HITL regardless of value, given regulatory traceability obligations under ISO 13485[cite: 4].</div>
+          <div class="uc-meta">
+            <span class="uc-tag pain">PAIN 01</span>
+            <span class="uc-tag pain">PAIN 02</span>
+            <span class="uc-tag">S-01 · S-06</span>
+            <span class="uc-tag">BR-01 · BR-11</span>
+          </div>
+        </div>
+        <div class="uc-card">
+          <div class="uc-header">
+            <div>
+              <div class="uc-id">UC-06</div>
+              <div class="uc-module">QualityTrace</div>
+              <div class="uc-name">NCR resolution + MDR Article 87 vigilance reporting</div>
+            </div>
+            <span class="uc-risk high">High-Risk · Annex III §6(a)</span>
+          </div>
+          <div class="uc-desc">Manual NCR resolution and vigilance reporting create simultaneous regulatory and patient safety exposure[cite: 4]. QualityTrace ingests Veeva Vault quality events, traces the full device genealogy across S/4HANA and ISO 13485 records, and generates a draft MDR Article 87 vigilance report within 72 hours — routed through Quality Director HITL before submission[cite: 4].</div>
+          <div class="uc-meta">
+            <span class="uc-tag pain">PAIN 04</span>
+            <span class="uc-tag">S-04 · S-03</span>
+            <span class="uc-tag">BR-03 · BR-04</span>
+            <span class="uc-tag">Veeva REST · MDR Art. 87</span>
+          </div>
+        </div>
+        <div class="uc-card">
+          <div class="uc-header">
+            <div>
+              <div class="uc-id">UC-07</div>
+              <div class="uc-module">ScopeTracer</div>
+              <div class="uc-name">Scope 3 emissions + CSRD reporting — automated, real-time</div>
+            </div>
+            <span class="uc-risk info">Not High-Risk · Informational</span>
+          </div>
+          <div class="uc-desc">CSRD Scope 3 reporting is a manual quarterly process across six freight portals and 310 supplier questionnaires[cite: 4]. FY2025 mandatory reporting is at risk without automation[cite: 4]. ScopeTracer ingests logistics emissions data from all six freight portals via Pub/Sub and supplier-reported Scope 3 data from Ariba, producing a real-time CSRD-compliant dashboard from Day 1 of operation[cite: 4].</div>
+          <div class="uc-meta">
+            <span class="uc-tag pain">PAIN 05</span>
+            <span class="uc-tag">S-05 · S-03</span>
+            <span class="uc-tag">BR-05</span>
+            <span class="uc-tag">Pub/Sub · BigQuery · Looker</span>
+          </div>
+        </div>
+        <div class="uc-card">
+          <div class="uc-header">
+            <div>
+              <div class="uc-id">All Modules</div>
+              <div class="uc-module">SupplyChain Command</div>
+              <div class="uc-name">C-suite unified intelligence dashboard across all modules</div>
+            </div>
+            <span class="uc-risk info">Not High-Risk · Aggregated View</span>
+          </div>
+          <div class="uc-desc">No single view connects forecast accuracy, supplier risk posture, inventory cost exposure, NCR pipeline, and CSRD compliance status for executive decision-making[cite: 4]. SupplyChain Command aggregates outputs from all seven AS modules into a single C-suite dashboard — real-time, drill-through, and traceable to the underlying model inference that produced every figure[cite: 4].</div>
+          <div class="uc-meta">
+            <span class="uc-tag">All PAINs</span>
+            <span class="uc-tag">S-01 · S-06 · S-03</span>
+            <span class="uc-tag">All BRs</span>
+            <span class="uc-tag">Looker · BigQuery</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 06 — BUSINESS REQUIREMENTS -->
+    <section class="section" id="requirements">
+      <p class="section-eyebrow">Section 06</p>
+      <h2 class="section-title">Business Requirements</h2>
+      <p class="section-body">
+        Every requirement below is traceable to a stakeholder concern, a regulatory obligation, or a business pain point identified in the preceding sections[cite: 4]. Prioritised using MoSCoW — BR-01 through BR-09 are Must Have; BR-10 and BR-11 are Should Have as they refine delivery of Must Have capabilities[cite: 4]. Each requirement includes a measurable acceptance criterion[cite: 4]. Eleven requirements covering the primary commercial outcomes, compliance obligations, and governance boundaries[cite: 4].
+      </p>
+
+      <div class="br-list">
+        <div class="br-item">
+          <div class="br-id">BR-01</div>
+          <div class="br-body">
+            <h3 class="br-title">Demand forecast error reduced from 34% to ≤12% within 12 months</h3>
+            <p class="br-desc">Forecast MAPE on imaging system components must be reduced from 34% to ≤12% within 12 months of DemandIQ go-live[cite: 4]. Measured at SKU level across all 6 manufacturing sites using SAP IBP actuals as the baseline (FY2024 12-month rolling MAPE, n=847 SKUs)[cite: 4]. Improvement must be attributable to the ML model, not safety stock increases[cite: 4]. <strong>Acceptance criterion:</strong> ≤12% MAPE sustained for 3 consecutive calendar months as measured in the Vertex AI monitoring dashboard, validated against SAP IBP actuals by the Supply Chain Analytics team[cite: 4].</p>
+          </div>
+          <div class="br-meta">
+            <span class="br-must must">Must Have</span>
+            <span class="br-module">DemandIQ<br>InventoryOrchestrator</span>
+          </div>
+        </div>
+        <div class="br-item">
+          <div class="br-id">BR-02</div>
+          <div class="br-body">
+            <h3 class="br-title">Supplier risk events surfaced ≥30 days before operational impact</h3>
+            <p class="br-desc">SupplierSentinel must detect and surface material supplier risk events — financial distress, geopolitical exposure, quality deterioration — with a minimum 30-day lead time before operational impact[cite: 4]. Current detection lag is 11 days (FY2024 post-incident review across 12 disruption events)[cite: 4]. Lead time measured as the interval between model alert timestamp and confirmed impact event date[cite: 4]. <strong>Acceptance criterion:</strong> ≥30-day lead time across ≥80% of material risk events in the 6-month post-go-live monitoring window, reviewed in joint quarterly business review between SupplierSentinel product owner and CPO[cite: 4].</p>
+          </div>
+          <div class="br-meta">
+            <span class="br-must must">Must Have</span>
+            <span class="br-module">SupplierSentinel</span>
+          </div>
+        </div>
+        <div class="br-item">
+          <div class="br-id">BR-03</div>
+          <div class="br-body">
+            <h3 class="br-title">NCR resolution time reduced from 23 days to ≤5 days</h3>
+            <p class="br-desc">Average NCR resolution time must fall from 23 days to ≤5 days within 6 months of QualityTrace go-live[cite: 4]. Baseline: FY2024 average across 143 NCR events, measured from event creation in Veeva Vault to Quality Director sign-off[cite: 4]. Reduction achieved through automated device genealogy tracing, intelligent triage, and structured HITL workflow — not by lowering NCR quality standards or reclassifying resolution events[cite: 4]. <strong>Acceptance criterion:</strong> ≤5-day average NCR resolution time over any rolling 30-day window post go-live, validated from Veeva Vault timestamps by Quality Director and independently auditable under ISO 13485 internal audit[cite: 4].</p>
+          </div>
+          <div class="br-meta">
+            <span class="br-must must">Must Have</span>
+            <span class="br-module">QualityTrace</span>
+          </div>
+        </div>
+        <div class="br-item">
+          <div class="br-id">BR-04</div>
+          <div class="br-body">
+            <h3 class="br-title">MDR Article 87 vigilance reporting within 72-hour SLA — architecturally satisfied</h3>
+            <p class="br-desc">MDR Article 87 requires notification of serious incidents within 72 hours of becoming aware[cite: 4]. QualityTrace must satisfy this SLA architecturally — by producing a complete, structured vigilance report draft within 72 hours of event ingestion from Veeva Vault — not by accelerating existing manual processes[cite: 4]. HITL Quality Director approval is the final gate before submission[cite: 4].</p>
+          </div>
+          <div class="br-meta">
+            <span class="br-must must">Must Have</span>
+            <span class="br-module">QualityTrace<br>MDR Art. 87</span>
+          </div>
+        </div>
+        <div class="br-item">
+          <div class="br-id">BR-05</div>
+          <div class="br-body">
+            <h3 class="br-title">CSRD Scope 3 reporting automated, real-time, and compliant from FY2025</h3>
+            <p class="br-desc">CSRD Scope 3 Category 1 (purchased goods) and Category 4 (upstream transportation) must be reported in real-time from FY2025 mandatory reporting date[cite: 4]. ScopeTracer must ingest data from all six freight portals and 310 Ariba supplier nodes without manual intervention[cite: 4]. The output must be CSRD-compliant and auditable — not a dashboard estimate[cite: 4].</p>
+          </div>
+          <div class="br-meta">
+            <span class="br-must must">Must Have</span>
+            <span class="br-module">ScopeTracer<br>ISO 14001</span>
+          </div>
+        </div>
+        <div class="br-item">
+          <div class="br-id">BR-06</div>
+          <div class="br-body">
+            <h3 class="br-title">All five high-risk ML models EU AI Act Annex III compliant at go-live</h3>
+            <p class="br-desc">Every model classified as High-Risk under EU AI Act Annex III — DemandIQ, SupplierSentinel, ProcureGuard, InventoryOrchestrator, QualityTrace — must satisfy Articles 9, 10, 11, 13, and 14 at go-live[cite: 4]. This requires: SHAP explanation per inference written to audit log before action; named HITL checkpoint per model; versioned Model Card in Vertex AI Registry; risk management documentation complete[cite: 4].</p>
+          </div>
+          <div class="br-meta">
+            <span class="br-must must">Must Have</span>
+            <span class="br-module">All high-risk<br>modules · XAI Layer</span>
+          </div>
+        </div>
+        <div class="br-item">
+          <div class="br-id">BR-07</div>
+          <div class="br-body">
+            <h3 class="br-title">Strategic sourcing decisions supported by ML risk-adjusted scoring + A2A commerce</h3>
+            <p class="br-desc">Every strategic sourcing decision across Ariba must be supported by a ML risk-adjusted supplier score from ProcureGuard, with SHAP explanation identifying the top contributing factors[cite: 4]. ContractIntelligence must provide A2A agent-to-agent commerce capability enabling autonomous negotiation of standard contract terms before escalating to Legal HITL for non-standard clauses[cite: 4].</p>
+          </div>
+          <div class="br-meta">
+            <span class="br-must must">Must Have</span>
+            <span class="br-module">ProcureGuard<br>ContractIntelligence</span>
+          </div>
+        </div>
+        <div class="br-item">
+          <div class="br-id">BR-08</div>
+          <div class="br-body">
+            <h3 class="br-title">All HITL checkpoints resolve within defined SLOs — 4-hour SLA for high-urgency events</h3>
+            <p class="br-desc">Every HITL checkpoint across all five high-risk modules must have a defined SLO with automated escalation on breach[cite: 4]. Target: 4-hour HITL response for high-urgency events (supplier disruption, MDR vigilance, critical NCR)[cite: 4]. The HITL state machine tracks elapsed time from entry to decision and escalates to a named backup approver if the primary approver exceeds SLO[cite: 4]. All HITL decisions logged to immutable audit store before action executes[cite: 4].</p>
+          </div>
+          <div class="br-meta">
+            <span class="br-must must">Must Have</span>
+            <span class="br-module">HITL Layer<br>All modules</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- NEXT NAVIGATION -->
+    <div class="next-nav">
+      <div class="next-nav-label">Next in the portfolio</div>
+      <p class="section-body" style="max-width:560px;">
+        Requirements captured[cite: 4]. <strong>Architecture follows[cite: 4].</strong> This document is the input to TOGAF Phase A — Architecture Vision[cite: 4]. Every diagram, decision record, and architecture component in the pages that follow traces back to a requirement, constraint, or stakeholder concern documented here[cite: 4].
+      </p>
+      <div class="next-cards">
+        <a href="page-03.html" class="next-card">
+          <div class="next-card-pg">PG 03</div>
+          <div class="next-card-title">TOGAF ADM — Phases A through F</div>
+          <div class="next-card-sub">Architecture Vision · Business · Data/App · Technology · Migration · ADRs</div>
+          <div class="next-card-status">In Design →</div>
+        </a>
+        <a href="page-04.html" class="next-card">
+          <div class="next-card-pg">PG 04</div>
+          <div class="next-card-title">Delivery &amp; Product Design</div>
+          <div class="next-card-sub">SAFe Solution Train · Personas · FRD · HITL Specification</div>
+          <div class="next-card-status">In Design →</div>
+        </a>
+        <a href="index.html" class="next-card">
+          <div class="next-card-pg">PG 01</div>
+          <div class="next-card-title">← Back to The Autonomous Supply Chain</div>
+          <div class="next-card-sub">Concept · Philosophy · Architecture Overview</div>
+          <div class="next-card-status">→</div>
+        </a>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="doc-footer">
+    <span>The <em>Autonomous</em> Supply Chain · Siddharth Rao Portfolio · 2026</span>
+    <div class="footer-links">
+      <a href="https://github.com" target="_blank" rel="noopener">GitHub</a>
+      <a href="index.html">Home</a>
+    </div>
+  </footer>
+
+</main>
+</div>
+
+</body>
+</html>

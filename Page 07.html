@@ -1,0 +1,1226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>PG 07 — ML Engineering &amp; MLOps · The Autonomous Supply Chain</title>
+<meta name="description" content="An explainability-first, EU AI Act-compliant enterprise AI architecture for regulated manufacturers — The Autonomous Supply Chain by Siddharth Rao.">
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg: #fafaf8; --bg2: #f2f0eb; --bg3: #e8e5de;
+  --text: #1a1917; --text2: #5a5852; --text3: #8a8880;
+  --border: #d8d5ce; --border2: #c8c5be;
+  --blue: #1850a0; --blue-bg: #eaf2fe; --blue-border: #90b8e8;
+  --purple: #4a40b0; --purple-bg: #f0effe; --purple-border: #b0a8e8;
+  --teal: #0a6b52; --teal-bg: #e8f5f0; --teal-border: #80c8b0;
+  --amber: #b07010; --amber-bg: #fdf4e3; --amber-border: #e8c870;
+  --coral: #b03820; --coral-bg: #fdf0ec; --coral-border: #e8a090;
+  --cyan: #0b6685; --cyan-bg: #e6f4f8; --cyan-border: #85c5d5;
+  --serif: 'DM Serif Display', Georgia, serif;
+  --mono: 'IBM Plex Mono', monospace;
+  --sans: 'Inter', system-ui, sans-serif;
+  --r: 6px; --r-lg: 10px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--sans); background: var(--bg); color: var(--text); font-size: 15px; line-height: 1.7; -webkit-font-smoothing: antialiased; }
+
+.skip-link {
+  position: absolute; top: -40px; left: 16px;
+  background: var(--blue); color: #fff;
+  padding: 8px 16px; border-radius: 4px; z-index: 9999;
+  font-family: var(--mono); font-size: 13px; text-decoration: none;
+  transition: top 0.2s;
+}
+.skip-link:focus { top: 8px; }
+
+.page-wrap { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
+
+/* SIDEBAR */
+.sidebar {
+  position: sticky; top: 0; height: 100vh; overflow-y: auto;
+  background: var(--bg2); border-right: 1px solid var(--border);
+  padding: 2rem 1.25rem; display: flex; flex-direction: column; gap: 0;
+}
+.sidebar-logo { font-family: var(--mono); font-size: 11px; font-weight: 500; color: var(--text3); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.25rem; }
+.sidebar-project { font-family: var(--serif); font-size: 20px; color: var(--text); margin-bottom: 2rem; line-height: 1.2; }
+.sidebar-project span { color: var(--blue); }
+.sidebar-nav { list-style: none; display: flex; flex-direction: column; gap: 2px; }
+.sidebar-nav a { display: block; font-size: 12.5px; color: var(--text2); text-decoration: none; padding: 6px 10px; border-radius: var(--r); transition: background 0.15s, color 0.15s; }
+.sidebar-nav a:hover { background: var(--bg3); color: var(--text); }
+.sidebar-nav a.active { background: var(--text); color: var(--bg); }
+.sidebar-divider { height: 1px; background: var(--border); margin: 1rem 0; }
+.sidebar-section { font-family: var(--mono); font-size: 10px; font-weight: 600; color: var(--text3); letter-spacing: 0.08em; text-transform: uppercase; padding: 12px 10px 4px; }
+
+.stack-block { margin-top: auto; padding-top: 1.5rem; border-top: 1px solid var(--border); }
+.stack-title { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text3); margin-bottom: 0.75rem; }
+.stack-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+.stack-tag { font-family: var(--mono); font-size: 9.5px; padding: 2px 6px; background: var(--bg3); border-radius: 4px; color: var(--text2); border: 1px solid transparent; }
+.stack-tag.accent { color: var(--blue); background: var(--blue-bg); border-color: var(--blue-border); }
+.stack-tag.green { color: var(--teal); background: var(--teal-bg); border-color: var(--teal-border); }
+.stack-tag.amber { color: var(--amber); background: var(--amber-bg); border-color: var(--amber-border); }
+.stack-tag.red { color: var(--coral); background: var(--coral-bg); border-color: var(--coral-border); }
+
+/* MAIN */
+.main { padding: 0; overflow-x: hidden; }
+.topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0.75rem 2.5rem; border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; background: rgba(250,250,248,0.95); backdrop-filter: blur(8px); z-index: 100;
+}
+.topbar-breadcrumb { font-family: var(--mono); font-size: 11px; color: var(--text3); }
+.topbar-breadcrumb a { color: var(--text3); text-decoration: none; }
+.topbar-right { display: flex; align-items: center; gap: 12px; }
+.topbar-tag { font-family: var(--mono); font-size: 10px; padding: 3px 10px; background: var(--bg3); border-radius: 99px; color: var(--text2); }
+.nav-cta { font-family: var(--mono); font-size: 11px; font-weight: 500; color: var(--blue); text-decoration: none; border: 1px solid var(--blue-border); padding: 3px 10px; border-radius: 4px; background: white; transition: all 0.2s; }
+.nav-cta:hover { background: var(--blue-bg); }
+
+/* CONTENT */
+.content { padding: 3rem 2.5rem 5rem; max-width: 940px; }
+
+/* HEADER */
+.doc-header { margin-bottom: 3.5rem; padding-bottom: 3rem; border-bottom: 1px solid var(--border); }
+.doc-eyebrow { display: flex; align-items: center; gap: 12px; font-family: var(--mono); font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1.5rem; }
+.doc-eyebrow::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.doc-title { font-family: var(--serif); font-size: clamp(32px, 5vw, 46px); font-weight: 400; line-height: 1.12; letter-spacing: -0.02em; color: var(--text); margin-bottom: 1rem; }
+.doc-title em { font-style: italic; color: var(--blue); }
+.doc-subtitle { font-size: 16px; line-height: 1.7; color: var(--text2); font-weight: 300; border-left: 2px solid var(--blue-border); padding-left: 20px; margin-bottom: 2.5rem; }
+
+.stat-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 2rem; }
+.stat-chip { font-family: var(--mono); font-size: 10.5px; padding: 3px 10px; background: var(--bg3); border-radius: 4px; color: var(--text2); border: 1px solid var(--border); }
+.stat-chip.green { color: var(--teal); background: var(--teal-bg); border-color: var(--teal-border); }
+.stat-chip.amber { color: var(--amber); background: var(--amber-bg); border-color: var(--amber-border); }
+
+/* STAT GRID */
+.stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; border: 1px solid var(--border); border-radius: var(--r-lg); overflow: hidden; margin: 0 0 2.5rem; background: white; }
+.stat-cell { padding: 1.25rem 1.5rem; border-right: 1px solid var(--border); }
+.stat-cell:last-child { border-right: none; }
+.stat-value { font-family: var(--serif); font-size: 38px; font-weight: 400; line-height: 1; margin-bottom: 6px; color: var(--text); }
+.stat-label { font-family: var(--mono); font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.08em; line-height: 1.4; }
+
+/* SECTIONS */
+.section { margin-bottom: 4.5rem; scroll-margin-top: 80px; }
+.section-eyebrow { font-family: var(--mono); font-size: 11px; font-weight: 500; letter-spacing: 0.12em; color: var(--text3); text-transform: uppercase; margin-bottom: 12px; }
+.section-eyebrow span { color: var(--blue); margin-right: 8px; }
+.section-title { font-family: var(--serif); font-size: 28px; font-weight: 400; line-height: 1.2; color: var(--text); margin-bottom: 1.5rem; }
+.section-title em { font-style: italic; color: var(--blue); }
+.section-intro { font-size: 15px; line-height: 1.75; color: var(--text2); margin-bottom: 2rem; font-weight: 300; }
+.sub-label { font-family: var(--mono); font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text3); margin: 2rem 0 0.75rem; display: block; }
+
+/* MODEL CARDS GRID */
+.model-grid { display: flex; flex-direction: column; gap: 12px; margin: 1.5rem 0; }
+.model-card { display: grid; grid-template-columns: 240px 1fr; border: 1px solid var(--border); border-radius: var(--r-lg); overflow: hidden; background: white; }
+.model-sidebar { padding: 1.5rem; border-right: 1px solid var(--border); background: #fafaf9; display: flex; flex-direction: column; justify-content: flex-start; }
+.model-num { font-family: var(--mono); font-size: 10px; text-transform: uppercase; color: var(--text3); margin-bottom: 4px; }
+.model-name { font-family: var(--serif); font-size: 18px; color: var(--text); margin-bottom: 10px; font-weight: 400; }
+.model-type-pill { font-family: var(--mono); font-size: 9.5px; padding: 2px 8px; border-radius: 4px; display: inline-block; text-transform: uppercase; margin-bottom: 12px; }
+.pill-xgb  { color: var(--blue); background: var(--blue-bg); border: 1px solid var(--blue-border); }
+.pill-clf  { color: var(--purple); background: var(--purple-bg); border: 1px solid var(--purple-border); }
+.pill-reg  { color: var(--teal); background: var(--teal-bg); border: 1px solid var(--teal-border); }
+.pill-llm  { color: var(--amber); background: var(--amber-bg); border: 1px solid var(--amber-border); }
+
+.risk-badge { font-family: var(--mono); font-size: 10px; color: var(--coral); text-transform: uppercase; margin-top: auto; display: flex; align-items: center; gap: 6px; font-weight: 500; }
+.risk-badge::before { content: '●'; font-size: 12px; color: var(--coral); }
+
+.model-body { padding: 1.5rem; display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.model-section-title { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text3); margin-bottom: 8px; display: block; }
+.feature-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+.feature-list li { font-size: 13px; color: var(--text2); display: flex; align-items: flex-start; gap: 6px; font-weight: 300; }
+.feature-list li::before { content: '·'; color: var(--blue); font-weight: bold; }
+
+.model-metrics { display: flex; flex-direction: column; gap: 12px; }
+.metric-row { display: flex; flex-direction: column; gap: 2px; }
+.metric-label { font-family: var(--mono); font-size: 9.5px; color: var(--text3); text-transform: uppercase; }
+.metric-value { font-size: 13.5px; color: var(--text); font-weight: 500; }
+.metric-value .val-accent { color: var(--teal); }
+
+.xai-block { grid-column: 1 / -1; display: flex; align-items: flex-start; gap: 12px; background: var(--blue-bg); border: 1px solid var(--blue-border); border-radius: var(--r); padding: 12px 16px; font-size: 13px; color: var(--text2); line-height: 1.6; }
+.xai-icon { font-family: var(--mono); font-size: 11px; color: var(--blue); font-weight: bold; }
+.xai-text-label { font-family: var(--mono); font-size: 10px; text-transform: uppercase; color: var(--blue); margin-bottom: 2px; }
+.xai-text-body { font-weight: 300; }
+.mdr-badge { grid-column: 1 / -1; padding: 10px 14px; background: var(--amber-bg); border: 1px solid var(--amber-border); border-radius: var(--r); font-family: var(--mono); font-size: 11.5px; color: var(--amber); }
+
+/* PIPELINE STEPS */
+.pipeline-steps { display: flex; flex-direction: column; gap: 8px; margin: 1.5rem 0; }
+.pipeline-step { display: grid; grid-template-columns: 60px 1fr; border: 1px solid var(--border); border-radius: var(--r-lg); overflow: hidden; background: white; }
+.step-num-col { display: flex; align-items: center; justify-content: center; background: var(--bg2); border-right: 1px solid var(--border); }
+.step-circle { font-family: var(--serif); font-size: 24px; color: var(--text3); }
+.step-content { padding: 1.25rem; }
+.step-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 6px; }
+.step-title { font-family: var(--serif); font-size: 18px; color: var(--text); font-weight: 400; }
+.step-tag { font-family: var(--mono); font-size: 9.5px; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; background: var(--blue-bg); color: var(--blue); border: 1px solid var(--blue-border); }
+.step-tag.green { background: var(--teal-bg); color: var(--teal); border-color: var(--teal-border); }
+.step-tag.amber { background: var(--amber-bg); color: var(--amber); border-color: var(--amber-border); }
+.step-tag.red   { background: var(--coral-bg); color: var(--coral); border-color: var(--coral-border); }
+.step-body { font-size: 13.5px; color: var(--text2); line-height: 1.6; font-weight: 300; }
+.step-gate { font-family: var(--mono); font-size: 11px; margin-top: 10px; display: inline-block; padding: 4px 8px; background: var(--bg2); border-radius: 4px; color: var(--text2); border: 1px solid var(--border); }
+
+/* DRIFT GRIDS */
+.drift-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 2rem; }
+.drift-card { border: 1px solid var(--border); border-radius: var(--r-lg); padding: 1.5rem; background: white; transition: background 0.2s; }
+.drift-card:hover { background: #fafaf9; }
+.drift-card-title { font-family: var(--serif); font-size: 18px; color: var(--text); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; font-weight: 400; }
+.drift-card-title .dot { inline-block; width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
+.dot-accent { background: var(--blue); }
+.dot-green  { background: var(--teal); }
+.dot-amber  { background: var(--amber); }
+.dot-red    { background: var(--coral); }
+
+.threshold-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.threshold-item { display: flex; flex-direction: column; gap: 2px; }
+.threshold-label { font-family: var(--mono); font-size: 9.5px; color: var(--text3); text-transform: uppercase; }
+.threshold-value { font-size: 13.5px; color: var(--text2); font-weight: 300; line-height: 1.5; }
+.threshold-value code { font-family: var(--mono); font-size: 11.5px; color: var(--blue); background: var(--blue-bg); padding: 1px 4px; border-radius: 3px; }
+.cadence-chip { font-family: var(--mono); font-size: 10px; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; display: inline-block; }
+.cadence-weekly  { background: var(--coral-bg); color: var(--coral); border: 1px solid var(--coral-border); }
+.cadence-monthly { background: var(--blue-bg); color: var(--blue); border: 1px solid var(--blue-border); }
+.cadence-quarterly { background: var(--teal-bg); color: var(--teal); border: 1px solid var(--teal-border); }
+
+.drift-infra { border: 1px solid var(--border); border-radius: var(--r-lg); padding: 1.5rem; background: white; }
+.infra-title { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text3); margin-bottom: 1rem; display: block; }
+.infra-flow { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.infra-node { display: flex; align-items: center; gap: 6px; }
+.infra-chip { font-family: var(--mono); font-size: 11px; padding: 4px 10px; background: var(--bg2); border: 1px solid var(--border); border-radius: 4px; color: var(--text2); }
+.infra-arrow { font-size: 12px; color: var(--text3); font-family: var(--mono); }
+
+/* MODEL CARD REGISTER DOCUMENT */
+.model-card-doc { border: 1px solid var(--border); border-radius: var(--r-lg); overflow: hidden; background: white; margin: 2rem 0; }
+.mc-header { display: flex; align-items: center; justify-content: space-between; padding: 1.25rem 1.5rem; background: var(--bg2); border-bottom: 1px solid var(--border); }
+.mc-header-left h3 { font-family: var(--serif); font-size: 20px; color: var(--text); font-weight: 400; }
+.mc-header-left p { font-size: 12.5px; color: var(--text3); margin-top: 2px; }
+.mc-version { font-family: var(--mono); font-size: 11px; color: var(--text2); text-align: right; line-height: 1.5; }
+
+.mc-body { display: grid; grid-template-columns: 1fr 1fr; }
+.mc-section { padding: 1.5rem; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+.mc-section:nth-child(even) { border-right: none; }
+.mc-section:nth-last-child(-n+2) { border-bottom: none; }
+.mc-section-label { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text3); margin-bottom: 12px; display: block; }
+.mc-section-label .snum { color: var(--blue); font-weight: 500; margin-right: 4px; }
+.mc-content { font-size: 13.5px; color: var(--text2); line-height: 1.6; font-weight: 300; }
+.mc-content strong { color: var(--text); font-weight: 500; }
+.mc-content ul { list-style: none; margin-top: 6px; display: flex; flex-direction: column; gap: 4px; }
+.mc-content ul li { display: flex; gap: 6px; align-items: flex-start; }
+.mc-content ul li::before { content: '·'; color: var(--blue); font-weight: bold; }
+.mc-metric-inline { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.mc-metric-chip { font-family: var(--mono); font-size: 11px; background: var(--bg2); border: 1px solid var(--border); padding: 2px 8px; border-radius: 4px; color: var(--text2); }
+.mc-metric-chip .val { color: var(--teal); font-weight: 500; }
+
+/* FEATURE STORE ENGAGEMENTS */
+.fs-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 2rem; }
+.fs-group { border: 1px solid var(--border); border-radius: var(--r-lg); padding: 1.25rem; background: white; transition: background 0.2s; display: flex; flex-direction: column; }
+.fs-group:hover { background: #fafaf9; }
+.fs-group-name { font-family: var(--serif); font-size: 16px; color: var(--text); margin-bottom: 2px; font-weight: 400; }
+.fs-group-key { font-family: var(--mono); font-size: 10.5px; color: var(--text3); margin-bottom: 14px; }
+.fs-features { list-style: none; display: flex; flex-direction: column; gap: 4px; margin-bottom: 14px; }
+.fs-features li { font-family: var(--mono); font-size: 11.5px; color: var(--text2); display: flex; align-items: center; gap: 6px; }
+.fs-features li::before { content: '·'; color: var(--text3); }
+.fs-consumers { margin-top: auto; border-top: 1px solid var(--border); padding-top: 10px; }
+.fs-consumers-label { font-family: var(--mono); font-size: 9.5px; text-transform: uppercase; color: var(--text3); margin-bottom: 6px; display: block; }
+.fs-consumer-chips { display: flex; flex-wrap: wrap; gap: 4px; }
+.fs-consumer-chip { font-family: var(--mono); font-size: 9.5px; padding: 1px 6px; background: var(--purple-bg); color: var(--purple); border: 1px solid var(--purple-border); border-radius: 4px; }
+.fs-slo-row { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border); }
+.fs-slo-label { font-family: var(--mono); font-size: 9.5px; color: var(--text3); text-transform: uppercase; }
+.fs-slo-value { font-family: var(--mono); font-size: 11px; color: var(--teal); background: var(--teal-bg); border: 1px solid var(--teal-border); padding: 2px 6px; border-radius: 4px; }
+
+/* CADENCE TABLE */
+.cadence-table { width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 1.5rem 0; border: 1px solid var(--border); border-radius: var(--r-lg); overflow: hidden; background: white; }
+.cadence-table th { font-family: var(--mono); font-size: 10px; text-transform: uppercase; color: var(--text3); background: var(--bg2); border-bottom: 1px solid var(--border); padding: 10px 14px; text-align: left; font-weight: 500; }
+.cadence-table td { padding: 12px 14px; border-bottom: 1px solid var(--border); vertical-align: top; color: var(--text2); line-height: 1.5; }
+.cadence-table tr:last-child td { border-bottom: none; }
+.cadence-table tr:hover { background: #fafaf9; }
+.cadence-table td:first-child { font-family: var(--serif); font-size: 15px; color: var(--text); font-weight: 400; }
+
+/* PORTFOLIO ROUTINGS NAV */
+.footer-nav { display: flex; justify-content: space-between; gap: 16px; margin-top: 4rem; border-top: 1px solid var(--border); padding-top: 2rem; }
+.footer-nav a { border: 1px solid var(--border); border-radius: var(--r-lg); padding: 16px; text-decoration: none; color: inherit; flex: 1; display: flex; flex-direction: column; justify-content: space-between; transition: border-color 0.2s; }
+.footer-nav a:hover { border-color: var(--blue-border); }
+.footer-nav-dir { font-family: var(--mono); font-size: 10px; text-transform: uppercase; color: var(--text3); margin-bottom: 4px; }
+.footer-nav-title { font-family: var(--serif); font-size: 16px; color: var(--text); }
+
+/* FOOTER */
+.doc-footer { padding: 2rem 2.5rem; border-top: 1px solid var(--border); background: var(--bg2); font-family: var(--mono); font-size: 11px; color: var(--text3); display: flex; justify-content: space-between; align-items: center; }
+
+@media (max-width: 1024px) {
+  .page-wrap { grid-template-columns: 1fr; }
+  .sidebar { display: none; }
+  .stat-grid, .model-card, .pipeline-step, .drift-grid, .fs-grid, .mc-body, .footer-nav { grid-template-columns: 1fr; }
+  .model-sidebar { border-right: none; border-bottom: 1px solid var(--border); }
+  .step-num-col { padding: 10px; border-right: none; border-bottom: 1px solid var(--border); }
+  .mc-section { border-right: none; }
+}
+</style>
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<div class="page-wrap">
+
+  <!-- SIDEBAR NAVIGATION -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">portfolio / engineering</div>
+    <div class="sidebar-project">ASC <span>·</span> Autonomous Supply Chain</div>
+    <nav aria-label="Main navigation">
+      <ul class="sidebar-nav">
+        <li><a href="index__1_.html">01. Overview</a></li>
+        <li><a href="page-02.html">02. Requirements</a></li>
+        <li><a href="workflow-simulation.html">03. Simulation</a></li>
+        <li><a href="page-04-autonomous-supply-chain.html">04. TOGAF ADM</a></li>
+        <li><a href="page-05.html">05. Product Design</a></li>
+        <li><a href="page-06-agent-swarm-a2a.html">06. Agent Swarm</a></li>
+        <li><a href="#" class="active">07. ML Engineering</a></li>
+        <li><a href="page-08.html">08. Infrastructure</a></li>
+        <li><a href="page-09.html">09. Adoption</a></li>
+      </ul>
+    </nav>
+
+    <div class="stack-block">
+      <div class="stack-title">Technology Stack</div>
+      <div class="stack-tags">
+        <span class="stack-tag accent">EU AI Act Compliant</span>
+        <span class="stack-tag">TOGAF 10</span>
+        <span class="stack-tag">GDPR</span>
+        <span class="stack-tag">MDR 2017/745</span>
+        <span class="stack-tag accent">Vertex AI</span>
+        <span class="stack-tag">Google Cloud</span>
+        <span class="stack-tag green">XAI / SHAP</span>
+        <span class="stack-tag amber">ISO 13485</span>
+        <span class="stack-tag red">CSRD Scope 3</span>
+        <span class="stack-tag">Gemini 2.5 Pro</span>
+        <span class="stack-tag">BigQuery</span>
+        <span class="stack-tag red">FDA 21 CFR Part 820</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN WORKSPACE BLOCK -->
+  <main class="main" id="main-content">
+    <div class="topbar">
+      <div class="topbar-breadcrumb">
+        <a href="index__1_.html">asc</a> / <a href="#models">ml-engineering-ops</a> · v2026
+      </div>
+      <div class="topbar-right">
+        <span class="topbar-tag">Explainability Contract</span>
+        <span class="topbar-tag">Vertex AI Fabric</span>
+        <a href="https://github.com/raosiddharthp" class="nav-cta" target="_blank" rel="noopener">GitHub →</a>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- DOCUMENT HEADER / HERO -->
+      <header class="doc-header">
+        <div class="doc-eyebrow">Page 07 · ML Engineering &amp; MLOps</div>
+        <h1 class="doc-title">Five models. One <em>explainability</em> contract. Zero black boxes.</h1>
+        <p class="doc-subtitle">Every ML model in the Autonomous Supply Chain is designed with its explanation contract before a single line of training code is written[cite: 9]. SHAP values generated at inference[cite: 9]. Model Cards versioned alongside models[cite: 9]. EU AI Act Articles 9, 10, 13, 14, 15, and 17 satisfied by design[cite: 9]. GDPR Article 22 position documented per model[cite: 9]. Rollback SLA: ≤15 minutes[cite: 9].</p>
+
+        <!-- STAT GRID -->
+        <div class="stat-grid" role="list">
+          <div class="stat-cell" role="listitem">
+            <div class="stat-value">5</div>
+            <div class="stat-label">EU AI Act<br/>High-Risk Models[cite: 9]</div>
+          </div>
+          <div class="stat-cell" role="listitem">
+            <div class="stat-value">8</div>
+            <div class="stat-label">Vertex AI Pipeline<br/>Steps[cite: 9]</div>
+          </div>
+          <div class="stat-cell" role="listitem">
+            <div class="stat-value">3</div>
+            <div class="stat-label">Shared Feature<br/>Groups[cite: 9]</div>
+          </div>
+          <div class="stat-cell" role="listitem">
+            <div class="stat-value">≤15m</div>
+            <div class="stat-label">Model Rollback<br/>SLA[cite: 9]</div>
+          </div>
+        </div>
+      </header>
+
+      <!-- SECTION 01 — FIVE MODELS -->
+      <section class="section" id="models">
+        <p class="section-eyebrow"><span>Section 01</span> · Five ML Models — EU AI Act Annex III</p>
+        <h2 class="section-title">Five high-risk models. <em>Each with a defined XAI contract.</em></h2>
+        <p class="section-lead">Every model below is classified as High-Risk under EU AI Act Annex III[cite: 9]. Each carries a SHAP explanation contract — specified before training begins, generated at inference, and written to the immutable audit log before any procurement, sourcing, or operational action is taken[cite: 9].</p>
+
+        <div class="model-grid">
+          <!-- MODEL 01 -->
+          <div class="model-card">
+            <div class="model-sidebar">
+              <div class="model-num">Model 01</div>
+              <h3 class="model-name">DemandIQ Forecast Model</h3>
+              <span class="model-type-pill pill-xgb">XGBoost + ARIMA Ensemble</span>
+              <div style="font-family:var(--mono); font-size:11px; color:var(--text3); line-height:1.5;">
+                Time-series ensemble<br/>12-week rolling forecast[cite: 9]
+              </div>
+              <div class="risk-badge">EU AI Act · Annex III High-Risk</div>
+            </div>
+            <div class="model-body">
+              <div>
+                <span class="model-section-title">Input Features — Vertex AI Feature Store</span>
+                <ul class="feature-list">
+                  <li>Salesforce pipeline value per SKU (30/60/90-day)[cite: 9]</li>
+                  <li>SAP IBP historical shipment data (36-month rolling)[cite: 9]</li>
+                  <li>Hospital procurement index (regional, by device category)[cite: 9]</li>
+                  <li>Macroeconomic indicators (EUR/MYR FX, PMI, logistics indices)[cite: 9]</li>
+                  <li>Regulatory approval calendar (new device approvals by market)[cite: 9]</li>
+                </ul>
+              </div>
+              <div class="model-metrics">
+                <div class="metric-row">
+                  <span class="metric-label">Target</span>
+                  <span class="metric-value">12-week rolling demand forecast per SKU per site[cite: 9]</span>
+                </div>
+                <div class="metric-row">
+                  <span class="metric-label">Evaluation Metrics</span>
+                  <span class="metric-value"><span class="val-accent">MAPE ≤12%</span> (target) · WAPE · Bias[cite: 9]</span>
+                </div>
+                <div class="metric-row">
+                  <span class="metric-label">Model Card Scope</span>
+                  <span class="metric-value" style="font-size:12.5px; color:var(--text3);">Intended use · Known limitations · Bias analysis · Training data provenance · Performance by device category[cite: 9]</span>
+                </div>
+              </div>
+              <div class="xai-block">
+                <span class="xai-icon">⟨φ⟩</span>
+                <div>
+                  <div class="xai-text-label">XAI Contract · SHAP TreeExplainer</div>
+                  <p class="xai-text-body">Top-5 feature contributions per forecast line — generated at inference time, written to audit log <strong>before</strong> any procurement trigger fires[cite: 9]. Explanation artifact versioned with model in Vertex AI Model Registry[cite: 9].</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- MODEL 02 -->
+          <div class="model-card">
+            <div class="model-sidebar">
+              <div class="model-num">Model 02</div>
+              <h3 class="model-name">SupplierSentinel Risk Classifier</h3>
+              <span class="model-type-pill pill-clf">Multi-factor XGBoost Classifier</span>
+              <div style="font-family:var(--mono); font-size:11px; color:var(--text3); line-height:1.5;">
+                Continuous risk scoring<br/>per supplier per dimension[cite: 9]
+              </div>
+              <div class="risk-badge">EU AI Act · Annex III High-Risk</div>
+            </div>
+            <div class="model-body">
+              <div>
+                <span class="model-section-title">Input Features — Vertex AI Feature Store</span>
+                <ul class="feature-list">
+                  <li>Supplier financial health score (Altman Z-score derived)[cite: 9]</li>
+                  <li>Geopolitical risk index (supplier country / region)[cite: 9]</li>
+                  <li>ESG compliance score (third-party + self-reported)[cite: 9]</li>
+                  <li>Sub-tier concentration score (single-source dependency)[cite: 9]</li>
+                  <li>News sentiment score (Gemini Vertex AI Search output)[cite: 9]</li>
+                  <li>Historical delivery performance (SAP Ariba)[cite: 9]</li>
+                  <li>Lead time volatility (SAP IBP)[cite: 9]</li>
+                </ul>
+              </div>
+              <div class="model-metrics">
+                <div class="metric-row">
+                  <span class="metric-label">Target</span>
+                  <span class="metric-value">Risk score 0–1 per supplier, per dimension, continuously[cite: 9]</span>
+                </div>
+                <div class="metric-row">
+                  <span class="metric-label">Evaluation Metrics</span>
+                  <span class="metric-value"><span class="val-accent">AUC-ROC ≥0.85</span> · Precision/Recall at 0.75 threshold[cite: 9]</span>
+                </div>
+                <div class="metric-row">
+                  <span class="metric-label">Model Card Scope</span>
+                  <span class="metric-value" style="font-size:12.5px; color:var(--text3);">Bias analysis by supplier geography · Known limitations on sub-tier data quality[cite: 9]</span>
+                </div>
+              </div>
+              <div class="xai-block">
+                <span class="xai-icon">⟨φ⟩</span>
+                <div>
+                  <div class="xai-text-label">XAI Contract · SHAP TreeExplainer</div>
+                  <p class="xai-text-body">Top-3 risk dimensions per supplier per event — generated <strong>before</strong> any sourcing action is taken[cite: 9]. Supplier-level SHAP report attached to every sourcing recommendation delivered to procurement agent[cite: 9].</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- MODEL 03 -->
+          <div class="model-card">
+            <div class="model-sidebar">
+              <div class="model-num">Model 03</div>
+              <h3 class="model-name">InventoryOrchestrator Reorder Model</h3>
+              <span class="model-type-pill pill-reg">Multi-output Regression</span>
+              <div style="font-family:var(--mono); font-size:11px; color:var(--text3); line-height:1.5;">
+                + Safety stock optimiser<br/>per SKU per site[cite: 9]
+              </div>
+              <div class="risk-badge">EU AI Act · Annex III High-Risk</div>
+            </div>
+            <div class="model-body">
+              <div>
+                <span class="model-section-title">Input Features — Vertex AI Feature Store</span>
+                <ul class="feature-list">
+                  <li>DemandIQ forecast output (primary input)[cite: 9]</li>
+                  <li>SupplierSentinel risk score (safety stock buffer multiplier)[cite: 9]</li>
+                  <li>Current stock level per SKU per site (SAP S/4HANA real-time)[cite: 9]</li>
+                  <li>Lead time distribution per supplier (historical)[cite: 9]</li>
+                  <li>Holding cost per SKU (SAP finance integration)[cite: 9]</li>
+                  <li>Stockout cost estimate per SKU (CFO-approved parameters)[cite: 9]</li>
+                </ul>
+              </div>
+              <div class="model-metrics">
+                <div class="metric-row">
+                  <span class="metric-label">Target</span>
+                  <span class="metric-value">Reorder point + safety stock quantity per SKU per site[cite: 9]</span>
+                </div>
+                <div class="metric-row">
+                  <span class="metric-label">Evaluation Metrics</span>
+                  <span class="metric-value"><span class="val-accent">Inventory cost reduction %</span> · Stockout rate[cite: 9]</span>
+                </div>
+              </div>
+              <div class="xai-block">
+                <span class="xai-icon">⟨φ⟩</span>
+                <div>
+                  <div class="xai-text-label">XAI Contract · SHAP</div>
+                  <p class="xai-text-body">Attribution split across DemandIQ forecast vs SupplierSentinel risk vs lead time uncertainty — enabling procurement to understand <strong>why</strong> each reorder quantity was computed, not just what it is[cite: 9].</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- MODEL 04 -->
+          <div class="model-card">
+            <div class="model-sidebar">
+              <div class="model-num">Model 04</div>
+              <h3 class="model-name">QualityTrace NCR Root Cause Classifier</h3>
+              <span class="model-type-pill pill-clf">Multi-class Gradient Boosted</span>
+              <div style="font-family:var(--mono); font-size:11px; color:var(--text3); line-height:1.5;">
+                + Gemini document<br/>intelligence layer[cite: 9]
+              </div>
+              <div class="risk-badge">EU AI Act · Annex III High-Risk</div>
+            </div>
+            <div class="model-body">
+              <div>
+                <span class="model-section-title">Input Features — Vertex AI Feature Store</span>
+                <ul class="feature-list">
+                  <li>Batch record attributes (SAP S/4HANA + Veeva Vault)[cite: 9]</li>
+                  <li>Supplier certificate compliance status[cite: 9]</li>
+                  <li>Incoming inspection result vectors[cite: 9]</li>
+                  <li>Historical NCR root cause patterns (36-month)[cite: 9]</li>
+                  <li>Device lineage graph features (supplier → component → sub-assembly → finished device)[cite: 9]</li>
+                </ul>
+              </div>
+              <div class="model-metrics">
+                <div class="metric-row">
+                  <span class="metric-label">Target</span>
+                  <span class="metric-value">Root cause category: material defect · process deviation · supplier non-conformance · equipment failure · documentation error[cite: 9]</span>
+                </div>
+                <div class="metric-row">
+                  <span class="metric-label">Evaluation Metrics</span>
+                  <span class="metric-value"><span class="val-accent">Top-1 accuracy ≥78%</span> · <span class="val-accent">Top-3 accuracy ≥93%</span>[cite: 9]</span>
+                </div>
+              </div>
+              <div class="xai-block">
+                <span class="xai-icon">⟨φ⟩</span>
+                <div>
+                  <div class="xai-text-label">XAI Contract · SHAP — 2h NCR SLA</div>
+                  <p class="xai-text-body">Top contributing batch record features per root cause hypothesis — generated within 2h of NCR creation and attached to quality engineer HITL review surface before investigation is assigned[cite: 9].</p>
+                </div>
+              </div>
+              <div class="mdr-badge">
+                ⚖ MDR Obligation — Device lineage trace output satisfies MDR Article 87 vigilance reporting data requirement[cite: 9]
+              </div>
+            </div>
+          </div>
+
+          <!-- MODEL 05 -->
+          <div class="model-card">
+            <div class="model-sidebar">
+              <div class="model-num">Model 05</div>
+              <h3 class="model-name">ContractIntelligence TCO &amp; Risk Scorer</h3>
+              <span class="model-type-pill pill-llm">Gemini 1.5 Pro + TCO Regression</span>
+              <div style="font-family:var(--mono); font-size:11px; color:var(--text3); line-height:1.5;">
+                1M token context<br/>200+ clause types[cite: 9]
+              </div>
+              <div class="risk-badge">EU AI Act · Annex III High-Risk</div>
+            </div>
+            <div class="model-body">
+              <div>
+                <span class="model-section-title">Two-layer Architecture</span>
+                <ul class="feature-list">
+                  <li><strong>Gemini layer:</strong> Full-document clause classification and risk scoring across 200+ clause types[cite: 9]. 1M token context — no chunking required[cite: 9].</li>
+                  <li><strong>TCO layer:</strong> Risk-adjusted total cost of ownership regression incorporating Gemini clause risk scores + SupplierSentinel risk + historical performance[cite: 9].</li>
+                </ul>
+                <span class="model-section-title" style="margin-top:12px;">TCO Regression Features</span>
+                <ul class="feature-list">
+                  <li>Clause risk vector (Gemini output)[cite: 9]</li>
+                  <li>SupplierSentinel score · Historical delivery/quality performance[cite: 9]</li>
+                  <li>Unit price · Logistics cost estimate · Compliance cost estimate[cite: 9]</li>
+                </ul>
+              </div>
+              <div class="model-metrics">
+                <div class="metric-row">
+                  <span class="metric-label">Target</span>
+                  <span class="metric-value">Risk-adjusted TCO score per supplier per contract[cite: 9]</span>
+                </div>
+              </div>
+              <div class="xai-block">
+                <span class="xai-icon">⟨φ⟩</span>
+                <div>
+                  <div class="xai-text-label">XAI Contract · SHAP + Gemini Clause Citations</div>
+                  <p class="xai-text-body">SHAP on TCO regression — attribution to contract risk, supplier risk, and cost components[cite: 9]. <strong>Plus</strong> Gemini clause citations for top-3 risk clauses, surfaced in legal reviewer HITL interface before any counter-proposal is drafted[cite: 9].</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 02 — VERTEX AI MLOPS PIPELINE -->
+      <section class="section" id="pipeline">
+        <p class="section-eyebrow"><span>Section 02</span> · Vertex AI MLOps Pipeline</p>
+        <h2 class="section-title">Eight-step training pipeline. <em>Applied uniformly across all five models.</em></h2>
+        <p class="section-lead">Every model passes through the same Vertex AI Pipelines topology[cite: 9]. Promotion is gated on metric thresholds[cite: 9]. Model Cards are auto-generated from training run metadata[cite: 9]. High-risk models under EU AI Act require a manual gate before full deployment[cite: 9].</p>
+
+        <div class="pipeline-steps">
+          <div class="pipeline-step" role="listitem">
+            <div class="step-num-col"><span class="step-circle">01</span></div>
+            <div class="step-content">
+              <div class="step-head">
+                <h3 class="step-title">Data Validation</h3>
+                <span class="step-tag">Great Expectations</span>
+                <span class="step-tag red">Pipeline Gate</span>
+              </div>
+              <p class="step-body">Great Expectations schema validation runs against the Feature Store snapshot before any training computation begins[cite: 9]. If schema drift is detected against the registered feature contract, the pipeline fails immediately — no training job is submitted, no compute is wasted, and an alert is raised to the ML Engineer on-call via PagerDuty[cite: 9].</p>
+            </div>
+          </div>
+
+          <div class="pipeline-step" role="listitem">
+            <div class="step-num-col"><span class="step-circle">02</span></div>
+            <div class="step-content">
+              <div class="step-head">
+                <h3 class="step-title">Feature Engineering</h3>
+                <span class="step-tag">Vertex AI Feature Store</span>
+              </div>
+              <p class="step-body">All feature transformations are executed with lineage metadata written to the Feature Store at each step[cite: 9]. Transformation logic is versioned alongside the feature group — ensuring that every model version can be exactly reproduced from a point-in-time feature snapshot, satisfying EU AI Act data provenance requirements[cite: 9].</p>
+            </div>
+          </div>
+
+          <div class="pipeline-step" role="listitem">
+            <div class="step-num-col"><span class="step-circle">03</span></div>
+            <div class="step-content">
+              <div class="step-head">
+                <h3 class="step-title">Distributed Model Training</h3>
+                <span class="step-tag">Vertex AI Training</span>
+                <span class="step-tag">Vertex AI Vizier</span>
+              </div>
+              <p class="step-body">Distributed training on Vertex AI Training with hyperparameter tuning via Vertex AI Vizier[cite: 9]. Each training run generates a full experiment lineage record: hyperparameter configuration, training data snapshot hash, framework version, and compute configuration — all captured in the Vertex AI Experiments registry before the model artifact is produced[cite: 9].</p>
+            </div>
+          </div>
+
+          <div class="pipeline-step" role="listitem">
+            <div class="step-num-col"><span class="step-circle">04</span></div>
+            <div class="step-content">
+              <div class="step-head">
+                <h3 class="step-title">Model Evaluation</h3>
+                <span class="step-tag red">Champion Gate</span>
+              </div>
+              <p class="step-body">Evaluation metrics are computed on the held-out evaluation set and compared to the registered champion model performance[cite: 9]. Promotion to the next pipeline step is gated on metric thresholds — MAPE for DemandIQ, AUC-ROC for classifiers[cite: 9]. A challenger model that does not improve on the champion is blocked from registration[cite: 9].</p>
+            </div>
+          </div>
+
+          <div class="pipeline-step" role="listitem">
+            <div class="step-num-col"><span class="step-circle">05</span></div>
+            <div class="step-content">
+              <div class="step-head">
+                <h3 class="step-title">Model Card Generation</h3>
+                <span class="step-tag green">Automated</span>
+              </div>
+              <p class="step-body">Model Card is auto-populated from training run metadata, evaluation results, and bias analysis computed over demographic slices of the evaluation set[cite: 9]. Sections include: intended use, training data provenance, evaluation results, bias analysis, ethical considerations, EU AI Act classification, regulatory obligations, and version history[cite: 9]. No manual authoring required[cite: 9].</p>
+            </div>
+          </div>
+
+          <div class="pipeline-step" role="listitem">
+            <div class="step-num-col"><span class="step-circle">06</span></div>
+            <div class="step-content">
+              <div class="step-head">
+                <h3 class="step-title">Model Registration</h3>
+                <span class="step-tag">Vertex AI Model Registry</span>
+              </div>
+              <p class="step-body">Model artifact, Model Card, and SHAP explainer artifact are registered together as a versioned bundle in Vertex AI Model Registry[cite: 9]. Each version carries a regulatory metadata tag set: EU AI Act risk class, applicable regulatory obligations, Model Card reference, and the identity of the training run that produced it[cite: 9].</p>
+            </div>
+          </div>
+
+          <div class="pipeline-step" role="listitem">
+            <div class="step-num-col"><span class="step-circle">07</span></div>
+            <div class="step-content">
+              <div class="step-head">
+                <h3 class="step-title">Canary Deployment</h3>
+                <span class="step-tag amber">10% Traffic Split</span>
+              </div>
+              <p class="step-body">The challenger model receives 10% of live inference traffic alongside the champion[cite: 9]. Champion/challenger performance comparison runs over a 48-hour observation window[cite: 9]. Both models log SHAP explanations to the audit trail during this period, enabling side-by-side explainability comparison as well as metric comparison[cite: 9]. <strong>Canary window / retraining conflict protocol:</strong> For SupplierSentinel (weekly retraining cadence), if a drift event fires during an active 48-hour canary window, the canary is immediately paused, the champion serves 100% traffic, and the retraining pipeline takes priority[cite: 9]. The canary observation window restarts fresh once the new challenger clears the champion gate[cite: 9]. This conflict protocol is encoded as a pipeline condition, not an operational procedure[cite: 9].</p>
+            </div>
+          </div>
+
+          <div class="pipeline-step" role="listitem">
+            <div class="step-num-col"><span class="step-circle">08</span></div>
+            <div class="step-content">
+              <div class="step-head">
+                <h3 class="step-title">Full Promotion</h3>
+                <span class="step-tag amber">Conditional Promote — Metrics + Manual Gate</span>
+              </div>
+              <p class="step-body">Promotion to 100% traffic is conditional on two gates passing in sequence[cite: 9]. First, canary metrics must hold against champion thresholds over the full observation window[cite: 9]. Second, because all five models are EU AI Act High-Risk, full promotion requires explicit manual approval from the designated ML Engineer and a compliance sign-off record before traffic shift[cite: 9]. Neither gate can be bypassed[cite: 9]. Rollback capability is preserved: if post-promotion metrics degrade within the 72-hour monitoring window, automated rollback to the previous champion is triggered and logged to the immutable audit trail[cite: 9].</p>
+              <span class="step-gate">⚖ EU AI Act Article 9 — Human oversight gate required before full deployment of any high-risk model[cite: 9]</span>
+              <span class="step-gate" style="margin-top:6px; color:var(--coral); background:var(--coral-bg); border-color:var(--coral-border);">↩ Rollback — automated revert to champion within 72h window if post-promotion performance degrades[cite: 9]</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 03 — DRIFT DETECTION -->
+      <section class="section" id="drift">
+        <p class="section-eyebrow"><span>Section 03</span> · Drift Detection &amp; Retraining Triggers</p>
+        <h2 class="section-title">Three drift thresholds. <em>One automated response chain.</em></h2>
+        <p class="section-lead">Feature drift, prediction drift, and performance drift are monitored continuously via Vertex AI Model Monitoring and Cloud Monitoring custom metrics[cite: 9]. Every drift event is timestamped, logged with the model version reference, and routed through PagerDuty before any retraining trigger fires[cite: 9].</p>
+
+        <div class="drift-grid">
+          <div class="drift-card">
+            <h3 class="drift-card-title"><span class="dot dot-accent"></span> Feature Drift</h3>
+            <div class="threshold-list">
+              <div class="threshold-item">
+                <span class="threshold-label">Threshold</span>
+                <span class="threshold-value"><code>PSI &gt; 0.2</code> on any top-5 feature[cite: 9]</span>
+              </div>
+              <div class="threshold-item">
+                <span class="threshold-label">Detection Method</span>
+                <span class="threshold-value">Vertex AI Model Monitoring — feature distribution monitoring[cite: 9]</span>
+              </div>
+              <div class="threshold-item">
+                <span class="threshold-label">Response</span>
+                <span class="threshold-value">Alert → PagerDuty → ML Engineer on-call[cite: 9]. Investigation required before retraining decision[cite: 9].</span>
+              </div>
+              <div class="threshold-item">
+                <span class="threshold-label">Audit Logging</span>
+                <span class="threshold-value">Drift event written to immutable audit log with timestamp and model version reference[cite: 9].</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="drift-card">
+            <h3 class="drift-card-title"><span class="dot dot-amber"></span> Prediction Drift</h3>
+            <div class="threshold-list">
+              <div class="threshold-item">
+                <span class="threshold-label">Threshold</span>
+                <span class="threshold-value"><code>KL divergence &gt; 0.1</code> on output distribution[cite: 9]</span>
+              </div>
+              <div class="threshold-item">
+                <span class="threshold-label">Detection Method</span>
+                <span class="threshold-value">Cloud Monitoring custom metrics — prediction distribution tracking per endpoint[cite: 9]</span>
+              </div>
+              <div class="threshold-item">
+                <span class="threshold-label">Response</span>
+                <span class="threshold-value">Alert + mandatory investigation[cite: 9]. Distinguishes between data shift and model degradation before triggering retraining[cite: 9].</span>
+              </div>
+              <div class="threshold-item">
+                <span class="threshold-label">Audit Logging</span>
+                <span class="threshold-value">Drift event written to audit log[cite: 9]. Investigation outcome recorded before any retraining pipeline is initiated[cite: 9].</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="drift-card">
+            <h3 class="drift-card-title"><span class="dot dot-red"></span> Performance Drift</h3>
+            <div class="threshold-list">
+              <div class="threshold-item">
+                <span class="threshold-label">DemandIQ Threshold</span>
+                <span class="threshold-value">MAPE degrades <code>&gt;5pp</code> against registered champion baseline[cite: 9]</span>
+              </div>
+              <div class="threshold-item">
+                <span class="threshold-label">Classifier Threshold</span>
+                <span class="threshold-value">AUC-ROC drops <code>&gt;0.05</code> against registered champion baseline[cite: 9]</span>
+              </div>
+              <div class="threshold-item">
+                <span class="threshold-label">Response</span>
+                <span class="threshold-value">Automatic retraining pipeline trigger[cite: 9]. Champion remains serving until challenger is promoted through full pipeline[cite: 9].</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="drift-card">
+            <h3 class="drift-card-title"><span class="dot dot-green"></span> Retraining Cadence</h3>
+            <div class="threshold-list">
+              <div class="threshold-item">
+                <span class="threshold-label">SupplierSentinel</span>
+                <span class="threshold-value"><span class="cadence-chip cadence-weekly">Weekly</span> — high event frequency, geopolitical volatility[cite: 9]</span>
+              </div>
+              <div class="threshold-item">
+                <span class="threshold-label">DemandIQ · InventoryOrchestrator</span>
+                <span class="threshold-value"><span class="cadence-chip cadence-monthly">Monthly</span> — demand signal lag, procurement cycle alignment[cite: 9]</span>
+              </div>
+              <div class="threshold-item">
+                <span class="threshold-label">QualityTrace · ContractIntelligence</span>
+                <span class="threshold-value"><span class="cadence-chip cadence-quarterly">Quarterly</span> — lower event frequency, stable clause taxonomy[cite: 9]</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="drift-infra">
+          <span class="infra-title">Drift Detection Infrastructure — Event Flow</span>
+          <div class="infra-flow">
+            <div class="infra-node"><span class="infra-chip">Vertex AI Model Monitoring</span><span class="infra-arrow">→</span></div>
+            <div class="infra-node"><span class="infra-chip">Cloud Monitoring Custom Metrics</span><span class="infra-arrow">→</span></div>
+            <div class="infra-node"><span class="infra-chip">Alerting Policy</span><span class="infra-arrow">→</span></div>
+            <div class="infra-node"><span class="infra-chip">PagerDuty</span><span class="infra-arrow">→</span></div>
+            <div class="infra-node"><span class="infra-chip">ML Engineer On-Call</span><span class="infra-arrow">→</span></div>
+            <div class="infra-node"><span class="infra-chip">Immutable Audit Log</span></div>
+          </div>
+        </div>
+
+        <div class="highlight-block" style="border-left-color: var(--amber); background: var(--amber-bg); margin-top:2rem;">
+          <span class="mc-section-label" style="color: var(--amber);"><span class="snum">⚖</span> GDPR Article 17 — Audit Log Retention &amp; Right to Erasure</span>
+          <p style="font-size:13.5px; font-weight:300;">
+            SHAP explanation artifacts written to the audit log at inference time include input feature values[cite: 9]. Where any feature value is derived from personal data (e.g. named contact data within supplier records, news sentiment attributed to identifiable individuals), the following controls apply[cite: 9]:
+          </p>
+          <ul style="margin-top:10px; list-style:none; display:flex; flex-direction:column; gap:6px; font-size:13px;">
+            <li style="display:flex; gap:8px;"><span style="color:var(--text3);">·</span><span><strong>Retention policy:</strong> Audit log entries are retained for 7 years to satisfy MDR and ISO 13485 traceability obligations[cite: 9]. SHAP artifacts containing personal data are pseudonymised at write time — the supplier entity ID is stored; raw personal identifiers are not written to the audit log[cite: 9].</span></li>
+            <li style="display:flex; gap:8px;"><span style="color:var(--text3);">·</span><span><strong>Erasure conflict resolution:</strong> Where a GDPR Art. 17 erasure request conflicts with a mandatory MDR retention obligation, the MDR obligation takes precedence under GDPR Art. 17(3)(b) (processing necessary for compliance with a legal obligation)[cite: 9]. The DPO is notified of each such conflict and maintains a register[cite: 9].</span></li>
+            <li style="display:flex; gap:8px;"><span style="color:var(--text3);">·</span><span><strong>Immutability scope:</strong> "Immutable audit log" means append-only with cryptographic integrity verification — not that erasure is technically impossible[cite: 9]. The pseudonymisation layer ensures erasure of the personal identifier is possible without invalidating the audit record integrity[cite: 9].</span></li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- SECTION 04 — MODEL CARD -->
+      <section class="section" id="modelcard">
+        <p class="section-eyebrow"><span>Section 04</span> · Model Card — Reference Example</p>
+        <h2 class="section-title">DemandIQ Forecast Model. <em>Fully worked Model Card.</em></h2>
+        <p class="section-lead">The Model Card template below is the standard applied across all five models[cite: 9]. Every section is auto-populated from Vertex AI training run metadata and evaluation results — Model Cards are generated artifacts of the pipeline, not manually authored documents[cite: 9].</p>
+
+        <div class="model-card-doc">
+          <div class="mc-header">
+            <div class="mc-header-left">
+              <h3>DemandIQ Forecast Model</h3>
+              <p>XGBoost + ARIMA Time-Series Ensemble · 12-week rolling demand forecast per SKU per site[cite: 9]</p>
+            </div>
+            <div class="mc-version">
+              Version: v2.4.1<br/>
+              Registry: vertex-model-registry/demandiq<br/>
+              EU AI Act Class: High-Risk Annex III<br/>
+              Card generated: 2026-04-09T08:14:22Z[cite: 9]
+            </div>
+          </div>
+          <div class="mc-body">
+            <div class="mc-section">
+              <span class="mc-section-label"><span class="snum">01</span> Model Details</span>
+              <p class="mc-content">
+                <strong>Architecture:</strong> XGBoost + ARIMA hybrid ensemble[cite: 9]. XGBoost captures non-linear relationships across cross-sectional features[cite: 9]. ARIMA models residual temporal structure[cite: 9]. Ensemble weights determined by Vertex AI Vizier hyperparameter tuning[cite: 9].
+              </p>
+              <ul class="mc-content" style="font-family:var(--sans); font-size:13px; font-weight:300;">
+                <li>Training framework: XGBoost 1.7 · statsmodels ARIMA[cite: 9]</li>
+                <li>Training platform: Vertex AI Training (custom container)[cite: 9]</li>
+                <li>Hyperparameter tuning: Vertex AI Vizier — Bayesian optimisation[cite: 9]</li>
+                <li>SHAP explainer: TreeExplainer (model-native, fast)[cite: 9]</li>
+              </ul>
+            </div>
+
+            <div class="mc-section">
+              <span class="mc-section-label"><span class="snum">02</span> Intended Use</span>
+              <p class="mc-content">
+                <strong>Primary use:</strong> 12-week rolling demand forecast per SKU per distribution site — used as the primary input to InventoryOrchestrator for reorder point and safety stock computation[cite: 9].
+              </p>
+              <ul class="mc-content" style="font-family:var(--sans); font-size:13px; font-weight:300;">
+                <li>Intended users: Procurement planning agents; Supply Chain Planning function[cite: 9]</li>
+                <li>Out-of-scope: Forecasting demand for device categories with fewer than 24 months of SAP IBP history[cite: 9]</li>
+                <li>Out-of-scope: Markets where regulatory approval calendar data is unavailable[cite: 9]</li>
+              </ul>
+            </div>
+
+            <div class="mc-section">
+              <span class="mc-section-label"><span class="snum">03</span> Training Data</span>
+              <div class="mc-content">
+                <strong>Data sources:</strong>
+                <ul>
+                  <li>SAP IBP historical shipments — 36-month rolling window per SKU per site[cite: 9]</li>
+                  <li>Salesforce pipeline value — 30/60/90-day cohorts per SKU[cite: 9]</li>
+                  <li>Hospital procurement index — regional, by device category (third-party)[cite: 9]</li>
+                  <li>EUR/MYR FX, PMI, logistics cost indices — macroeconomic data feed[cite: 9]</li>
+                  <li>Regulatory approval calendar — new device approvals by market (regulatory intelligence provider)[cite: 9]</li>
+                </ul>
+                <div style="margin-top:12px; padding:10px 14px; background:var(--bg2); border:1px solid var(--border); border-radius:5px;">
+                  <span style="font-family:var(--font-mono); font-size:9.5px; text-transform:uppercase; color:var(--text3); margin-bottom:4px; display:block;">Train / Validation / Test Split — Temporal</span>
+                  <p style="font-size:12.5px; color:var(--text2); line-height:1.5;">Strict temporal split to prevent leakage: Train 2023-04-01→2025-09-30 · Validation 2025-10-01→2025-12-31 · Test (held-out) 2026-01-01→2026-03-31[cite: 9]. No future data leaks into training window[cite: 9]. Evaluation set is re-anchored at each retraining cycle — held-out window always represents the most recent 13 weeks not seen during training[cite: 9].</p>
+                </div>
+                <p style="margin-top:10px; font-size:12px; color:var(--text3)">Training data snapshot: 2023-04-01 to 2026-03-31 · Snapshot hash: sha256:7f4a…c21b[cite: 9]</p>
+              </div>
+            </div>
+
+            <div class="mc-section">
+              <span class="mc-section-label"><span class="snum">04</span> Evaluation Results</span>
+              <div class="mc-content">
+                <div class="mc-metric-inline">
+                  <div class="mc-metric-chip">MAPE <span class="val">9.4%</span></div>
+                  <div class="mc-metric-chip">WAPE <span class="val">8.1%</span></div>
+                  <div class="mc-metric-chip">Bias <span class="val">+0.3%</span></div>
+                  <div class="mc-metric-chip">Champion Δ MAPE <span class="val">−1.2pp</span></div>
+                </div>
+                <p style="margin-top:14px; font-size:12.5px; color:var(--text3)">Evaluated on held-out 13-week rolling window across all active SKUs and sites[cite: 9]. Performance by device category available in the full evaluation report attached to this Model Card version in Vertex AI Model Registry[cite: 9].</p>
+              </div>
+            </div>
+
+            <div class="mc-section">
+              <span class="mc-section-label"><span class="snum">05</span> Bias Analysis</span>
+              <p class="mc-content">
+                MAPE evaluated separately by device category, geographic region, and forecast horizon (4w, 8w, 12w)[cite: 9]. Known performance degradation at 12-week horizon for newly approved device categories with fewer than 6 months of post-approval shipment data — flagged as a known limitation[cite: 9].
+              </p>
+              <ul class="mc-content" style="font-family:var(--sans); font-size:13px; font-weight:300;">
+                <li>MAPE at 4-week horizon: 6.8% (all categories)[cite: 9]</li>
+                <li>MAPE at 12-week horizon: 12.1% (all categories)[cite: 9]</li>
+                <li>MAPE at 12-week horizon — new device categories: 18.4%[cite: 9]</li>
+              </ul>
+            </div>
+
+            <div class="mc-section">
+              <span class="mc-section-label"><span class="snum">06</span> Ethical Considerations</span>
+              <div class="mc-content">
+                <strong>Human oversight:</strong> All procurement recommendations derived from DemandIQ output above a quantity or value threshold route to a Procurement Manager HITL checkpoint before a purchase order is raised[cite: 7, 9]. SHAP top-5 feature contributions are presented at the HITL checkpoint[cite: 9].
+                <ul style="margin-bottom: 12px;">
+                  <li>No demographic data is used as a model feature[cite: 9]</li>
+                  <li>Forecast outputs do not directly affect individual employment decisions[cite: 9]</li>
+                  <li>Model Card versioned alongside model — auditors read the operational registry[cite: 9]</li>
+                </ul>
+                <div style="padding:10px 14px; background:var(--bg2); border:1px solid var(--border); border-radius:5px;">
+                  <span style="font-family:var(--font-mono); font-size:9.5px; text-transform:uppercase; color:var(--text3); margin-bottom:4px; display:block;">GDPR Article 22 — Automated Decision-Making</span>
+                  <p style="font-size:12.5px; color:var(--text2); line-height:1.5;">DemandIQ outputs are used as <em>inputs to a human decision</em>, not as autonomous procurement decisions[cite: 9]. A qualified Procurement Manager reviews and approves all PO triggers above the CFO-defined financial threshold[cite: 9]. Below-threshold POs are automated but do not individually affect natural persons in the sense of Article 22[cite: 9]. Right to explanation is satisfied by the SHAP report presented at HITL[cite: 9]. No solely-automated decision with significant legal effect on a natural person is made from DemandIQ output alone[cite: 9].</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="mc-section">
+              <span class="mc-section-label"><span class="snum">07</span> EU AI Act Classification</span>
+              <p class="mc-content">
+                <strong>Risk class:</strong> High-Risk — Annex III, Category 8b (critical infrastructure management systems that could pose risks to health, safety, or fundamental rights of natural persons)[cite: 9].
+              </p>
+              <ul class="mc-content" style="font-family:var(--sans); font-size:13px; font-weight:300;">
+                <li>Article 9: Risk management system documented and versioned in Model Registry[cite: 9]</li>
+                <li>Article 10: Training data governance enforced via Feature Store lineage[cite: 9]</li>
+                <li>Article 13: Transparency — Model Card accessible to deployer and affected parties[cite: 9]</li>
+                <li>Article 14: Human oversight — HITL checkpoint specified before deployment[cite: 9]</li>
+                <li>Article 15: Accuracy, robustness &amp; cybersecurity — OOD detection, adversarial input gate, graceful degradation, VPC endpoint isolation (see Section 06)[cite: 9]</li>
+                <li>Article 17: Quality management — pipeline gated at evaluation step[cite: 9]</li>
+              </ul>
+            </div>
+
+            <div class="mc-section">
+              <span class="mc-section-label"><span class="snum">08</span> Regulatory Obligations</span>
+              <div class="mc-content">
+                <strong>ISO 13485:</strong> Demand forecast outputs are used to determine safety stock levels for medical device components — supply chain traceability maintained via InventoryOrchestrator integration[cite: 9].
+                <ul style="margin-bottom:12px;">
+                  <li>Forecast lineage (input features → forecast output → reorder trigger) preserved in audit log[cite: 9]</li>
+                  <li>Model version referenced in every procurement trigger event[cite: 9]</li>
+                  <li>Retraining pipeline output subject to same registration and promotion gate[cite: 9]</li>
+                </ul>
+                <div style="padding:10px 14px; background:var(--bg2); border:1px solid var(--border); border-radius:5px;">
+                  <span style="font-family:var(--font-mono); font-size:9.5px; text-transform:uppercase; color:var(--text3); margin-bottom:4px; display:block;">EU AI Act Article 15 — Accuracy, Robustness &amp; Cybersecurity</span>
+                  <p style="font-size:12.5px; color:var(--text2); line-height:1.5;">Robustness requirements maintained throughout model lifecycle[cite: 9]:</p>
+                  <ul style="font-size:12.5px; font-weight:300;">
+                    <li>Out-of-distribution detection: inference requests with feature values outside ±3σ of training distribution are flagged and routed to HITL before PO action[cite: 9]</li>
+                    <li>Adversarial input handling: Great Expectations schema gate at inference rejects malformed or anomalous feature payloads[cite: 9]</li>
+                    <li>Data degradation resilience: model degrades gracefully when ≤2 non-critical features are missing — missing feature imputation is logged and flagged in SHAP output[cite: 9]</li>
+                    <li>Cybersecurity: model endpoint accessible only via VPC Service Controls perimeter; no public inference endpoint exposed[cite: 9]</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 05 — FEATURE STORE -->
+      <section class="section" id="featurestore">
+        <p class="section-eyebrow"><span>Section 05</span> · Feature Store Design</p>
+        <h2 class="section-title">Three shared feature groups. <em>No feature duplication across models.</em></h2>
+        <p class="section-lead">Feature groups are designed to be shared across models — eliminating training/serving skew and ensuring that a feature value computed once is consumed consistently by every model that depends on it[cite: 9]. Feature freshness SLOs are enforced by the ingestion pipeline, not just measured[cite: 9]. Access to feature groups is governed by IAM role-based access control — models and agents consume features via service accounts with least-privilege scope[cite: 9]. GDPR data minimisation applies: no feature group stores personal data beyond what is necessary for the declared model purpose; <code>supplier_features</code> contains entity-level scores only, not the underlying personal data records from which scores are derived[cite: 9].</p>
+
+        <div class="fs-grid">
+          <div class="fs-group">
+            <h3 class="fs-group-name">supplier_features</h3>
+            <span class="fs-group-key">Key: supplier_id[cite: 9]</span>
+            <ul class="fs-features">
+              <li>supplier_id[cite: 9]</li>
+              <li>risk_score_composite[cite: 9]</li>
+              <li>financial_health_score[cite: 9]</li>
+              <li>esg_score[cite: 9]</li>
+              <li>geopolitical_index[cite: 9]</li>
+              <li>lead_time_p50[cite: 9]</li>
+              <li>lead_time_p95[cite: 9]</li>
+              <li>delivery_performance_rate[cite: 9]</li>
+            </ul>
+            <div class="fs-consumers">
+              <span class="fs-consumers-label">Consumers</span>
+              <div class="fs-consumer-chips">
+                <span class="fs-consumer-chip">SupplierSentinel</span>
+                <span class="fs-consumer-chip">InventoryOrchestrator</span>
+                <span class="fs-consumer-chip">ContractIntelligence</span>
+              </div>
+            </div>
+            <div class="fs-slo-row">
+              <span class="fs-slo-label">Freshness SLO</span>
+              <span class="fs-slo-value">Sub-60s (Pub/Sub)</span>
+            </div>
+          </div>
+
+          <div class="fs-group">
+            <h3 class="fs-group-name">demand_features</h3>
+            <span class="fs-group-key">Key: sku_id · site_id[cite: 9]</span>
+            <ul class="fs-features">
+              <li>sku_id[cite: 9]</li>
+              <li>site_id[cite: 9]</li>
+              <li>salesforce_pipeline_value_30d[cite: 9]</li>
+              <li>salesforce_pipeline_value_90d[cite: 9]</li>
+              <li>ibp_forecast_baseline[cite: 9]</li>
+              <li>hospital_procurement_index[cite: 9]</li>
+              <li>macro_pmi_index[cite: 9]</li>
+            </ul>
+            <div class="fs-consumers">
+              <span class="fs-consumers-label">Consumers</span>
+              <div class="fs-consumer-chips">
+                <span class="fs-consumer-chip">DemandIQ</span>
+                <span class="fs-consumer-chip">InventoryOrchestrator</span>
+              </div>
+            </div>
+            <div class="fs-slo-row">
+              <span class="fs-slo-label">Freshness SLO</span>
+              <span class="fs-slo-value">Sub-1h (SAP/SF)</span>
+            </div>
+          </div>
+
+          <div class="fs-group">
+            <h3 class="fs-group-name">quality_features</h3>
+            <span class="fs-group-key">Key: supplier_id · batch_id[cite: 9]</span>
+            <ul class="fs-features">
+              <li>supplier_id[cite: 9]</li>
+              <li>batch_id[cite: 9]</li>
+              <li>inspection_pass_rate[cite: 9]</li>
+              <li>ncr_frequency_90d[cite: 9]</li>
+              <li>cert_compliance_status[cite: 9]</li>
+            </ul>
+            <div class="fs-consumers">
+              <span class="fs-consumers-label">Consumers</span>
+              <div class="fs-consumer-chips">
+                <span class="fs-consumer-chip">QualityTrace</span>
+                <span class="fs-consumer-chip">SupplierSentinel</span>
+              </div>
+            </div>
+            <div class="fs-slo-row">
+              <span class="fs-slo-label">Freshness SLO</span>
+              <span class="fs-slo-value">Sub-4h (Veeva)</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-bottom:16px; padding:14px 20px; background:var(--bg2); border:1px solid var(--border); border-radius:6px; display:flex; gap:32px; flex-wrap:wrap;">
+          <div>
+            <div style="font-family:var(--font-mono); font-size:9.5px; text-transform:uppercase; color:var(--text3); margin-bottom:4px;">Full Pipeline SLA — Trigger to Model-Ready-for-Canary</div>
+            <div style="font-size:13.5px; color:var(--text2);">XGBoost/classifier models: <span style="color:var(--teal); font-weight:500;">(≤4 hours)</span> · Gemini-based ContractIntelligence: <span style="color:var(--amber); font-weight:500;">(≤8 hours)</span>[cite: 9]</div>
+          </div>
+          <div>
+            <div style="font-family:var(--font-mono); font-size:9.5px; text-transform:uppercase; color:var(--text3); margin-bottom:4px;">SupplierSentinel Effective Monitoring Gap</div>
+            <div style="font-size:13.5px; color:var(--text2);">Weekly retraining + 4h pipeline SLA + 48h canary = <span style="color:var(--amber); font-weight:500;">max 52h gap</span> — within acceptable operational window[cite: 9].</div>
+          </div>
+        </div>
+
+        <table class="cadence-table" role="table" aria-label="Model Retraining Cadence Parameters">
+          <thead>
+            <tr role="row">
+              <th role="columnheader">Model</th>
+              <th role="columnheader">Retraining Cadence</th>
+              <th role="columnheader">Feature Drift Threshold</th>
+              <th role="columnheader">Performance Drift Trigger</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr role="row">
+              <td role="cell">DemandIQ</td>
+              <td role="cell"><span class="cadence-chip cadence-monthly">Monthly</span></td>
+              <td role="cell" style="font-family:var(--mono);">PSI &gt; 0.2 on any top-5 feature[cite: 9]</td>
+              <td role="cell" style="font-family:var(--mono);">MAPE degrades &gt;5pp vs champion[cite: 9]</td>
+            </tr>
+            <tr role="row">
+              <td role="cell">SupplierSentinel</td>
+              <td role="cell"><span class="cadence-chip cadence-weekly">Weekly</span></td>
+              <td role="cell" style="font-family:var(--mono);">PSI &gt; 0.2 on any top-5 feature[cite: 9]</td>
+              <td role="cell" style="font-family:var(--mono);">AUC-ROC drops &gt;0.05 vs champion[cite: 9]</td>
+            </tr>
+            <tr role="row">
+              <td role="cell">InventoryOrchestrator</td>
+              <td role="cell"><span class="cadence-chip cadence-monthly">Monthly</span></td>
+              <td role="cell" style="font-family:var(--mono);">PSI &gt; 0.2 on any top-5 feature[cite: 9]</td>
+              <td role="cell" style="font-family:var(--mono);">Inventory cost KPI degrades &gt;3%[cite: 9]</td>
+            </tr>
+            <tr role="row">
+              <td role="cell">QualityTrace</td>
+              <td role="cell"><span class="cadence-chip cadence-quarterly">Quarterly</span></td>
+              <td role="cell" style="font-family:var(--mono);">PSI &gt; 0.2 on any top-5 feature[cite: 9]</td>
+              <td role="cell" style="font-family:var(--mono);">Top-1 accuracy drops &gt;5pp vs champion<br/><span style="font-family:var(--sans); color:var(--amber); font-size:12px;">Compensating control: MDR-class NCRs always route to quality engineer HITL regardless of model confidence — classification degradation cannot silently affect safety-critical decisions[cite: 9]</span></td>
+            </tr>
+            <tr role="row">
+              <td role="cell">ContractIntelligence</td>
+              <td role="cell"><span class="cadence-chip cadence-quarterly">Quarterly</span></td>
+              <td role="cell" style="font-family:var(--mono);">PSI &gt; 0.2 on clause risk vector distribution[cite: 9]</td>
+              <td role="cell" style="font-family:var(--mono);">Procurement outcome correlation &lt; 0.65 on 90-day rolling window (KL divergence on TCO output distribution &gt; 0.1 used as leading indicator)[cite: 9]</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- SECTION 06 — ROBUSTNESS, ROLLBACK & GDPR ART.22 -->
+      <section class="section" id="robustness">
+        <p class="section-eyebrow"><span>Section 06</span> · Robustness, Rollback &amp; GDPR Article 22</p>
+        <h2 class="section-title">EU AI Act Article 15. <em>Accuracy, robustness, and cybersecurity — throughout the lifecycle.</em></h2>
+        <p class="section-lead">Article 15 requires that high-risk AI systems achieve appropriate levels of accuracy, robustness, and cybersecurity across their operational lifetime — not just at deployment[cite: 9]. This section specifies the robustness controls applied uniformly to all five models, the rollback procedure triggered when a promoted model degrades, and the GDPR Article 22 position for the two models whose outputs most directly affect third-party decisions[cite: 9].</p>
+
+        <div class="drift-grid">
+          <div class="drift-card">
+            <h3 class="drift-card-title"><span class="dot dot-accent"></span> Out-of-Distribution Detection</h3>
+            <div class="threshold-list">
+              <div class="threshold-item">
+                <span class="threshold-label">Trigger Condition</span>
+                <span class="threshold-value">Any inference request with ≥1 feature value outside ±3σ of training distribution[cite: 9]</span>
+              </div>
+              <div class="threshold-item">
+                <span class="threshold-label">Automated Response</span>
+                <span class="threshold-value">Request flagged[cite: 9]. Prediction returned with <code>ood_flag=true</code>[cite: 9]. Downstream agent routes to HITL — no autonomous action taken on OOD inferences[cite: 9].</span>
+              </div>
+              <div class="threshold-item">
+                <span class="threshold-label">Audit Log Contract</span>
+                <span class="threshold-value">OOD event logged with feature vector, model version, and routing decision[cite: 9].</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="drift-card">
+            <h3 class="drift-card-title"><span class="dot dot-amber"></span> Adversarial &amp; Malformed Input Handling</h3>
+            <div class="threshold-list">
+              <div class="threshold-item">
+                <span class="threshold-label">Inference Gate</span>
+                <span class="threshold-value">Great Expectations schema validation runs at inference — same contract as training pipeline Step 01[cite: 9]. Payload errors reject records before reaching endpoints[cite: 9].</span>
+              </div>
+              <div class="threshold-item">
+                <span class="threshold-label">Endpoint Security</span>
+                <span class="threshold-value">All model endpoints are private, accessible only within VPC Service Controls perimeter[cite: 9]. No public inference endpoint[cite: 9]. IAP enforced for human-facing HITL surfaces[cite: 9].</span>
+              </div>
+              <div class="threshold-item">
+                <span class="threshold-label">Threat Model Posture</span>
+                <span class="threshold-value">Model endpoints are not externally reachable[cite: 9]. Primary attack surface is internal — covered by VPC perimeter, service account least-privilege, and Cloud Armor on API Gateway[cite: 9].</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="drift-card">
+            <h3 class="drift-card-title"><span class="dot dot-green"></span> Graceful Degradation Under Feature Unavailability</h3>
+            <div class="threshold-list">
+              <div class="threshold-item">
+                <span class="threshold-label">Tolerance Parameters</span>
+                <span class="threshold-value">Models tolerate absence of ≤2 non-critical features[cite: 9]. Missing features are imputed using training-set median[cite: 9]. Imputation is flagged in SHAP output[cite: 9].</span>
+              </div>
+              <div class="threshold-item">
+                <span class="threshold-label">Critical Feature Unavailability</span>
+                <span class="threshold-value">If a critical feature (defined per model in Feature Store metadata) is unavailable, inference is blocked and escalated to ML Engineer on-call[cite: 9]. No prediction with unknown reliability is served[cite: 9].</span>
+              </div>
+              <div class="threshold-item">
+                <span class="threshold-label">Classification Boundary</span>
+                <span class="threshold-value">Critical features per model are designated at registration time and versioned in Vertex AI Model Registry alongside the model artifact[cite: 9].</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="drift-card">
+            <h3 class="drift-card-title"><span class="dot dot-red"></span> Rollback Procedure — All Five Models</h3>
+            <div class="threshold-list">
+              <div class="threshold-item">
+                <span class="threshold-label">Rollback Trigger</span>
+                <span class="threshold-value">Post-promotion performance metrics degrade beyond threshold within 72-hour monitoring window, OR a compliance issue is identified in the promoted model[cite: 9].</span>
+              </div>
+              <div class="threshold-item">
+                <span class="threshold-label">Rollback SLA</span>
+                <span class="threshold-value">Champion model restored to 100% traffic within <code>≤15 minutes</code> of rollback decision[cite: 9]. Traffic shift is automated via Vertex AI endpoint split update[cite: 9].</span>
+              </div>
+              <div class="threshold-item">
+                <span class="threshold-label">Rollback Authority</span>
+                <span class="threshold-value">Automated rollback: triggered by metric threshold breach[cite: 9]. Manual rollback: any designated ML Engineer or Compliance Officer can trigger via ITSM ticket — no change freeze required[cite: 9].</span>
+              </div>
+              <div class="threshold-item">
+                <span class="threshold-label">Audit Log Contract</span>
+                <span class="threshold-value">Rollback event written to immutable audit log: timestamp, triggered-by identity, reason code, previous champion version, and post-rollback verification metric[cite: 9]. EU AI Act Article 9 rollback record[cite: 9].</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <span class="sub-label">GDPR Article 22 — Automated Decision-Making Position · Per Model</span>
+        <table class="cadence-table" role="table" aria-label="GDPR Article 22 Compliance Matrix">
+          <thead>
+            <tr role="row">
+              <th role="columnheader">Model Hub</th>
+              <th role="columnheader">Art. 22 Applicability</th>
+              <th role="columnheader">Structural Safeguard</th>
+              <th role="columnheader">Right to Explanation</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr role="row">
+              <td>DemandIQ</td>
+              <td style="font-size:12.5px;">Not applicable — outputs are inputs to a human procurement decision, not autonomous decisions affecting natural persons directly[cite: 9].</td>
+              <td style="font-size:12.5px;">HITL gate above financial threshold[cite: 7, 9]. Procurement Manager approval required before PO raised[cite: 9].</td>
+              <td style="font-size:12.5px;">SHAP top-5 features presented at HITL checkpoint[cite: 9].</td>
+            </tr>
+            <tr role="row">
+              <td>SupplierSentinel</td>
+              <td style="font-size:12.5px; color:var(--amber);">Potentially applicable — risk scores may produce significant effects on supplier commercial relationships (individuals acting as sole traders or named representatives)[cite: 8, 9].</td>
+              <td style="font-size:12.5px;">All sourcing exclusion or downgrade actions require human procurement agent review[cite: 9]. Score alone cannot trigger supplier removal — a human decision is required[cite: 8, 9]. HITL is structural, not configurable[cite: 8, 9].</td>
+              <td style="font-size:12.5px;">Top-3 risk dimensions + SHAP per supplier event available to affected party on request via DPO channel[cite: 8, 9]. Response SLA: 72 hours[cite: 8, 9].</td>
+            </tr>
+            <tr role="row">
+              <td>InventoryOrchestrator</td>
+              <td style="font-size:12.5px;">Not applicable — reorder decisions affect inventory levels, not natural persons[cite: 9].</td>
+              <td style="font-size:12.5px;">HITL gate for orders above CFO-defined financial threshold[cite: 7, 9].</td>
+              <td style="font-size:12.5px;">SHAP attribution available in procurement dashboard[cite: 9].</td>
+            </tr>
+            <tr role="row">
+              <td>QualityTrace</td>
+              <td style="font-size:12.5px;">Not applicable — root cause classification affects batch records, not natural persons directly[cite: 9].</td>
+              <td style="font-size:12.5px;">All MDR-class NCRs route to quality engineer HITL unconditionally[cite: 9].</td>
+              <td style="font-size:12.5px;">Root cause SHAP report attached to quality engineer review surface[cite: 9].</td>
+            </tr>
+            <tr role="row">
+              <td>ContractIntelligence</td>
+              <td style="font-size:12.5px; color:var(--amber);">Potentially applicable — clause risk scoring and TCO output may significantly affect contract outcomes for natural persons party to supplier agreements[cite: 9].</td>
+              <td style="font-size:12.5px;">Legal reviewer HITL is mandatory before any contract countersignature[cite: 7, 9]. No contract action is taken from model output alone[cite: 9].</td>
+              <td style="font-size:12.5px;">Gemini clause citations + SHAP TCO attribution surfaced in legal reviewer interface and available to affected party on request[cite: 9].</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- PORTFOLIO DIRECTIONAL NAV ROUTING -->
+      <nav class="footer-nav" aria-label="Portfolio document routing navigation">
+        <a href="page-06-agent-swarm-a2a.html">
+          <span class="footer-nav-dir">← Previous</span>
+          <span class="footer-nav-num">PG 06</span>
+          <h3 class="footer-nav-title">Agent Swarm &amp; A2A Commerce Architecture</h3>
+        </a>
+        <a href="page-08.html">
+          <span class="footer-nav-dir">Next →</span>
+          <span class="footer-nav-num">PG 08</span>
+          <h3 class="footer-nav-title">Infrastructure &amp; GCP Architecture</h3>
+        </a>
+      </nav>
+
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="doc-footer">
+      <span>The Autonomous Supply Chain · Siddharth Rao Portfolio · 2026[cite: 9]</span>
+      <div class="footer-links">
+        <a href="index__1_.html">Overview Hub</a>
+      </div>
+    </footer>
+
+  </main>
+</div>
+
+</body>
+</html>

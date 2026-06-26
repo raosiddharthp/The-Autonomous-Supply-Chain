@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Delivery &amp; Product Design — Page 05 · The Autonomous Supply Chain</title>
+<meta name="description" content="An explainability-first, EU AI Act-compliant enterprise AI architecture for regulated manufacturers — The Autonomous Supply Chain by Siddharth Rao.">
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg: #fafaf8; --bg2: #f2f0eb; --bg3: #e8e5de;
+  --text: #1a1917; --text2: #5a5852; --text3: #8a8880;
+  --border: #d8d5ce; --border2: #c8c5be;
+  --blue: #1850a0; --blue-bg: #eaf2fe; --blue-border: #90b8e8;
+  --purple: #4a40b0; --purple-bg: #f0effe; --purple-border: #b0a8e8;
+  --teal: #0a6b52; --teal-bg: #e8f5f0; --teal-border: #80c8b0;
+  --amber: #b07010; --amber-bg: #fdf4e3; --amber-border: #e8c870;
+  --coral: #b03820; --coral-bg: #fdf0ec; --coral-border: #e8a090;
+  --cyan: #0b6685; --cyan-bg: #e6f4f8; --cyan-border: #85c5d5;
+  --green: #0a6b52; --green-dim: #e8f5f0;
+  --red: #b03820; --red-dim: #fdf0ec;
+  --serif: 'DM Serif Display', Georgia, serif;
+  --mono: 'IBM Plex Mono', monospace;
+  --sans: 'Inter', system-ui, sans-serif;
+  --r: 6px; --r-lg: 10px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--sans); background: var(--bg); color: var(--text); font-size: 15px; line-height: 1.7; -webkit-font-smoothing: antialiased; }
+
+.skip-link {
+  position: absolute; top: -40px; left: 16px;
+  background: var(--blue); color: #fff;
+  padding: 8px 16px; border-radius: 4px; z-index: 9999;
+  font-family: var(--mono); font-size: 13px; text-decoration: none;
+  transition: top 0.2s;
+}
+.skip-link:focus { top: 8px; }
+
+.page-wrap { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
+
+/* SIDEBAR */
+.sidebar {
+  position: sticky; top: 0; height: 100vh; overflow-y: auto;
+  background: var(--bg2); border-right: 1px solid var(--border);
+  padding: 2rem 1.25rem; display: flex; flex-direction: column; gap: 0;
+}
+.sidebar-logo { font-family: var(--mono); font-size: 11px; font-weight: 500; color: var(--text3); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.25rem; }
+.sidebar-project { font-family: var(--serif); font-size: 20px; color: var(--text); margin-bottom: 2rem; line-height: 1.2; }
+.sidebar-project span { color: var(--blue); }
+.sidebar-nav { list-style: none; display: flex; flex-direction: column; gap: 2px; }
+.sidebar-nav a { display: block; font-size: 12.5px; color: var(--text2); text-decoration: none; padding: 6px 10px; border-radius: var(--r); transition: background 0.15s, color 0.15s; }
+.sidebar-nav a:hover { background: var(--bg3); color: var(--text); }
+.sidebar-nav a.active { background: var(--text); color: var(--bg); }
+.sidebar-divider { height: 1px; background: var(--border); margin: 1.25rem 0; }
+.sidebar-section { font-family: var(--mono); font-size: 10px; font-weight: 600; color: var(--text3); letter-spacing: 0.08em; text-transform: uppercase; padding: 12px 10px 4px; }
+
+.stack-block { margin-top: auto; padding-top: 1.5rem; border-top: 1px solid var(--border); }
+.stack-title { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text3); margin-bottom: 0.75rem; }
+.stack-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+.stack-tag { font-family: var(--mono); font-size: 9.5px; padding: 2px 6px; background: var(--bg3); border-radius: 4px; color: var(--text2); border: 1px solid transparent; }
+.stack-tag.accent { color: var(--blue); background: var(--blue-bg); border-color: var(--blue-border); }
+.stack-tag.green { color: var(--teal); background: var(--teal-bg); border-color: var(--teal-border); }
+.stack-tag.amber { color: var(--amber); background: var(--amber-bg); border-color: var(--amber-border); }
+.stack-tag.red { color: var(--coral); background: var(--coral-bg); border-color: var(--coral-border); }
+
+/* MAIN */
+.main { padding: 0; overflow-x: hidden; }
+.topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0.75rem 2.5rem; border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; background: rgba(250,250,248,0.95); backdrop-filter: blur(8px); z-index: 100;
+}
+.topbar-breadcrumb { font-family: var(--mono); font-size: 11px; color: var(--text3); }
+.topbar-breadcrumb a { color: var(--text3); text-decoration: none; }
+.topbar-right { display: flex; align-items: center; gap: 12px; }
+.topbar-tag { font-family: var(--mono); font-size: 10px; padding: 3px 10px; background: var(--bg3); border-radius: 99px; color: var(--text2); }
+.nav-cta { font-family: var(--mono); font-size: 11px; font-weight: 500; color: var(--blue); text-decoration: none; border: 1px solid var(--blue-border); padding: 3px 10px; border-radius: 4px; background: white; transition: all 0.2s; }
+.nav-cta:hover { background: var(--blue-bg); }
+
+/* CONTENT */
+.content { padding: 3rem 2.5rem 5rem; max-width: 940px; }
+
+/* HEADER */
+.doc-header { margin-bottom: 3.5rem; padding-bottom: 3rem; border-bottom: 1px solid var(--border); }
+.doc-eyebrow { display: flex; align-items: center; gap: 12px; font-family: var(--mono); font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1.5rem; }
+.doc-eyebrow::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.doc-title { font-family: var(--serif); font-size: clamp(32px, 5vw, 46px); font-weight: 400; line-height: 1.12; letter-spacing: -0.02em; color: var(--text); margin-bottom: 1rem; }
+.doc-title em { font-style: italic; color: var(--blue); }
+.doc-subtitle { font-size: 16px; line-height: 1.7; color: var(--text2); font-weight: 300; border-left: 2px solid var(--blue-border); padding-left: 20px; margin-bottom: 2.5rem; }
+
+.stat-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 2rem; }
+.stat-chip { font-family: var(--mono); font-size: 10.5px; padding: 3px 10px; background: var(--bg3); border-radius: 4px; color: var(--text2); border: 1px solid var(--border); }
+.stat-chip.green { color: var(--teal); background: var(--teal-bg); border-color: var(--teal-border); }
+.stat-chip.amber { color: var(--amber); background: var(--amber-bg); border-color: var(--amber-border); }
+
+/* SECTIONS */
+.section { margin-bottom: 4.5rem; scroll-margin-top: 80px; }
+.section-eyebrow { font-family: var(--mono); font-size: 11px; font-weight: 500; letter-spacing: 0.12em; color: var(--text3); text-transform: uppercase; margin-bottom: 12px; }
+.section-eyebrow span { color: var(--blue); margin-right: 8px; }
+.section-title { font-family: var(--serif); font-size: 28px; font-weight: 400; line-height: 1.2; color: var(--text); margin-bottom: 1.5rem; }
+.section-title em { font-style: italic; color: var(--blue); }
+.section-lead { font-size: 15px; line-height: 1.75; color: var(--text2); margin-bottom: 2rem; font-weight: 300; }
+.sub-label { font-family: var(--mono); font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text3); margin: 2rem 0 0.75rem; display: block; }
+
+/* SAFE WHY BOX */
+.safe-why { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 2.5rem; }
+.safe-why-card { border: 1px solid var(--border); border-radius: var(--r-lg); padding: 1.5rem; background: white; transition: background 0.2s; }
+.safe-why-card:hover { background: #fafaf9; }
+.safe-why-icon { font-size: 1.5rem; margin-bottom: 0.75rem; }
+.safe-why-title { font-family: var(--serif); font-size: 18px; color: var(--text); margin-bottom: 6px; font-weight: 400; }
+.safe-why-text { font-size: 13.5px; line-height: 1.65; color: var(--text2); font-weight: 300; }
+
+/* COMPLIANCE BADGE STRIP */
+.compliance-strip { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 2rem; margin-bottom: 0; }
+.compliance-badge { font-family: var(--mono); font-size: 10px; padding: 2px 8px; border-radius: 4px; border: 1px solid; text-transform: uppercase; }
+.compliance-badge.green { color: var(--teal); border-color: var(--teal-border); background: var(--teal-bg); }
+.compliance-badge.amber { color: var(--amber); border-color: var(--amber-border); background: var(--amber-bg); }
+.compliance-badge.blue { color: var(--blue); border-color: var(--blue-border); background: var(--blue-bg); }
+
+/* TABLES */
+.art-table-wrap, .threshold-table-wrap, .hitl-table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--r-lg); margin-bottom: 2rem; }
+table.art-table, table.threshold-table, table.hitl-table { width: 100%; border-collapse: collapse; font-size: 13.5px; background: white; }
+table.art-table thead tr, table.threshold-table thead tr, table.hitl-table thead tr { background: var(--bg2); border-bottom: 1px solid var(--border); font-family: var(--mono); font-size: 10px; color: var(--text3); text-transform: uppercase; }
+table.art-table th, table.threshold-table th, table.hitl-table th { padding: 12px 14px; text-align: left; font-weight: 500; }
+table.art-table td, table.threshold-table td, table.hitl-table td { padding: 12px 14px; border-bottom: 1px solid var(--border); color: var(--text2); vertical-align: top; line-height: 1.5; }
+table.art-table tbody tr:last-child td, table.threshold-table tr:last-child td, table.hitl-table tr:last-child td { border-bottom: none; }
+table.art-table tbody tr:hover, table.threshold-table tbody tr:hover, table.hitl-table tbody tr:hover { background: #fafaf9; }
+
+.art-name { font-family: var(--sans); font-weight: 500; color: var(--text); }
+.art-tag { font-family: var(--mono); color: var(--blue); font-weight: 500; }
+.th-val { font-family: var(--mono); font-weight: 500; color: var(--amber); }
+.th-src { font-size: 12.5px; color: var(--text2); }
+
+.hitl-id { font-family: var(--mono); font-weight: 500; color: var(--amber); }
+.hitl-module { font-family: var(--mono); color: var(--blue); }
+.hitl-role { font-weight: 500; color: var(--text); }
+.hitl-slo { font-family: var(--mono); color: var(--teal); font-weight: 500; }
+.hitl-info { font-size: 13px; line-height: 1.5; font-weight: 300; }
+
+/* CALLOUT CORES */
+.callout { padding: 1.25rem; border: 1px solid var(--blue-border); border-left: 3px solid var(--blue); background: var(--blue-bg); border-radius: 0 var(--r-lg) var(--r-lg) 0; margin: 2rem 0; }
+.callout-label { font-family: var(--mono); font-size: 10px; text-transform: uppercase; color: var(--blue); letter-spacing: 0.05em; margin-bottom: 4px; }
+.callout p { font-size: 14px; color: var(--text2); line-height: 1.6; font-weight: 300; }
+.callout strong { color: var(--text); font-weight: 500; }
+
+.callout.amber { border-color: var(--amber-border); border-left-color: var(--amber); background: var(--amber-bg); }
+.callout.amber .callout-label { color: var(--amber); }
+
+.callout.green { border-color: var(--teal-border); border-left-color: var(--teal); background: var(--teal-bg); }
+.callout.green .callout-label { color: var(--teal); }
+
+/* HORIZONS PI ROADMAP */
+.pi-horizon-bar { display: flex; gap: 12px; margin-bottom: 2rem; flex-wrap: wrap; }
+.pi-horizon-seg { border: 1px solid var(--border); border-radius: var(--r-lg); padding: 12px; flex: 1; background: white; font-size: 13px; color: var(--text2); font-weight: 300; }
+.pi-horizon-seg .seg-label { display: block; font-family: var(--mono); font-size: 9.5px; text-transform: uppercase; color: var(--text3); margin-bottom: 4px; font-weight: 500; }
+.pi-horizon-seg.h1 { border-top: 3px solid var(--teal); }
+.pi-horizon-seg.h1 .seg-label { color: var(--teal); }
+.pi-horizon-seg.h2 { border-top: 3px solid var(--blue); }
+.pi-horizon-seg.h2 .seg-label { color: var(--blue); }
+.pi-horizon-seg.h3 { border-top: 3px solid var(--purple); }
+.pi-horizon-seg.h3 .seg-label { color: var(--purple); }
+
+/* PI CARDS GRID */
+.pi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 2rem; }
+.pi-card { border: 1px solid var(--border); border-radius: var(--r-lg); padding: 1.5rem; background: white; }
+.pi-card:hover { background: #fafaf9; transition: background 0.2s; }
+.pi-label { font-family: var(--mono); font-size: 10px; text-transform: uppercase; color: var(--text3); margin-bottom: 4px; }
+.pi-name { font-family: var(--serif); font-size: 20px; color: var(--text); margin-bottom: 4px; }
+.pi-period { font-size: 13px; color: var(--text2); font-weight: 300; margin-bottom: 10px; line-height: 1.4; }
+.pi-meta { font-family: var(--mono); font-size: 11px; color: var(--blue); font-weight: 500; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 12px; }
+.pi-features-label { font-family: var(--mono); font-size: 10px; text-transform: uppercase; color: var(--text3); margin-bottom: 8px; display: block; }
+.pi-feature { font-size: 13px; color: var(--text2); margin-bottom: 6px; line-height: 1.5; font-weight: 300; display: flex; align-items: flex-start; gap: 6px; }
+.pi-feature::before { content: '·'; color: var(--blue); font-weight: bold; }
+.pi-dod { margin-top: 1.5rem; padding: 12px; background: var(--bg2); border-left: 2px solid var(--teal); border-radius: 0 var(--r) var(--r) 0; }
+.pi-dod-label { font-family: var(--mono); font-size: 9.5px; text-transform: uppercase; color: var(--teal); margin-bottom: 4px; font-weight: 600; }
+.pi-dod p { font-size: 12.5px; color: var(--text2); line-height: 1.5; font-weight: 300; }
+
+/* FRD PIPELINES CARD */
+.frd-grid { display: flex; flex-direction: column; gap: 12px; }
+.frd-module { border: 1px solid var(--border); border-radius: var(--r-lg); overflow: hidden; background: white; display: grid; grid-template-columns: 260px 1fr 240px; }
+.frd-module:hover { background: #fafaf9; }
+.frd-left { padding: 1.5rem; border-right: 1px solid var(--border); background: #fafaf9; }
+.frd-module-tag { font-family: var(--mono); font-size: 10px; text-transform: uppercase; color: var(--text3); margin-bottom: 4px; }
+.frd-module-name { font-family: var(--serif); font-size: 18px; color: var(--text); margin-bottom: 6px; }
+.frd-function { font-size: 13px; color: var(--text2); line-height: 1.55; font-weight: 300; }
+.frd-badge { display: inline-flex; align-items: center; gap: 4px; margin-top: 12px; font-family: var(--mono); font-size: 9px; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; background: var(--coral-bg); color: var(--coral); border: 1px solid var(--coral-border); }
+.frd-badge.standard { background: var(--bg2); color: var(--text3); border-color: var(--border); }
+
+.frd-reqs { padding: 1.5rem; border-right: 1px solid var(--border); }
+.frd-reqs-label { font-family: var(--mono); font-size: 10px; text-transform: uppercase; color: var(--text3); margin-bottom: 12px; display: block; }
+.frd-req { display: flex; gap: 10px; margin-bottom: 8px; align-items: flex-start; }
+.frd-req:last-child { margin-bottom: 0; }
+.frd-req-id { font-family: var(--mono); font-size: 11px; color: var(--blue); flex-shrink: 0; font-weight: 500; min-width: 60px; }
+.frd-req-text { font-size: 13px; color: var(--text2); line-height: 1.5; font-weight: 300; }
+
+.frd-right { padding: 1.5rem; display: flex; flex-direction: column; justify-content: center; }
+.frd-hitl-label { font-family: var(--mono); font-size: 10px; text-transform: uppercase; color: var(--text3); margin-bottom: 8px; display: block; }
+.frd-hitl-id { font-family: var(--mono); font-size: 12px; color: var(--amber); font-weight: 500; margin-bottom: 4px; }
+.frd-hitl-detail { font-size: 12.5px; color: var(--text2); line-height: 1.5; font-weight: 300; margin-bottom: 10px; }
+.frd-hitl-slo { font-family: var(--mono); font-size: 10px; color: var(--teal); padding: 2px 6px; background: var(--teal-bg); border: 1px solid var(--teal-border); border-radius: 4px; display: inline-block; }
+.frd-no-hitl { font-size: 12.5px; color: var(--text3); font-style: italic; font-weight: 300; }
+
+/* STATEMENTS CORES */
+.eu-statement, .gdpr-notice { border: 1px solid var(--border); border-radius: var(--r-lg); padding: 1.5rem; margin-top: 1.5rem; background: white; }
+.eu-statement { border-top: 3px solid var(--teal); background: var(--teal-bg); border-color: var(--teal-border); }
+.eu-statement-label { font-family: var(--mono); font-size: 11px; text-transform: uppercase; color: var(--teal); letter-spacing: 0.05em; margin-bottom: 8px; }
+.eu-statement p, .gdpr-notice p { font-size: 13.5px; color: var(--text2); line-height: 1.65; font-weight: 300; }
+.eu-statement strong, .gdpr-notice strong { color: var(--text); font-weight: 500; }
+
+.gdpr-notice { border-left: 3px solid var(--amber); background: var(--amber-bg); border-color: var(--amber-border); }
+.gdpr-notice-label { font-family: var(--mono); font-size: 11px; text-transform: uppercase; color: var(--amber); letter-spacing: 0.05em; margin-bottom: 8px; }
+
+/* NON-FUNCTIONAL GRID */
+.nfr-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.nfr-card { border: 1px solid var(--border); border-radius: var(--r-lg); padding: 1.5rem; background: white; transition: border-color 0.2s; }
+.nfr-card:hover { border-color: var(--blue-border); }
+.nfr-id { font-family: var(--mono); font-size: 10px; text-transform: uppercase; color: var(--text3); margin-bottom: 4px; }
+.nfr-name { font-family: var(--serif); font-size: 16px; color: var(--text); margin-bottom: 10px; }
+.nfr-detail { font-size: 13px; color: var(--text2); line-height: 1.6; font-weight: 300; }
+.nfr-metric { margin-top: 12px; padding: 6px 10px; background: var(--bg2); border-left: 2px solid var(--teal); border-radius: 0 4px 4px 0; font-family: var(--mono); font-size: 11px; color: var(--teal); font-weight: 500; }
+
+/* PORTFOLIO ROUTING LINKS */
+.footer-nav { padding: 3rem 0 0; border-top: 1px solid var(--border); margin-top: 4rem; display: flex; justify-content: space-between; gap: 16px; }
+.footer-nav-card { border: 1px solid var(--border); border-radius: var(--r-lg); padding: 20px; text-decoration: none; color: inherit; flex: 1; display: flex; flex-direction: column; justify-content: space-between; transition: border-color 0.2s; }
+.footer-nav-card:hover { border-color: var(--blue-border); }
+.footer-nav-dir { font-family: var(--mono); font-size: 10px; text-transform: uppercase; color: var(--text3); margin-bottom: 6px; }
+.footer-nav-num { font-family: var(--mono); font-size: 11px; color: var(--blue); margin-bottom: 4px; }
+.footer-nav-title { font-family: var(--serif); font-size: 16px; color: var(--text); margin-bottom: 4px; }
+.footer-nav-sub { font-size: 12px; line-height: 1.4; color: var(--text2); font-weight: 300; }
+
+@media (max-width: 1100px) {
+  .page-wrap { grid-template-columns: 1fr; }
+  .sidebar { display: none; }
+  .safe-why, .pi-grid, .frd-module, .nfr-grid, .footer-nav { grid-template-columns: 1fr; }
+  .frd-module { display: block; }
+  .frd-left, .frd-reqs { border-right: none; border-bottom: 1px solid var(--border); }
+}
+@media (max-width: 600px) {
+  .stat-row { display: column; }
+}
+</style>
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<div class="page-wrap">
+
+  <!-- SIDEBAR NAVIGATION -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">portfolio / design</div>
+    <div class="sidebar-project">ASC <span>·</span> Autonomous Supply Chain</div>
+    <nav aria-label="Main navigation">
+      <ul class="sidebar-nav">
+        <li><a href="#safe">SAFe for AI</a></li>
+        <li><a href="#art-structure">ART Structure</a></li>
+        <li><a href="#pi-structure">PI Structure</a></li>
+        <li><a href="#thresholds">HITL Thresholds</a></li>
+        <li><a href="#frd">Functional Requirements</a></li>
+        <li><a href="#hitl-spec">HITL Specification</a></li>
+        <li><a href="#nfr">Non-Functional Req.</a></li>
+      </ul>
+    </nav>
+
+    <div class="stack-block">
+      <div class="stack-title">Technology Stack</div>
+      <div class="stack-tags">
+        <span class="stack-tag accent">EU AI Act Compliant</span>
+        <span class="stack-tag">TOGAF 10</span>
+        <span class="stack-tag">GDPR</span>
+        <span class="stack-tag">MDR 2017/745</span>
+        <span class="stack-tag accent">Vertex AI</span>
+        <span class="stack-tag">Google Cloud</span>
+        <span class="stack-tag green">XAI / SHAP</span>
+        <span class="stack-tag amber">ISO 13485</span>
+        <span class="stack-tag red">CSRD Scope 3</span>
+        <span class="stack-tag">Gemini 2.5 Pro</span>
+        <span class="stack-tag">BigQuery</span>
+        <span class="stack-tag red">FDA 21 CFR Part 820</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN WORKSPACE BLOCK -->
+  <main class="main" id="main-content">
+    <div class="topbar">
+      <div class="topbar-breadcrumb">
+        <a href="index__1_.html">asc</a> / <a href="#safe">delivery-product-design</a> · v2026
+      </div>
+      <div class="topbar-right">
+        <span class="topbar-tag">SAFe Governance</span>
+        <span class="topbar-tag">Product Architecture</span>
+        <a href="https://github.com/siddharthrao" class="nav-cta" target="_blank" rel="noopener">GitHub →</a>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- DOCUMENT HEADER / HERO -->
+      <header class="doc-header">
+        <div class="doc-eyebrow">The Autonomous Supply Chain &nbsp;/&nbsp; Page 05 of 9</div>
+        <h1 class="doc-title">Delivery &amp; <em>Product Design</em></h1>
+        <p class="doc-subtitle">SAFe for AI · ART Structure · Programme Increment Structure · FRD · HITL Specification · NFR[cite: 7].</p>
+        <p class="section-lead">
+          Two questions answered on one page[cite: 7]. How does the Autonomous Supply Chain get delivered across an 18-month programme — the SAFe delivery governance layer, including ART composition, PI schedules, and measurable Definitions of Done[cite: 7]. And what does each of the eight modules actually do — the product design layer that bridges architecture to implementation, covering all modules with full functional requirements, GDPR Article 22 analysis, and HITL traceability[cite: 7].
+        </p>
+
+        <div class="stat-row">
+          <span class="stat-chip">18 months · 8 modules</span>
+          <span class="stat-chip">3 PIs · 2 ARTs</span>
+          <span class="stat-chip green">5 of 8 modules high-risk</span>
+          <span class="stat-chip amber">8 checkpoints</span>
+          <span class="stat-chip">99.9% CET Availability</span>
+        </div>
+      </header>
+
+      <!-- ── SECTION 01 — SAFE ── -->
+      <section class="section" id="safe">
+        <p class="section-eyebrow">Section 01</p>
+        <h2 class="section-title">Delivery Framework: <em>SAFe for AI</em></h2>
+        <p class="section-lead">ClaraVis is an enterprise with 4,200 employees across 12 countries[cite: 7]. The Autonomous Supply Chain is an 18-month, 8-module programme[cite: 7]. SAFe provides the PI Planning, ART cadence, and change management structure that enterprise stakeholders recognise and trust — and the explicit cross-team dependency governance that prevents integration surprises at scale[cite: 7].</p>
+
+        <div class="safe-why">
+          <div class="safe-why-card">
+            <div class="safe-why-icon">🏛️</div>
+            <h3 class="safe-why-title">Enterprise Scale Demands SAFe</h3>
+            <p class="safe-why-text">At 4,200 employees across 12 countries, the Autonomous Supply Chain cannot be delivered through ad-hoc sprint planning[cite: 7]. SAFe's Solution Train provides a governance model that senior stakeholders in Procurement, Regulatory Affairs, and IT all recognise — reducing programme risk through a shared delivery language rather than architecture-team vocabulary alone[cite: 7].</p>
+          </div>
+          <div class="safe-why-card">
+            <div class="safe-why-icon">🔄</div>
+            <h3 class="safe-why-title">PI Cadence Aligns to Regulatory Gates</h3>
+            <p class="safe-why-text">Each PI increment delivers a compliance milestone — not just a feature set[cite: 7]. PI-01 delivers the EU AI Act compliance infrastructure[cite: 7]. PI-02 delivers four Annex III-compliant models in production[cite: 7]. PI-03 delivers the conformity assessment documentation readiness pack[cite: 7]. The PI boundary is the audit checkpoint[cite: 7].</p>
+          </div>
+          <div class="safe-why-card">
+            <div class="safe-why-icon">🔗</div>
+            <h3 class="safe-why-title">Cross-Team Dependency Management</h3>
+            <p class="safe-why-text">DemandIQ feeds InventoryOrchestrator[cite: 7]. SupplierSentinel feeds ContractIntelligence[cite: 7]. InventoryOrchestrator writes back to SAP MRP[cite: 7]. These dependencies cross module boundaries[cite: 7]. SAFe's cross-ART dependency board surfaces them at PI Planning — before they become integration blockers in sprint 8[cite: 7].</p>
+          </div>
+          <div class="safe-why-card">
+            <div class="safe-why-icon">🛡️</div>
+            <h3 class="safe-why-title">HITL as a SAFe Enabler</h3>
+            <p class="safe-why-text">The HITL Framework — the Firestore-backed state machine that governs all eight human oversight checkpoints — is a Platform ART enabler[cite: 7]. It is delivered in PI-01 before any domain module can build its own HITL integration[cite: 7]. SAFe's explicit enabler model prevents every team from building their own oversight mechanism in isolation[cite: 7].</p>
+          </div>
+        </div>
+
+        <div class="compliance-strip">
+          <span class="compliance-badge green">SAFe 6.0 Solution Train</span>
+          <span class="compliance-badge blue">3 Programme Increments</span>
+          <span class="compliance-badge amber">EU AI Act Annex III Gate per PI</span>
+          <span class="compliance-badge green">HITL Framework — Platform ART Enabler</span>
+          <span class="compliance-badge blue">ISO 13485 · MDR 2017/745</span>
+        </div>
+      </section>
+
+      <!-- ── SECTION 01a — ART STRUCTURE ── -->
+      <section class="section" id="art-structure">
+        <p class="section-eyebrow">Section 01 — ART Composition</p>
+        <h2 class="section-title">Agile Release Train <em>Structure</em></h2>
+        <p class="section-lead">Two ARTs deliver the Autonomous Supply Chain under the Solution Train[cite: 7]. The Platform ART delivers shared infrastructure, compliance tooling, and the HITL Framework as enablers consumed by all domain teams[cite: 7]. The Domain ART delivers the eight business modules in PI-sequenced waves[cite: 7]. Team composition is indicative and subject to PI Planning capacity review[cite: 7].</p>
+
+        <div class="art-table-wrap">
+          <table class="art-table" role="table" aria-label="ART Structure Setup">
+            <thead>
+              <tr role="row">
+                <th role="columnheader">ART</th>
+                <th role="columnheader">Name</th>
+                <th role="columnheader">Teams</th>
+                <th role="columnheader">Approx. Headcount</th>
+                <th role="columnheader">Sprint Cadence</th>
+                <th role="columnheader">Primary PI Deliverables</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr role="row">
+                <td role="cell"><span class="art-tag">ART-1</span></td>
+                <td role="cell"><span class="art-name">Platform ART</span></td>
+                <td role="cell">GCP Infrastructure · MLOps · Security &amp; Compliance · HITL Framework · Integration</td>
+                <td role="cell">~30 FTE</td>
+                <td role="cell">2-week sprints · 5 sprints per PI</td>
+                <td role="cell">VPC-SC, CMEK, Pub/Sub fabric, HITL state machine, XAI layer, MLOps pipeline, drift detection, conformity doc automation</td>
+              </tr>
+              <tr role="row">
+                <td role="cell"><span class="art-tag">ART-2</span></td>
+                <td role="cell"><span class="art-name">Domain ART</span></td>
+                <td role="cell">DemandIQ · SupplierSentinel · QualityTrace · InventoryOrchestrator · ContractIntelligence · ScopeTracer · ProcureGuard · Dashboard</td>
+                <td role="cell">~40 FTE</td>
+                <td role="cell">2-week sprints · 5 sprints per PI</td>
+                <td role="cell">All eight business modules; consumer of Platform ART enablers; cross-ART dependency coordination via PI Planning board</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout">
+          <div class="callout-label">Cross-ART Dependency Protocol</div>
+          <p>Domain ART teams cannot deploy a HITL integration until the Platform ART HITL Framework enabler is accepted (PI-01 DoD)[cite: 7]. This dependency is tracked on the cross-ART board at each PI Planning event and enforced as a hard architectural gate — not a soft dependency[cite: 7]. The Platform ART System Architect signs off on each domain module's HITL integration before it enters UAT[cite: 7].</p>
+        </div>
+      </section>
+
+      <!-- ── SECTION 01b — PI STRUCTURE ── -->
+      <section class="section" id="pi-structure">
+        <p class="section-eyebrow">Section 01 — continued</p>
+        <h2 class="section-title">Programme Increment <em>Structure</em></h2>
+        <p class="section-lead">Three PIs[cite: 7]. Each with a defined feature set, a measurable Definition of Done tied to a quantitative baseline, and a compliance gate that is a formal regulatory milestone — not a sprint velocity target[cite: 7]. Sprint count and velocity estimates are based on 2 ARTs × 5 sprints per PI × estimated 40-point team velocity, subject to PI Planning calibration[cite: 7].</p>
+
+        <div class="pi-horizon-bar" role="list">
+          <div class="pi-horizon-seg h1" role="listitem">
+            <span class="seg-label">Horizon 1 · Months 1–6</span>
+            PI-01 — GCP Foundation + Compliance Infrastructure[cite: 7]
+          </div>
+          <div class="pi-horizon-seg h2" role="listitem">
+            <span class="seg-label">Horizon 2 · Months 7–12</span>
+            PI-02 — Core ML Modules[cite: 7]
+          </div>
+          <div class="pi-horizon-seg h3" role="listitem">
+            <span class="seg-label">Horizon 3 · Months 13–18</span>
+            PI-03 — Strategic Intelligence + A2A Commerce[cite: 7]
+          </div>
+        </div>
+
+        <div class="pi-grid">
+          <!-- PI-01 -->
+          <div class="pi-card">
+            <div class="pi-label">Programme Increment</div>
+            <h3 class="pi-name">PI-01</h3>
+            <div class="pi-period">Months 1–6 · H1 · GCP Foundation + Compliance Infrastructure[cite: 7]</div>
+            <div class="pi-meta">2 ARTs · ~12 sprints · ART-1 primary[cite: 7]</div>
+            <span class="pi-features-label">Features</span>
+            <div class="pi-feature"><span>VPC-SC + CMEK + IAM baseline — europe-west3 residency enforced[cite: 7]</span></div>
+            <div class="pi-feature"><span>Pub/Sub event fabric — all SAP integration streams live[cite: 7]</span></div>
+            <div class="pi-feature"><span>SAP Ariba REST integration + SAP S/4HANA event bridge[cite: 7]</span></div>
+            <div class="pi-feature"><span>HITL Framework — Firestore-backed state machine, all 8 checkpoint types registered[cite: 7]</span></div>
+            <div class="pi-feature"><span>XAI layer baseline — SHAP pipeline operational[cite: 7]</span></div>
+            <div class="pi-feature"><span>EU AI Act conformity doc automation — pack template accepted[cite: 7]</span></div>
+            <div class="pi-feature"><span>SupplierSentinel v1 — monitoring only, no ML-triggered actions[cite: 7]</span></div>
+            <div class="pi-feature"><span>MLOps scaffold — Vertex AI Pipelines, registry, drift hooks[cite: 7]</span></div>
+            <div class="pi-dod">
+              <div class="pi-dod-label">Definition of Done</div>
+              <p>EU AI Act compliance infrastructure independently verified by Regulatory Affairs[cite: 7]. All SAP integration event streams live and producing valid events in staging[cite: 7]. SupplierSentinel v1 surfacing risk signals to HITL queue with ≥95% event completeness[cite: 7]. HITL Framework load-tested to 99.9% availability SLA[cite: 7]. DR failover demonstrated for europe-west3 outage scenario[cite: 7].</p>
+            </div>
+          </div>
+          <!-- PI-02 -->
+          <div class="pi-card">
+            <div class="pi-label">Programme Increment</div>
+            <h3 class="pi-name">PI-02</h3>
+            <div class="pi-period">Months 7–12 · H2 · Core ML Modules[cite: 7]</div>
+            <div class="pi-meta">2 ARTs · ~12 sprints · ART-2 primary[cite: 7]</div>
+            <span class="pi-features-label">Features</span>
+            <div class="pi-feature"><span>DemandIQ — full ensemble + HITL-01 operational[cite: 7]</span></div>
+            <div class="pi-feature"><span>QualityTrace — NCR pipeline + MDR lineage + HITL-03/08[cite: 7]</span></div>
+            <div class="pi-feature"><span>InventoryOrchestrator — multi-site ML + SAP MRP + HITL-04[cite: 7]</span></div>
+            <div class="pi-feature"><span>ProcureGuard — procurement agent + SAP Ariba + HITL-06[cite: 7]</span></div>
+            <div class="pi-feature"><span>MLOps pipeline operational — retraining + champion rollback[cite: 7]</span></div>
+            <div class="pi-feature"><span>Model Cards for all four models — accepted by Regulatory Affairs[cite: 7]</span></div>
+            <div class="pi-feature"><span>Drift detection alerts operational — ≤1h alert SLO live[cite: 7]</span></div>
+            <div class="pi-dod">
+              <div class="pi-dod-label">Definition of Done</div>
+              <p>Four high-risk ML models in production and EU AI Act Annex III compliant per accepted Model Cards[cite: 7]. DemandIQ forecast error ≤20% WMAPE (measured against 34% baseline on 90-day holdout)[cite: 7]. QualityTrace NCR pipeline meeting 72-hour MDR SLA at ≥98% rate in production[cite: 7]. SHAP + HITL operational for all four modules[cite: 7]. Automated model rollback demonstrated for each champion model[cite: 7].</p>
+            </div>
+          </div>
+          <!-- PI-03 -->
+          <div class="pi-card">
+            <div class="pi-label">Programme Increment</div>
+            <h3 class="pi-name">PI-03</h3>
+            <div class="pi-period">Months 13–18 · H3 · Strategic Intelligence + A2A Commerce[cite: 7]</div>
+            <div class="pi-meta">2 ARTs · ~12 sprints · ART-2 primary[cite: 7]</div>
+            <span class="pi-features-label">Features</span>
+            <div class="pi-feature"><span>ContractIntelligence — Gemini full-corpus analysis + HITL-05[cite: 7]</span></div>
+            <div class="pi-feature"><span>ScopeTracer — Scope 3 + CSRD automated reporting[cite: 7]</span></div>
+            <div class="pi-feature"><span>ProcureGuard v2 — full A2A Commerce inter-enterprise loop[cite: 7]</span></div>
+            <div class="pi-feature"><span>SupplyChain Command Dashboard — unified HITL queue + module health[cite: 7]</span></div>
+            <div class="pi-feature"><span>DemandIQ target: forecast error ≤12% WMAPE (programme end target)[cite: 7]</span></div>
+            <div class="pi-feature"><span>EU AI Act conformity assessment documentation package — complete[cite: 7]</span></div>
+            <div class="pi-dod">
+              <div class="pi-dod-label">Definition of Done</div>
+              <p>Full 8-module system operational[cite: 7]. CSRD Scope 3 reporting generating automated output verified against prior manual baseline[cite: 7]. A2A Commerce loop demonstrated end-to-end with live supplier agent[cite: 7]. DemandIQ forecast error ≤12% WMAPE on 90-day live window[cite: 7]. EU AI Act conformity assessment documentation package accepted by Regulatory Affairs and filed[cite: 7]. NCR cycle time ≤5 days in production[cite: 7].</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="callout">
+          <div class="callout-label">SAFe Alignment Note — Regulatory Milestones as PI Gates</div>
+          <p>Each PI boundary is a compliance gate — not a feature delivery milestone[cite: 7]. <strong>PI-01 closes when the EU AI Act infrastructure is independently verifiable by Regulatory Affairs[cite: 7].</strong> PI-02 closes when all four Annex III Model Cards are accepted and the measurable forecast error target is demonstrated[cite: 7]. PI-03 closes when the full conformity assessment documentation package is filed[cite: 7]. This alignment of PI cadence to regulatory milestones makes compliance governance a first-class SAFe artifact, not a retrospective audit[cite: 7].</p>
+        </div>
+      </section>
+
+      <!-- ── SECTION 01c — HITL THRESHOLDS ── -->
+      <section class="section" id="thresholds">
+        <p class="section-eyebrow">Section 01 — HITL Autonomy Thresholds</p>
+        <h2 class="section-title">Financial Autonomy <em>Threshold Governance</em></h2>
+        <p class="section-lead">All financial thresholds that govern HITL activation are derived from ClaraVis Medical Systems GmbH's Delegation of Authority (DoA) policy and CFO-approved procurement thresholds — not architecture team assumptions[cite: 7]. This table traces each threshold to its governance source[cite: 7]. These figures must be re-validated at each PI Planning event and are subject to CFO sign-off before programme go-live[cite: 7].</p>
+
+        <div class="threshold-table-wrap">
+          <table class="threshold-table" role="table" aria-label="HITL Governance Thresholds">
+            <thead>
+              <tr role="row">
+                <th role="columnheader">HITL ID</th>
+                <th role="columnheader">Module</th>
+                <th role="columnheader">Threshold Value</th>
+                <th role="columnheader">Threshold Type</th>
+                <th role="columnheader">Governance Source</th>
+                <th role="columnheader">Owner</th>
+                <th role="columnheader">Review Cadence</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr role="row">
+                <td role="cell"><span class="hitl-id">HITL-01</span></td>
+                <td role="cell"><span class="hitl-module">DemandIQ</span></td>
+                <td role="cell"><span class="th-val">€50,000</span></td>
+                <td role="cell">Forecast-triggered PO value</td>
+                <td role="cell"><span class="th-src">DoA Policy § 4.2 — Procurement Level II</span></td>
+                <td role="cell">VP Supply Chain</td>
+                <td role="cell">Annual / PI Planning</td>
+              </tr>
+              <tr role="row">
+                <td role="cell"><span class="hitl-id">HITL-02</span></td>
+                <td role="cell"><span class="hitl-module">SupplierSentinel</span></td>
+                <td role="cell"><span class="th-val">Risk Score ≥ 0.75</span></td>
+                <td role="cell">Composite risk score (0–1)</td>
+                <td role="cell"><span class="th-src">Supplier Risk Management Policy § 6 — Critical Threshold</span></td>
+                <td role="cell">Procurement Director</td>
+                <td role="cell">Quarterly / model retrain</td>
+              </tr>
+              <tr role="row">
+                <td role="cell"><span class="hitl-id">HITL-03</span></td>
+                <td role="cell"><span class="hitl-module">QualityTrace</span></td>
+                <td role="cell"><span class="th-val">Any CAPA closure</span></td>
+                <td role="cell">Regulatory event (no financial threshold)</td>
+                <td role="cell"><span class="th-src">ISO 13485 § 8.5.2 — CAPA closure requires QM sign-off</span></td>
+                <td role="cell">Quality Manager</td>
+                <td role="cell">Per event / MDR SLA</td>
+              </tr>
+              <tr role="row">
+                <td role="cell"><span class="hitl-id">HITL-04</span></td>
+                <td role="cell"><span class="hitl-module">InventoryOrchestrator</span></td>
+                <td role="cell"><span class="th-val">€100,000</span></td>
+                <td role="cell">Reorder decision value</td>
+                <td role="cell"><span class="th-src">DoA Policy § 4.3 — Inventory Reorder Level III</span></td>
+                <td role="cell">CFO / VP Supply Chain</td>
+                <td role="cell">Annual / PI Planning</td>
+              </tr>
+              <tr role="row">
+                <td role="cell"><span class="hitl-id">HITL-05</span></td>
+                <td role="cell"><span class="hitl-module">ContractIntelligence</span></td>
+                <td role="cell"><span class="th-val">Any strategic sourcing · Any A2A bid</span></td>
+                <td role="cell">Strategic sourcing decision</td>
+                <td role="cell"><span class="th-src">Procurement Policy § 2.1 — Strategic Sourcing requires CPO approval</span></td>
+                <td role="cell">CPO</td>
+                <td role="cell">Annual</td>
+              </tr>
+              <tr role="row">
+                <td role="cell"><span class="hitl-id">HITL-06</span></td>
+                <td role="cell"><span class="hitl-module">ProcureGuard</span></td>
+                <td role="cell"><span class="th-val">Any contract countersignature</span></td>
+                <td role="cell">Legal event (no financial threshold)</td>
+                <td role="cell"><span class="th-src">Legal Sign-off Policy § 3 — All contracts require Legal Counsel review</span></td>
+                <td role="cell">Head of Legal</td>
+                <td role="cell">Annual</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout amber">
+          <div class="callout-label">Threshold Governance Note</div>
+          <p>Financial thresholds in this document are derived from the governance artefacts cited above[cite: 7]. <strong>They are not architecture team defaults[cite: 7].</strong> Any change to ClaraVis's DoA policy, Procurement Policy, or Supplier Risk Management Policy must trigger a review of the corresponding HITL threshold — tracked as a configuration change item in the MLOps change management register[cite: 7]. The CFO and Head of Legal must formally accept the threshold table before PI-01 completion[cite: 7].</p>
+        </div>
+      </section>
+
+      <!-- ── SECTION 02 — FRD ── -->
+      <section class="section" id="frd">
+        <p class="section-eyebrow">Section 02</p>
+        <h2 class="section-title">Functional Requirements Document <em>— All Eight Modules</em></h2>
+        <p class="section-lead">All eight modules[cite: 7]. For each: primary function, key functional requirements, EU AI Act Annex III classification (where applicable), and the HITL checkpoint specification[cite: 7]. Five modules carry high-risk designation under EU AI Act Annex III and require full conformity assessment[cite: 7]. Three modules (ScopeTracer, SupplierSentinel monitoring component, SupplyChain Command Dashboard) operate under standard risk classification[cite: 7]. These are the handover documents from the architecture engagement to the development teams — precise enough to build from[cite: 7].</p>
+
+        <div class="frd-grid">
+
+          <!-- DemandIQ -->
+          <div class="frd-module">
+            <div class="frd-left">
+              <div class="frd-module-tag">Module 01</div>
+              <h3 class="frd-module-name">DemandIQ</h3>
+              <p class="frd-function">Multi-signal ML demand forecasting replacing the Excel-based monthly cycle[cite: 7]. 12-week rolling forecast per SKU per manufacturing site, with SHAP attribution required before any procurement trigger is issued[cite: 7].</p>
+              <div class="frd-badge">EU AI Act · Annex III High-Risk</div>
+            </div>
+            <div class="frd-reqs">
+              <span class="frd-reqs-label">Functional Requirements</span>
+              <div class="frd-req"><span class="frd-req-id">FR-D01</span><span class="frd-req-text">Ingest Salesforce pipeline, SAP IBP, hospital procurement indices, macroeconomic indicators as feature inputs via Pub/Sub event stream[cite: 7]</span></div>
+              <div class="frd-req"><span class="frd-req-id">FR-D02</span><span class="frd-req-text">Generate 12-week rolling forecast with 80% and 95% confidence intervals per SKU per manufacturing site[cite: 7]</span></div>
+              <div class="frd-req"><span class="frd-req-id">FR-D03</span><span class="frd-req-text">Produce SHAP attribution (top-5 features with magnitude and direction) per forecast line before procurement trigger is issued[cite: 7]</span></div>
+              <div class="frd-req"><span class="frd-req-id">FR-D04</span><span class="frd-req-text">Route all forecast-triggered procurement decisions above the DoA-defined threshold (currently €50K) to HITL-01 (Demand Planner) for approval before any SAP event is written[cite: 7]</span></div>
+              <div class="frd-req"><span class="frd-req-id">FR-D05</span><span class="frd-req-text">Write forecast, SHAP explanation, confidence interval, and human approval decision to immutable Firestore audit log atomically before proceeding[cite: 7]</span></div>
+              <div class="frd-req"><span class="frd-req-id">FR-D06</span><span class="frd-req-text">Support automated model rollback to last champion version upon drift alert — rollback must complete within 30 minutes of alert trigger[cite: 7]</span></div>
+            </div>
+            <div class="frd-right">
+              <span class="frd-hitl-label">HITL Specification</span>
+              <div class="frd-hitl-id">HITL-01 — Demand Planner</div>
+              <p class="frd-hitl-detail">Reviews: 12-week forecast + SHAP top-5 features + 80%/95% confidence intervals + prior forecast accuracy on this SKU/site pair[cite: 7]. Actions: Approve / Reject / Escalate[cite: 7]. Trigger: forecast-triggered PO above DoA threshold[cite: 7].</p>
+              <div class="frd-hitl-slo">SLO: 4h · Timeout → VP Supply Chain</div>
+            </div>
+          </div>
+
+          <!-- SupplierSentinel -->
+          <div class="frd-module">
+            <div class="frd-left">
+              <div class="frd-module-tag">Module 02</div>
+              <h3 class="frd-module-name">SupplierSentinel</h3>
+              <p class="frd-function">Continuous real-time multi-dimensional supplier risk scoring[cite: 7]. Financial, geopolitical, ESG, and sub-tier concentration risk per supplier — continuously refreshed via Pub/Sub event stream[cite: 7]. Monitoring v1 delivered in PI-01; ML-triggered actions in PI-02[cite: 7].</p>
+              <div class="frd-badge">EU AI Act · Annex III High-Risk</div>
+            </div>
+            <div class="frd-reqs">
+              <span class="frd-reqs-label">Functional Requirements</span>
+              <div class="frd-req"><span class="frd-req-id">FR-S01</span><span class="frd-req-text">Ingest supplier financial filings, news/event streams, geopolitical indices, ESG data, and sub-tier mapping via Pub/Sub — refresh within 60 seconds of each inbound event[cite: 7]</span></div>
+              <div class="frd-req"><span class="frd-req-id">FR-S02</span><span class="frd-req-text">Generate composite risk score (0–1) per supplier per dimension (financial, geopolitical, ESG, concentration) with per-dimension sub-scores[cite: 7]</span></div>
+              <div class="frd-req"><span class="frd-req-id">FR-S03</span><span class="frd-req-text">Produce SHAP explanation per composite score identifying the top contributing signals before any sourcing action is triggered[cite: 7]</span></div>
+              <div class="frd-req"><span class="frd-req-id">FR-S04</span><span class="frd-req-text">Route events where composite score ≥ 0.75 (per Supplier Risk Management Policy § 6) to HITL-02 before sourcing decisions proceed[cite: 7]</span></div>
+              <div class="frd-req"><span class="frd-req-id">FR-S05</span><span class="frd-req-text">Route sub-tier concentration risk events (single supplier representing ≥30% of a critical component category) to HITL-07 (Supply Chain Director) for resilience response[cite: 7]</span></div>
+              <div class="frd-req"><span class="frd-req-id">FR-S06</span><span class="frd-req-text">Maintain immutable supplier risk event history in Cloud Firestore with full audit trail for regulatory review and MDR lineage correlation[cite: 7]</span></div>
+            </div>
+            <div class="frd-right">
+              <span class="frd-hitl-label">HITL Specification</span>
+              <div class="frd-hitl-id">HITL-02 — Procurement Director</div>
+              <p class="frd-hitl-detail">Reviews: composite risk score + per-dimension sub-scores + SHAP top signals + recommended sourcing action + alternative supplier availability[cite: 7]. Actions: Approve / Reject / Escalate[cite: 7]. Trigger: composite score ≥ 0.75 per policy[cite: 7].</p>
+              <div class="frd-hitl-slo">SLO: 2h · Timeout → CPO + Alert Regulatory Affairs</div>
+            </div>
+          </div>
+
+          <!-- QualityTrace -->
+          <div class="frd-module">
+            <div class="frd-left">
+              <div class="frd-module-tag">Module 03</div>
+              <h3 class="frd-module-name">QualityTrace</h3>
+              <p class="frd-function">Automated NCR root cause + MDR Article 87 vigilance reporting[cite: 7]. Full device lineage from raw material supplier to finished device, with CAPA routing and 72-hour MDR SLA enforcement via event-sourced pipeline[cite: 7].</p>
+              <div class="frd-badge">EU AI Act · Annex III High-Risk</div>
+            </div>
+            <div class="frd-reqs">
+              <span class="frd-reqs-label">Functional Requirements</span>
+              <div class="frd-req"><span class="frd-req-id">FR-Q01</span><span class="frd-req-text">Ingest batch records, supplier certificates, and incoming inspection data from Veeva Vault and SAP S/4HANA via Pub/Sub event stream — all events timestamped and immutable[cite: 7]</span></div>
+              <div class="frd-req"><span class="frd-req-id">FR-Q02</span><span class="frd-req-text">Generate automated root cause hypothesis per NCR with SHAP attribution within 2 hours of NCR creation event — hypothesis must identify responsible component/supplier/process step[cite: 7]</span></div>
+              <div class="frd-req"><span class="frd-req-id">FR-Q03</span><span class="frd-req-text">Trace full device lineage from raw material supplier through to finished device serial number for MDR Article 87 vigilance reporting — lineage must be exportable as MDR-structured artefact[cite: 7]</span></div>
+              <div class="frd-req"><span class="frd-req-id">FR-Q04</span><span class="frd-req-text">Generate MDR Article 87 vigilance report draft within 48 hours of serious incident event, leaving 24 hours for HITL-08 (Regulatory Affairs) review before 72-hour SLA deadline[cite: 7]</span></div>
+              <div class="frd-req"><span class="frd-req-id">FR-Q05</span><span class="frd-req-text">Route all CAPA recommendations to HITL-03 (Quality Manager) before CAPA closure — ISO 13485 § 8.5.2 requires QM sign-off; system must enforce this as a hard gate[cite: 7]</span></div>
+            </div>
+            <div class="frd-right">
+              <span class="frd-hitl-label">HITL Specification</span>
+              <div class="frd-hitl-id">HITL-03 — Quality Manager</div>
+              <p class="frd-hitl-detail">Reviews: root cause hypothesis + SHAP attribution + affected device lineage + CAPA recommendation[cite: 7]. Actions: Approve / Modify / Reject[cite: 7]. MDR 72h hard deadline enforced by pipeline — timeout triggers auto-escalation to VP Quality[cite: 7].</p>
+              <div class="frd-hitl-slo">SLO: 8h · MDR hard deadline: 72h</div>
+            </div>
+          </div>
+
+          <!-- InventoryOrchestrator -->
+          <div class="frd-module">
+            <div class="frd-left">
+              <div class="frd-module-tag">Module 04</div>
+              <h3 class="frd-module-name">InventoryOrchestrator</h3>
+              <p class="frd-function">ML-optimised inventory positioning across 6 manufacturing and distribution sites[cite: 7]. Consumes DemandIQ forecasts and SupplierSentinel risk scores as primary inputs for reorder and safety stock calculation[cite: 7]. Writes back to SAP S/4HANA MRP only after HITL gate[cite: 7].</p>
+              <div class="frd-badge">EU AI Act · Annex III High-Risk</div>
+            </div>
+            <div class="frd-reqs">
+              <span class="frd-reqs-label">Functional Requirements</span>
+              <div class="frd-req"><span class="frd-req-id">FR-I01</span><span class="frd-req-text">Consume DemandIQ forecast events + SupplierSentinel risk scores as primary inputs via Pub/Sub — reorder calculation must re-run within 5 minutes of each upstream event[cite: 7]</span></div>
+              <div class="frd-req"><span class="frd-req-id">FR-I02</span><span class="frd-req-text">Generate reorder point and safety stock recommendation per SKU per site with confidence score and SHAP attribution to DemandIQ forecast, SupplierSentinel risk, and safety stock model contributions[cite: 7]</span></div>
+              <div class="frd-req"><span class="frd-req-id">FR-I03</span><span class="frd-req-text">Integrate with SAP S/4HANA MRP via Pub/Sub for automated reorder trigger — SAP write is blocked until HITL gate is passed or value is below autonomous threshold[cite: 7]</span></div>
+              <div class="frd-req"><span class="frd-req-id">FR-I04</span><span class="frd-req-text">Route high-value reorder decisions above DoA-defined threshold (currently €100K) to HITL-04 (Inventory Planner) before SAP write — SAP write held atomically until approval[cite: 7]</span></div>
+              <div class="frd-req"><span class="frd-req-id">FR-I05</span><span class="frd-req-text">Support automated model rollback to prior champion state within 30 minutes of drift alert — rollback must include re-calculation of all open reorder recommendations[cite: 7]</span></div>
+            </div>
+            <div class="frd-right">
+              <span class="frd-hitl-label">HITL Specification</span>
+              <div class="frd-hitl-id">HITL-04 — Inventory Planner</div>
+              <p class="frd-hitl-detail">Reviews: reorder recommendation + SHAP attribution (DemandIQ %, SupplierSentinel %, safety stock %) + current stock levels + lead time[cite: 7]. Actions: Approve / Adjust / Reject[cite: 7]. Trigger: reorder value above DoA threshold[cite: 7].</p>
+              <div class="frd-hitl-slo">SLO: 4h · Timeout → VP Supply Chain</div>
+            </div>
+          </div>
+
+          <!-- ContractIntelligence -->
+          <div class="frd-module">
+            <div class="frd-left">
+              <div class="frd-module-tag">Module 05</div>
+              <h3 class="frd-module-name">ContractIntelligence</h3>
+              <p class="frd-function">Full-corpus contract analysis + A2A Commerce sourcing loop[cite: 7]. Uses a Gemini-family model with ≥1M token context window for full-corpus contract ingestion (no chunking), classifying 200+ clause types, generating TCO scores, and executing the inter-enterprise A2A sourcing loop[cite: 7].</p>
+              <div class="frd-badge">EU AI Act · Annex III High-Risk</div>
+            </div>
+            <div class="frd-reqs">
+              <span class="frd-reqs-label">Functional Requirements</span>
+              <div class="frd-req"><span class="frd-req-id">FR-C01</span><span class="frd-req-text">Ingest full SAP Ariba contract corpus via REST — 310 supplier contracts, full document without chunking — requires Gemini-family model with ≥1M token context window[cite: 7]</span></div>
+              <div class="frd-req"><span class="frd-req-id">FR-C02</span><span class="frd-req-text">Classify and risk-score 200+ clause types per contract using a capable large context model with clause-level confidence score per classification[cite: 7]</span></div>
+              <div class="frd-req"><span class="frd-req-id">FR-C03</span><span class="frd-req-text">Generate risk-adjusted TCO score per supplier for strategic sourcing decisions with SHAP attribution tracing each score to clause-level risk contributors[cite: 7]</span></div>
+              <div class="frd-req"><span class="frd-req-id">FR-C04</span><span class="frd-req-text">Execute A2A Commerce loop — issue structured sourcing request to supplier agents via A2A protocol, receive structured bids, evaluate against TCO model, present comparison to CPO via HITL-05[cite: 7]</span></div>
+              <div class="frd-req"><span class="frd-req-id">FR-C05</span><span class="frd-req-text">Route all strategic sourcing decisions and all A2A bid acceptances to HITL-05 (CPO) before contract countersignature or PO issuance — no autonomous contract commitment permitted[cite: 7]</span></div>
+            </div>
+            <div class="frd-right">
+              <span class="frd-hitl-label">HITL Specification</span>
+              <div class="frd-hitl-id">HITL-05 — CPO</div>
+              <p class="frd-hitl-detail">Reviews: TCO score + SHAP clause attribution + A2A bid comparison table + contract risk summary[cite: 7]. Actions: Approve / Counter / Reject[cite: 7]. Covers strategic sourcing and emergency re-sourcing paths[cite: 7].</p>
+              <div class="frd-hitl-slo">SLO: 24h strategic · 2h emergency</div>
+            </div>
+          </div>
+
+          <!-- ProcureGuard -->
+          <div class="frd-module">
+            <div class="frd-left">
+              <div class="frd-module-tag">Module 06</div>
+              <h3 class="frd-module-name">ProcureGuard</h3>
+              <p class="frd-function">Automated procurement agent managing PO lifecycle in SAP Ariba, executing contract countersignature workflows, and enforcing Legal Counsel sign-off via HITL-06 before any contract becomes binding[cite: 7]. The A2A Commerce v1 integration is delivered in PI-02; full inter-enterprise loop in PI-03[cite: 7].</p>
+              <div class="frd-badge">EU AI Act · Annex III High-Risk</div>
+            </div>
+            <div class="frd-reqs">
+              <span class="frd-reqs-label">Functional Requirements</span>
+              <div class="frd-req"><span class="frd-req-id">FR-P01</span><span class="frd-req-text">Manage full PO lifecycle in SAP Ariba — creation, amendment, and closure — with every state transition logged to immutable Firestore audit record[cite: 7]</span></div>
+              <div class="frd-req"><span class="frd-req-id">FR-P02</span><span class="frd-req-text">Enforce HITL-06 (Legal Counsel) gate before any contract progresses to countersignature — system must hold contract in PENDING_LEGAL state until approval or rejection is recorded[cite: 7]</span></div>
+              <div class="frd-req"><span class="frd-req-id">FR-P03</span><span class="frd-req-text">Surface to Legal Counsel: contract summary, ContractIntelligence clause risk flags, SHAP attribution, recommended action, and escalation path — all in HITL-06 review interface[cite: 7]</span></div>
+              <div class="frd-req"><span class="frd-req-id">FR-P04</span><span class="frd-req-text">Execute A2A Commerce v1 sourcing request issuance to supplier agents on behalf of ContractIntelligence — all A2A messages structured per A2A protocol specification[cite: 7]</span></div>
+              <div class="frd-req"><span class="frd-req-id">FR-P05</span><span class="frd-req-text">Generate structured audit export per PO and contract event — exportable in formats compatible with ISO 13485 audit requirements and EU AI Act Annex IV documentation obligations[cite: 7]</span></div>
+            </div>
+            <div class="frd-right">
+              <span class="frd-hitl-label">HITL Specification</span>
+              <div class="frd-hitl-id">HITL-06 — Legal Counsel</div>
+              <p class="frd-hitl-detail">Reviews: contract summary + clause risk flags from ContractIntelligence + SHAP attribution + recommended action[cite: 7]. Actions: Approve / Return for Revision / Escalate to Head of Legal[cite: 7]. Trigger: any contract countersignature[cite: 7].</p>
+              <div class="frd-hitl-slo">SLO: 48 hours · Timeout → CPO + Head of Legal alert + CPO notified</div>
+            </div>
+          </div>
+
+          <!-- ScopeTracer -->
+          <div class="frd-module">
+            <div class="frd-left">
+              <div class="frd-module-tag">Module 07</div>
+              <h3 class="frd-module-name">ScopeTracer</h3>
+              <p class="frd-function">Automated real-time Scope 3 emissions monitoring and CSRD-compliant reporting[cite: 7]. Ingests freight, 3PL, and logistics data via BigQuery Omni in-place calculation — eliminating the quarterly manual data gathering process[cite: 7]. Classified as standard risk under EU AI Act (reporting module, no high-impact automated decisions)[cite: 7].</p>
+              <div class="frd-badge standard">Standard Risk · CSRD Obligation</div>
+            </div>
+            <div class="frd-reqs">
+              <span class="frd-reqs-label">Functional Requirements</span>
+              <div class="frd-req"><span class="frd-req-id">FR-SC01</span><span class="frd-req-text">Ingest freight emissions data, 3PL portal feeds, and logistics event streams via Pub/Sub — all data ingestion in-region (europe-west3) with CMEK encryption at rest[cite: 7]</span></div>
+              <div class="frd-req"><span class="frd-req-id">FR-SC02</span><span class="frd-req-text">Calculate Scope 3 Category 4 (upstream transportation) and Category 9 (downstream transportation) emissions per shipment using GHG Protocol-compliant emission factors[cite: 7]</span></div>
+              <div class="frd-req"><span class="frd-req-id">FR-SC03</span><span class="frd-req-text">Generate CSRD-structured Scope 3 emissions report on automated schedule — output must be diff-comparable against prior period for Sustainability Controller review[cite: 7]</span></div>
+              <div class="frd-req"><span class="frd-req-id">FR-SC04</span><span class="frd-req-text">Surface real-time Scope 3 dashboard in SupplyChain Command Dashboard — current period vs. prior period, by supplier, by logistics lane[cite: 7]</span></div>
+              <div class="frd-req"><span class="frd-req-id">FR-SC05</span><span class="frd-req-text">Maintain full emissions calculation audit trail — each reported figure must be traceable to source data, emission factor version, and calculation methodology[cite: 7]</span></div>
+            </div>
+            <div class="frd-right">
+              <span class="frd-hitl-label">Human Review</span>
+              <div class="frd-hitl-id">Sustainability Controller Review</div>
+              <p class="frd-hitl-detail">ScopeTracer does not carry an EU AI Act high-risk HITL checkpoint[cite: 7]. The Sustainability Controller reviews the auto-generated CSRD report before external submission[cite: 7]. This is a business process control, not an AI Act Article 14 obligation — documented here for completeness[cite: 7].</p>
+              <div class="frd-no-hitl">Review cycle: Quarterly CSRD submission · Annual ESRS E1 report</div>
+            </div>
+          </div>
+
+          <!-- SupplyChain Command Dashboard -->
+          <div class="frd-module">
+            <div class="frd-left">
+              <div class="frd-module-tag">Module 08</div>
+              <h3 class="frd-module-name">SupplyChain Command</h3>
+              <p class="frd-function">Unified operational interface for all HITL queue management, module health monitoring, agent state inspection, and cross-module alerting[cite: 7]. Read-only aggregate view — it does not make autonomous decisions[cite: 7]. Delivered in PI-03[cite: 7].</p>
+              <div class="frd-badge standard">Standard Risk · Observability Module</div>
+            </div>
+            <div class="frd-reqs">
+              <span class="frd-reqs-label">Functional Requirements</span>
+              <div class="frd-req"><span class="frd-req-id">FR-DB01</span><span class="frd-req-text">Display all 8 HITL queues with pending items, reviewer assignment, elapsed time against SLO, and escalation status — refreshed every 30 seconds[cite: 7]</span></div>
+              <div class="frd-req"><span class="frd-req-id">FR-DB02</span><span class="frd-req-text">Surface module health metrics per agent — last run timestamp, event throughput, drift alert status, error rate — with threshold-based alerting to on-call engineer[cite: 7]</span></div>
+              <div class="frd-req"><span class="frd-req-id">FR-DB03</span><span class="frd-req-text">Provide cross-module alert feed — structured JSON events from Cloud Logging surfaced as prioritised operational alerts with severity classification[cite: 7]</span></div>
+              <div class="frd-req"><span class="frd-req-id">FR-DB04</span><span class="frd-req-text">Support HITL audit log export per module per time period — export must satisfy EU AI Act Annex IV audit documentation requirements[cite: 7]</span></div>
+              <div class="frd-req"><span class="frd-req-id">FR-DB05</span><span class="frd-req-text">Role-based access control enforced at dashboard layer — HITL reviewer sees only their assigned queue; VP Supply Chain sees cross-module view; read-only for all non-approver roles[cite: 7]</span></div>
+            </div>
+            <div class="frd-right">
+              <span class="frd-hitl-label">Human Review</span>
+              <div class="frd-hitl-id">No AI Act HITL Obligation</div>
+              <p class="frd-hitl-detail">The Dashboard is a monitoring and audit interface, not an AI decision system[cite: 7]. It does not trigger automated actions[cite: 7]. All human decisions are initiated through the HITL checkpoints of the domain modules — the Dashboard surfaces the queue and provides the review interface for those checkpoints[cite: 7].</p>
+              <div class="frd-no-hitl">Monitoring module · No autonomous decision path</div>
+            </div>
+          </div>
+
+        </div><!-- /frd-grid -->
+      </section>
+
+      <!-- ── SECTION 03 — HITL MASTER TABLE ── -->
+      <section class="section" id="hitl-spec">
+        <p class="section-eyebrow">Section 03</p>
+        <h2 class="section-title">HITL Specification <em>— Master Table</em></h2>
+        <p class="section-lead">All eight HITL checkpoints across the Autonomous Supply Chain system[cite: 7]. This table is the contract between the architecture and the EU AI Act compliance team — satisfying Article 14 documentation requirements for every high-risk AI system in scope[cite: 7]. The "Information Presented" column is a required Article 14 artefact specifying that reviewers receive sufficient, interpretable information to make a meaningful oversight decision — not just a notification[cite: 7].</p>
+
+        <div class="hitl-table-wrap">
+          <table class="hitl-table" role="table" aria-label="HITL Checkpoints Master Registry">
+            <thead>
+              <tr role="row">
+                <th role="columnheader">ID</th>
+                <th role="columnheader">Module</th>
+                <th role="columnheader">Reviewer</th>
+                <th role="columnheader">Trigger Condition</th>
+                <th role="columnheader">Information Presented to Reviewer</th>
+                <th role="columnheader">Actions Available</th>
+                <th role="columnheader">SLO</th>
+                <th role="columnheader">Timeout Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr role="row">
+                <td role="cell"><span class="hitl-id">HITL-01</span></td>
+                <td role="cell"><span class="hitl-module">DemandIQ</span></td>
+                <td role="cell"><span class="hitl-role">Demand Planner</span></td>
+                <td role="cell">Forecast-triggered PO above DoA threshold (€50K)[cite: 7]</td>
+                <td role="cell"><span class="hitl-info">12-week forecast + 80%/95% confidence intervals · SHAP top-5 features with magnitude · Prior forecast accuracy for this SKU/site pair · Proposed PO value[cite: 7]</span></td>
+                <td role="cell">Approve · Reject · Escalate</td>
+                <td role="cell"><span class="hitl-slo">4 hours</span></td>
+                <td role="cell">Auto-escalate to VP Supply Chain · SAP write held[cite: 7]</td>
+              </tr>
+              <tr role="row">
+                <td role="cell"><span class="hitl-id">HITL-02</span></td>
+                <td role="cell"><span class="hitl-module">SupplierSentinel</span></td>
+                <td role="cell"><span class="hitl-role">Procurement Director</span></td>
+                <td role="cell">Composite supplier risk score ≥ 0.75 (per Risk Policy § 6)[cite: 7]</td>
+                <td role="cell"><span class="hitl-info">Composite score + per-dimension sub-scores (financial, geo, ESG, concentration) · SHAP top signals · Recommended action · Alternative supplier availability[cite: 7]</span></td>
+                <td role="cell">Approve · Reject · Escalate</td>
+                <td role="cell"><span class="hitl-slo">2 hours</span></td>
+                <td role="cell">Pause sourcing action · Alert CPO · Regulatory Affairs notified[cite: 7]</td>
+              </tr>
+              <tr role="row">
+                <td role="cell"><span class="hitl-id">HITL-03</span></td>
+                <td role="cell"><span class="hitl-module">QualityTrace</span></td>
+                <td role="cell"><span class="hitl-role">Quality Manager</span></td>
+                <td role="cell">CAPA recommendation pending closure (ISO 13485 § 8.5.2)[cite: 7]</td>
+                <td role="cell"><span class="hitl-info">Root cause hypothesis + SHAP attribution · Affected device lineage + batch records · CAPA recommendation + proposed corrective actions · MDR SLA countdown[cite: 7]</span></td>
+                <td role="cell">Approve · Modify · Reject</td>
+                <td role="cell"><span class="hitl-slo">8h · 72h MDR hard SLA</span></td>
+                <td role="cell">Escalate to VP Quality · MDR flag raised · Hard deadline enforced[cite: 7]</td>
+              </tr>
+              <tr role="row">
+                <td role="cell"><span class="hitl-id">HITL-04</span></td>
+                <td role="cell"><span class="hitl-module">InventoryOrchestrator</span></td>
+                <td role="cell"><span class="hitl-role">Inventory Planner</span></td>
+                <td role="cell">Reorder decision above DoA threshold (€100K)[cite: 7]</td>
+                <td role="cell"><span class="hitl-info">Reorder recommendation + SHAP attribution (DemandIQ %, SupplierSentinel %, safety stock %) · Current stock levels per site · Lead time · Prior reorder accuracy[cite: 7]</span></td>
+                <td role="cell">Approve · Adjust · Reject</td>
+                <td role="cell"><span class="hitl-slo">4 hours</span></td>
+                <td role="cell">Hold SAP write · Escalate to Supply Chain Director[cite: 7]</td>
+              </tr>
+              <tr role="row">
+                <td role="cell"><span class="hitl-id">HITL-05</span></td>
+                <td role="cell"><span class="hitl-module">ContractIntelligence</span></td>
+                <td role="cell"><span class="hitl-role">CPO</span></td>
+                <td role="cell">Strategic sourcing decision · Any A2A bid acceptance[cite: 7]</td>
+                <td role="cell"><span class="hitl-info">TCO score + SHAP clause attribution · A2A bid comparison table (all bids received) · Contract risk summary · Recommended supplier + rationale[cite: 7]</span></td>
+                <td role="cell">Approve · Counter · Reject</td>
+                <td role="cell"><span class="hitl-slo">24h strategic · 2h emergency</span></td>
+                <td role="cell">Pause A2A loop · Hold PO issuance · Alert Head of Legal[cite: 7]</td>
+              </tr>
+              <tr role="row">
+                <td role="cell"><span class="hitl-id">HITL-06</span></td>
+                <td role="cell"><span class="hitl-module">ProcureGuard</span></td>
+                <td role="cell"><span class="hitl-role">Legal Counsel</span></td>
+                <td role="cell">Any contract pending countersignature[cite: 7]</td>
+                <td role="cell"><span class="hitl-info">Contract summary · ContractIntelligence clause risk flags + severity · SHAP attribution for flagged clauses · Recommended action · Prior legal review history for this supplier[cite: 7]</span></td>
+                <td role="cell">Approve · Return for Revision · Escalate</td>
+                <td role="cell"><span class="hitl-slo">48 hours</span></td>
+                <td role="cell">Hold contract in PENDING_LEGAL · Alert CPO + Head of Legal[cite: 7]</td>
+              </tr>
+              <tr role="row">
+                <td role="cell"><span class="hitl-id">HITL-07</span></td>
+                <td role="cell"><span class="hitl-module">SupplierSentinel</span></td>
+                <td role="cell"><span class="hitl-role">Supply Chain Director</span></td>
+                <td role="cell">Sub-tier concentration risk flag: single supplier ≥30% of critical component category[cite: 7]</td>
+                <td role="cell"><span class="hitl-info">Concentration risk profile · Affected component categories + spend exposure · Alternative supplier landscape · Recommended diversification action + estimated lead time[cite: 7]</span></td>
+                <td role="cell">Initiate Diversification · Accept Risk · Escalate</td>
+                <td role="cell"><span class="hitl-slo">8 hours</span></td>
+                <td role="cell">Escalate to VP Supply Chain · Regulatory Affairs notified if MDR-critical component[cite: 7]</td>
+              </tr>
+              <tr role="row">
+                <td role="cell"><span class="hitl-id">HITL-08</span></td>
+                <td role="cell"><span class="hitl-module">QualityTrace</span></td>
+                <td role="cell"><span class="hitl-role">Regulatory Affairs</span></td>
+                <td role="cell">MDR Article 87 vigilance report ready for sign-off[cite: 7]</td>
+                <td role="cell"><span class="hitl-info">Full MDR-structured vigilance report draft · Device lineage trace · Root cause summary + CAPA status · SLA countdown to 72h submission deadline · Prior similar incident history[cite: 7]</span></td>
+                <td role="cell">Sign Off · Request Amendment · Reject</td>
+                <td role="cell"><span class="hitl-slo">Within 72h MDR SLA</span></td>
+                <td role="cell">Auto-escalate to VP Regulatory · Hard deadline enforced by pipeline[cite: 7]</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="eu-statement">
+          <div class="eu-statement-label">EU AI Act Article 14 — Human Oversight Compliance Statement</div>
+          <p>This HITL specification satisfies EU AI Act Article 14 by defining: <strong>(1)</strong> the specific conditions under which human oversight is triggered for each high-risk AI system, <strong>(2)</strong> the information presented to the human reviewer at each checkpoint — including model outputs, explainability artefacts, and contextual data sufficient for a meaningful decision, <strong>(3)</strong> the decision options available and the system action each triggers, <strong>(4)</strong> the SLA and escalation path, and <strong>(5)</strong> the immutable audit record written to Cloud Firestore before any agent proceeds[cite: 7]. All eight checkpoints are implemented as first-class state machine nodes in the ADK agent definition — not process notes or informal review steps[cite: 7]. The HITL Framework is a Platform ART enabler delivered in PI-01 before any domain module can build a HITL integration[cite: 7].</p>
+        </div>
+
+        <div class="gdpr-notice">
+          <div class="gdpr-notice-label">GDPR Article 22 — Automated Decision-Making Analysis</div>
+          <p>Several modules in this system produce decisions with legally significant or commercially significant effects on third parties (supplier organisations, procurement counterparties)[cite: 7]. GDPR Article 22 applies where automated processing is used to make decisions that produce legal effects concerning, or similarly significantly affecting, a data subject or legal entity[cite: 7]. <strong>The HITL architecture is the primary Article 22 safeguard:</strong> no high-impact decision — PO issuance, contract countersignature, supplier sourcing action — proceeds without a human approval step[cite: 7]. This design satisfies GDPR Article 22(2)(b) (explicit human review)[cite: 7]. The DPO must confirm this assessment at PI-01 gate[cite: 7]. Supplier risk scoring (SupplierSentinel) may also require a legitimate interest assessment under GDPR Article 6(1)(f) for the processing of third-party financial and behavioural data — to be resolved with Legal Counsel before SupplierSentinel v2 activates ML-triggered actions in PI-02[cite: 7].</p>
+        </div>
+      </section>
+
+      <!-- ── SECTION 04 — NFR ── -->
+      <section class="section" id="nfr">
+        <p class="section-eyebrow">Section 04</p>
+        <h2 class="section-title">Non-Functional <em>Requirements</em></h2>
+        <p class="section-lead">Six NFRs that govern the entire Autonomous Supply Chain platform — performance, availability, security, compliance, observability, and cost[cite: 7]. These are architectural constraints, not aspirational goals[cite: 7]. Each carries a measurable acceptance criterion and an owner accountable for its enforcement[cite: 7].</p>
+
+        <div class="nfr-grid">
+          <div class="nfr-card">
+            <div class="nfr-id">NFR-01</div>
+            <h3 class="nfr-name">Performance</h3>
+            <p class="nfr-detail">DemandIQ forecast generation within 30 seconds per full-corpus run on Vertex AI Pipelines[cite: 7]. SupplierSentinel risk score refresh within 60 seconds of each Pub/Sub event[cite: 7]. InventoryOrchestrator reorder recalculation within 5 minutes of an upstream DemandIQ or SupplierSentinel event[cite: 7]. These are architectural constraints on pipeline configuration and Pub/Sub consumer topology — not SLAs to be set post-deployment[cite: 7].</p>
+            <div class="nfr-metric">DemandIQ ≤ 30s · SupplierSentinel ≤ 60s · InventoryOrchestrator ≤ 5min</div>
+          </div>
+          <div class="nfr-card">
+            <div class="nfr-id">NFR-02</div>
+            <h3 class="nfr-name">Availability &amp; DR</h3>
+            <p class="nfr-detail">HITL-gated modules require 99.9% availability during CET business hours — a human reviewer cannot approve if the platform is unavailable[cite: 7]. Non-HITL modules operate at 99.5%[cite: 7]. RTO: 4 hours, RPO: 15 minutes for HITL modules (derived from the 4-hour HITL-01 SLO — a platform recovery must complete before the first HITL timeout fires)[cite: 7]. Multi-region failover design for europe-west3 outage scenarios is required by PI-01 DoD[cite: 7]. GreenOps batch scheduling shifts non-HITL workloads to off-peak windows[cite: 7].</p>
+            <div class="nfr-metric">HITL: 99.9% CET · RTO 4h · RPO 15min · Non-HITL: 99.5%</div>
+          </div>
+          <div class="nfr-card">
+            <div class="nfr-id">NFR-03</div>
+            <h3 class="nfr-name">Security</h3>
+            <p class="nfr-detail">All data within VPC-SC perimeter[cite: 7]. CMEK mandatory for all persistent storage — Cloud Storage, BigQuery, Firestore, Pub/Sub[cite: 7]. Supplier PII restricted to europe-west3 at the Organisation Policy level[cite: 7]. No service account key files in any environment — Workload Identity Federation only[cite: 7]. All inter-service calls authenticated via IAM service identities[cite: 7]. Network egress restricted to approved external endpoints only (SAP, Veeva, approved supplier agent endpoints)[cite: 7].</p>
+            <div class="nfr-metric">VPC-SC · CMEK mandatory · WIF only · No SA keys · PII in europe-west3</div>
+          </div>
+          <div class="nfr-card">
+            <div class="nfr-id">NFR-04</div>
+            <h3 class="nfr-name">Compliance</h3>
+            <p class="nfr-detail">EU AI Act Annex IV conformity assessment documentation is generated automatically per model version by the MLOps pipeline on every model promotion event — not produced manually for each audit[cite: 7]. Generated artefacts include: model purpose statement, training data provenance, performance metrics per validation dataset, SHAP explainability summary, HITL checkpoint mapping, and known limitations[cite: 7]. The documentation documentation pipeline is a first-class Platform ART component, delivering its first template in PI-01 and full automation in PI-02[cite: 7].</p>
+            <div class="nfr-metric">Conformity docs auto-generated per model version · Annex IV template accepted by Regulatory Affairs in PI-01</div>
+          </div>
+          <div class="nfr-card">
+            <div class="nfr-id">NFR-05</div>
+            <h3 class="nfr-name">Observability &amp; Model Operations</h3>
+            <p class="nfr-detail">All agent state transitions logged to Cloud Logging with structured JSON — queryable in BigQuery via Log Sink[cite: 7]. Drift detection alerts are operational SLOs: threshold breach triggers automated alert within 1 hour — before the next HITL review cycle is affected[cite: 7]. On drift alert: automated rollback to last champion model initiates within 5 minutes; rollback must complete within 30 minutes[cite: 7]. Rollback trigger, rollback completion, and post-rollback performance metrics are all logged as first-class audit events[cite: 7].</p>
+            <div class="nfr-metric">Structured JSON logging · Drift alert ≤ 1h · Rollback initiation ≤ 5min · Rollback complete ≤ 30min</div>
+          </div>
+          <div class="nfr-card">
+            <div class="nfr-id">NFR-06</div>
+            <h3 class="nfr-name">Cost &amp; GreenOps</h3>
+            <p class="nfr-detail">FinOps tagging per module per environment from the first Terraform apply — cost allocation is enforced from day 1, not deferred to Phase 2[cite: 7]. GreenOps scheduling shifts batch workloads — DemandIQ full-corpus runs, QualityTrace lineage traces, ScopeTracer Scope 3 calculations — to off-peak hours aligned with low-carbon grid windows[cite: 7]. ScopeTracer's CSRD reporting itself depends on accurate GreenOps scheduling to report reduced cloud Scope 3 emissions[cite: 7].</p>
+            <div class="nfr-metric">FinOps tags day 1 · GreenOps batch scheduling active · Scope 3 cloud emissions tracked by ScopeTracer</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── FOOTER NAV ── -->
+      <nav class="footer-nav" aria-label="Portfolio page navigation">
+        <a class="footer-nav-card" href="page-04-autonomous-supply-chain.html">
+          <div class="footer-nav-dir">← Previous</div>
+          <div class="footer-nav-num">PG 04</div>
+          <h3 class="footer-nav-title">TOGAF ADM — Architecture Development</h3>
+          <p class="footer-nav-sub">Phases A–F · ADRs · Technology Architecture · Data Architecture[cite: 7]</p>
+        </a>
+        <a class="footer-nav-card" href="page-06-agent-swarm-a2a.html">
+          <div class="footer-nav-dir">Next →</div>
+          <div class="footer-nav-num">PG 06</div>
+          <h3 class="footer-nav-title">Agent Swarm Architecture</h3>
+          <p class="footer-nav-sub">ADK · A2A · MCP · State Machines · Tool Manifests · Guardrails[cite: 7]</p>
+        </a>
+      </nav>
+
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="doc-footer">
+      <span>The <em>Autonomous</em> Supply Chain · Siddharth Rao Portfolio · 2026[cite: 7]</span>
+      <div class="footer-links">
+        <a href="https://github.com/siddharthrao" target="_blank" rel="noopener">GitHub</a>
+        <a href="index__1_.html">Overview Dashboard</a>
+      </div>
+    </footer>
+
+  </main>
+</div>
+
+</body>
+</html>
